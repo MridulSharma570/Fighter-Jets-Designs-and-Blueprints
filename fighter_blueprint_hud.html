@@ -337,6 +337,50 @@
   .card.nuke .inspect-3d-btn { border-color: rgba(255,59,78,0.55); color: #ff8e99; background: rgba(255,59,78,0.14); }
   .card.nuke .inspect-3d-btn:hover { background: var(--hud-red); color: #fff; }
 
+  /* Metalstorm-Style Full-Body Paint Shop & Multi-Color Skin Customizer */
+  .paint-shop {
+    margin-top: 10px;
+    background: linear-gradient(155deg, rgba(10, 22, 42, 0.96), rgba(5, 11, 22, 0.98));
+    border: 1px solid rgba(45, 226, 255, 0.36);
+    padding: 10px 12px;
+  }
+  .paint-hdr {
+    display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap;
+    margin-bottom: 8px; padding-bottom: 6px; border-bottom: 1px solid rgba(45, 226, 255, 0.18);
+  }
+  .paint-title { font-size: 11px; font-weight: 800; color: var(--hud-cyan); letter-spacing: 0.9px; }
+  .skin-preset-row { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 8px; }
+  .skin-chip {
+    display: inline-flex; align-items: center; gap: 5px;
+    background: rgba(7, 17, 32, 0.92); border: 1px solid rgba(45, 226, 255, 0.25);
+    color: var(--text-main); padding: 4px 8px; font-family: inherit; font-size: 9.5px; cursor: pointer; transition: 0.14s;
+  }
+  .skin-chip:hover { border-color: var(--hud-cyan); background: rgba(18, 42, 74, 0.95); }
+  .skin-chip.active { border-color: var(--hud-amber); background: rgba(255, 174, 43, 0.16); color: #ffe6ad; font-weight: 700; }
+  .swatch-dots { display: inline-flex; gap: 2px; }
+  .swatch-dots i { width: 8px; height: 8px; border-radius: 1px; display: inline-block; border: 1px solid rgba(255,255,255,0.28); }
+  .paint-controls-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(115px, 1fr)); gap: 7px; align-items: end;
+  }
+  .zone-pick {
+    background: rgba(5, 12, 24, 0.9); border: 1px solid rgba(45, 226, 255, 0.20);
+    padding: 5px 7px; display: flex; flex-direction: column; gap: 4px;
+  }
+  .zone-pick label { font-size: 9px; color: var(--text-dim); letter-spacing: 0.5px; text-transform: uppercase; }
+  .zone-pick input[type="color"] {
+    width: 100%; height: 22px; border: 1px solid rgba(255,255,255,0.22); background: transparent; cursor: pointer; padding: 0;
+  }
+  .zone-pick select {
+    width: 100%; background: #071324; color: var(--text-main); border: 1px solid rgba(45, 226, 255, 0.35);
+    padding: 3px 5px; font-family: inherit; font-size: 10px; cursor: pointer;
+  }
+  .paint-action-row { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 8px; }
+  .paint-action-btn {
+    background: rgba(45, 226, 255, 0.12); border: 1px solid rgba(45, 226, 255, 0.40); color: var(--hud-cyan);
+    padding: 4px 9px; font-family: inherit; font-size: 9.5px; font-weight: 700; cursor: pointer; text-transform: uppercase;
+  }
+  .paint-action-btn:hover { background: var(--hud-cyan); color: #03111c; }
+
   .hidden { display: none !important; }
   .flash-nuke { animation: nukeFlash 1.0s ease-out; }
   @keyframes nukeFlash { 0% { box-shadow: inset 0 0 150px rgba(255,220,120,0.98); } 100% { box-shadow: none; } }
@@ -449,6 +493,61 @@
               <span id="hud-tl"></span>
               <span id="hud-tc"></span>
               <span id="hud-tr"></span>
+            </div>
+
+            <!-- METALSTORM FULL-BODY AIRCRAFT PAINT SHOP -->
+            <div class="paint-shop" id="jet-paint-shop">
+              <div class="paint-hdr">
+                <span class="paint-title">🎨 METALSTORM FULL-BODY PAINT SHOP // MULTI-COLOR AIRFRAME SKINS</span>
+                <span style="font-size:9.5px;color:var(--hud-amber);" id="jet-skin-badge">FACTORY SIGNATURE</span>
+              </div>
+              <div class="skin-preset-row" id="jet-skin-presets"></div>
+              <div class="paint-controls-grid">
+                <div class="zone-pick">
+                  <label>Pattern Style</label>
+                  <select id="js-pattern" onchange="onJetSkinControl()">
+                    <option value="factory">Factory Signature</option>
+                    <option value="digital_pixel">Digital Pixel Camo</option>
+                    <option value="splinter_geo">Geometric Splinter</option>
+                    <option value="gradient_ace">Ace Nose-Tail Gradient</option>
+                    <option value="tiger_stripes">Predator Tiger Stripes</option>
+                    <option value="tri_tone">Tri-Tone Tactical</option>
+                    <option value="two_tone">Two-Tone Interceptor</option>
+                    <option value="carbon_gold">Carbon &amp; Metallic Gold</option>
+                    <option value="cyber_tron">Futuristic Cyber Grid</option>
+                    <option value="metallic_chrome">Titanium Chrome</option>
+                  </select>
+                </div>
+                <div class="zone-pick">
+                  <label>Surface Finish</label>
+                  <select id="js-finish" onchange="onJetSkinControl()">
+                    <option value="0">Satin Tactical</option>
+                    <option value="1">Matte Stealth RAM</option>
+                    <option value="2">Metallic Clearcoat</option>
+                    <option value="3">Sci-Fi Cyber Neon</option>
+                  </select>
+                </div>
+                <div class="zone-pick">
+                  <label>Canopy Tint</label>
+                  <select id="js-canopy" onchange="onJetSkinControl()">
+                    <option value="#f0b83a">24K Stealth Gold</option>
+                    <option value="#28a8ff">Sapphire Blue</option>
+                    <option value="#22f098">Emerald HUD</option>
+                    <option value="#ff3b4e">Crimson Ace</option>
+                    <option value="#475569">Obsidian Smoke</option>
+                  </select>
+                </div>
+                <div class="zone-pick"><label>1. Fuselage / Body</label><input type="color" id="js-c1" oninput="onJetSkinControl()"/></div>
+                <div class="zone-pick"><label>2. Wings / Camo</label><input type="color" id="js-c2" oninput="onJetSkinControl()"/></div>
+                <div class="zone-pick"><label>3. Belly / Strakes</label><input type="color" id="js-c3" oninput="onJetSkinControl()"/></div>
+                <div class="zone-pick"><label>4. Stripes / Tips</label><input type="color" id="js-acc" oninput="onJetSkinControl()"/></div>
+                <div class="zone-pick"><label>5. Nose Radome</label><input type="color" id="js-rad" oninput="onJetSkinControl()"/></div>
+              </div>
+              <div class="paint-action-row">
+                <button class="paint-action-btn" onclick="resetJetSkin()">↺ Reset Factory</button>
+                <button class="paint-action-btn" onclick="applyJetSkinToAll()">✦ Apply Skin to All 10 Jets</button>
+                <button class="paint-action-btn" onclick="syncOrdnanceToJetSkin()">⚡ Sync Weapons to Jet Skin</button>
+              </div>
             </div>
           </div>
 
@@ -577,6 +676,48 @@
               <div class="ord-chip-grid" id="ord-chip-grid"></div>
             </div>
           </div>
+
+          <!-- FULL-BODY WEAPON PAINT SHOP (ALL MISSILES, NUKES, ROCKETS & CANNONS) -->
+          <div class="paint-shop" style="grid-column: 1 / -1; margin-top: 2px;">
+            <div class="paint-hdr">
+              <span class="paint-title">🎨 WEAPON SKIN CUSTOMIZER // FULL-BODY MULTI-COLOR FINISHES (MISSILES • ROCKETS • CANNONS • NUKES)</span>
+              <span style="font-size:9.5px;color:var(--hud-green);" id="ord-skin-badge">STOCK ARMORY</span>
+            </div>
+            <div class="skin-preset-row" id="ord-skin-presets"></div>
+            <div class="paint-controls-grid">
+              <div class="zone-pick">
+                <label>Weapon Pattern</label>
+                <select id="os-pattern" onchange="onOrdSkinControl()">
+                  <option value="stock">Stock Armory</option>
+                  <option value="stripes">Ace Dual-Stripes</option>
+                  <option value="chevron">Hazard Chevron</option>
+                  <option value="tri_tone">Tri-Tone Tactical</option>
+                  <option value="gradient">Thermal Gradient</option>
+                  <option value="carbon_gold">Carbon &amp; Gold</option>
+                  <option value="cyber_neon">Cyber Neon Circuit</option>
+                  <option value="chrome_steel">Brushed Titanium</option>
+                </select>
+              </div>
+              <div class="zone-pick">
+                <label>Finish</label>
+                <select id="os-finish" onchange="onOrdSkinControl()">
+                  <option value="0">Satin Ordnance</option>
+                  <option value="1">Matte Stealth RAM</option>
+                  <option value="2">Metallic Gloss</option>
+                  <option value="3">Sci-Fi Cyber</option>
+                </select>
+              </div>
+              <div class="zone-pick"><label>1. Main Body / Hull</label><input type="color" id="os-body" oninput="onOrdSkinControl()"/></div>
+              <div class="zone-pick"><label>2. Nose / Barrels / Tips</label><input type="color" id="os-nose" oninput="onOrdSkinControl()"/></div>
+              <div class="zone-pick"><label>3. Bands / Drum / Collar</label><input type="color" id="os-band" oninput="onOrdSkinControl()"/></div>
+              <div class="zone-pick"><label>4. Fins / Mounts / Grips</label><input type="color" id="os-fin" oninput="onOrdSkinControl()"/></div>
+            </div>
+            <div class="paint-action-row">
+              <button class="paint-action-btn" onclick="resetOrdSkin()">↺ Reset Stock</button>
+              <button class="paint-action-btn" onclick="applyOrdSkinToAll()">✦ Apply Skin to All 31 Weapons</button>
+              <button class="paint-action-btn" onclick="syncCurrentWeaponToJet()">⚡ Match Active Jet Skin</button>
+            </div>
+          </div>
         </div>
 
         <div class="cards-3" id="ordnance-catalog"></div>
@@ -674,7 +815,7 @@ const JETS = [
     radarMod: "N036X AESA (1,514 T/R)", fuelKg: 10300, bypass: "0.59:1 TVC", sparMat: "Ti-6Al-4V / Carbon", ramMm: "2.4 mm Ferrite",
     hp: 178, maxSpd: 594, kmh: 2140, mach: "2.00", turn: 68, stealth: 82, detKm: 3.5, radKm: 8.6, cone: 38,
     planform: "Chamfered LEVCON Trapezoid", engine: "2x AL-51X 3D TVC", engPitch: 0.94, engCount: 2,
-    camoType: "pixel", color1: "#586d80", color2: "#2c3d4f", color3: "#7c95aa", canards: false, fsw: false, singleTail: false, flatNozzle: false, platypus: false,
+    camoType: "pixel", color1: "#586e82", color2: "#28394a", color3: "#9ab4ca", accent: "#d9383a", canards: false, fsw: false, singleTail: false, flatNozzle: false, platypus: false,
     cannon: "gsh_30v", pri: ["r_77v", 4], sec: ["r_74x", 2], nuke: ["kh_102x", 1], rockets: null,
     flares: { name: "UV-50X Spectral", cap: 6, cd: "4.0s", dur: "1.8s" },
     traits: [
@@ -691,7 +832,7 @@ const JETS = [
     radarMod: "Type-1475X AESA (1,856 T/R)", fuelKg: 11200, bypass: "0.52:1", sparMat: "CFRP Composite", ramMm: "2.8 mm Meta-RAM",
     hp: 168, maxSpd: 590, kmh: 2126, mach: "2.00", turn: 58, stealth: 88, detKm: 3.1, radKm: 9.2, cone: 42,
     planform: "Notched Canard-Delta Stealth", engine: "2x WS-15X Afterburning", engPitch: 1.05, engCount: 2,
-    camoType: "ram_dark", color1: "#2d333c", color2: "#191d23", color3: "#5c6675", canards: true, fsw: false, singleTail: false, flatNozzle: false, platypus: false,
+    camoType: "splinter_jade", color1: "#29333c", color2: "#161c22", color3: "#536878", accent: "#d49b28", canards: true, fsw: false, singleTail: false, flatNozzle: false, platypus: false,
     cannon: "cs_23v_pod", pri: ["pl_15x", 6], sec: null, nuke: ["cj_20x", 1], rockets: null,
     flares: { name: "T-935X Thermal-Chaff", cap: 5, cd: "4.5s", dur: "1.6s" },
     traits: [
@@ -708,7 +849,7 @@ const JETS = [
     radarMod: "APG-77V AESA (1,956 T/R)", fuelKg: 8200, bypass: "0.30:1 2D-TVC", sparMat: "Ti-39% / Bismaleimide", ramMm: "3.1 mm Ferrite-Gold",
     hp: 175, maxSpd: 670, kmh: 2414, mach: "2.25", turn: 67, stealth: 94, detKm: 2.7, radKm: 8.8, cone: 36,
     planform: "Clipped Diamond Trapezoid", engine: "2x F119V 2D Pitch TVC", engPitch: 1.00, engCount: 2,
-    camoType: "raptor_patch", color1: "#6c7580", color2: "#3b424c", color3: "#949eaa", canards: false, fsw: false, singleTail: false, flatNozzle: true, platypus: false,
+    camoType: "raptor_patch", color1: "#6d7884", color2: "#3c4550", color3: "#a4b0be", accent: "#c9a86a", canards: false, fsw: false, singleTail: false, flatNozzle: true, platypus: false,
     cannon: "m61v_vulcanix", pri: ["am_120d", 6], sec: ["am_9x", 2], nuke: ["b61n", 1], rockets: null,
     flares: { name: "MJU-39X Spectral", cap: 6, cd: "3.8s", dur: "1.7s" },
     traits: [
@@ -725,7 +866,7 @@ const JETS = [
     radarMod: "APG-81K AESA (1,676 T/R)", fuelKg: 8278, bypass: "0.57:1 High-T", sparMat: "Monolithic Al-Li / Carbon", ramMm: "2.9 mm Baked-Fiber",
     hp: 180, maxSpd: 536, kmh: 1930, mach: "1.60", turn: 56, stealth: 90, detKm: 2.9, radKm: 8.6, cone: 50,
     planform: "Single-Engine Stealth Trapezoid", engine: "1x F135K High-Thrust", engPitch: 0.76, engCount: 1,
-    camoType: "sawtooth", color1: "#363d46", color2: "#21262c", color3: "#6b7684", canards: false, fsw: false, singleTail: false, flatNozzle: false, platypus: false,
+    camoType: "sawtooth_charcoal", color1: "#30363f", color2: "#1d2228", color3: "#7c8998", accent: "#e05a2b", canards: false, fsw: false, singleTail: false, flatNozzle: false, platypus: false,
     cannon: "gau_22x", pri: ["am_120d", 4], sec: null, nuke: null, rockets: null,
     flares: { name: "MJU-61X Smart", cap: 4, cd: "4.5s", dur: "1.8s" },
     traits: [
@@ -742,7 +883,7 @@ const JETS = [
     radarMod: "LIG-X AESA (1,088 T/R)", fuelKg: 6000, bypass: "0.29:1 Twin", sparMat: "Al-7075 / CFRP", ramMm: "1.5 mm Semi-RAM",
     hp: 155, maxSpd: 611, kmh: 2200, mach: "1.81", turn: 62, stealth: 65, detKm: 4.2, radKm: 8.0, cone: 36,
     planform: "Canted Twin-Tail Trapezoid", engine: "2x F414K Afterburning", engPitch: 1.12, engCount: 2,
-    camoType: "two_tone", color1: "#626e7b", color2: "#38424f", color3: "#8f9dad", canards: false, fsw: false, singleTail: false, flatNozzle: false, platypus: false,
+    camoType: "two_tone_cobalt", color1: "#5b6d82", color2: "#303e4f", color3: "#9ab0c7", accent: "#2b7cd3", canards: false, fsw: false, singleTail: false, flatNozzle: false, platypus: false,
     cannon: "m61k_precision", pri: ["mt_200", 4], sec: ["ir_t", 2], nuke: null, rockets: ["log_70", 14],
     flares: { name: "KD-50X Salvo", cap: 5, cd: "4.0s", dur: "1.5s" },
     traits: [
@@ -759,7 +900,7 @@ const JETS = [
     radarMod: "CAPTOR-E AESA (1,400 T/R)", fuelKg: 4996, bypass: "0.40:1 Twin", sparMat: "82% Carbon Composite", ramMm: "1.2 mm Leading-Edge",
     hp: 160, maxSpd: 693, kmh: 2495, mach: "2.35", turn: 64, stealth: 45, detKm: 4.9, radKm: 8.4, cone: 34,
     planform: "Unstable Canard-Delta", engine: "2x EJ200X Turbofan", engPitch: 1.08, engCount: 2,
-    camoType: "euro_slate", color1: "#6f7983", color2: "#464e57", color3: "#98a3af", canards: true, fsw: false, singleTail: true, flatNozzle: false, platypus: false,
+    camoType: "euro_ghost", color1: "#727e8a", color2: "#49535e", color3: "#aebac6", accent: "#d97706", canards: true, fsw: false, singleTail: true, flatNozzle: false, platypus: false,
     cannon: "bk_27x", pri: ["mt_200", 4], sec: ["as_132", 4], nuke: ["storm_n", 1], rockets: ["cr_70", 38],
     flares: { name: "EDASS Praetorian", cap: 5, cd: "4.0s", dur: "1.6s" },
     traits: [
@@ -776,7 +917,7 @@ const JETS = [
     radarMod: "N011X PESA Array", fuelKg: 9400, bypass: "0.49:1 Twin", sparMat: "Aeroelastic Carbon Matrix", ramMm: "1.8 mm Matte Black",
     hp: 152, maxSpd: 477, kmh: 1717, mach: "1.65", turn: 76, stealth: 55, detKm: 4.5, radKm: 7.4, cone: 40,
     planform: "Forward-Swept Composite Wing", engine: "2x D-30F6V Afterburning", engPitch: 0.88, engCount: 2,
-    camoType: "black_stripe", color1: "#181b21", color2: "#0c0e12", color3: "#eef3fa", canards: true, fsw: true, singleTail: false, flatNozzle: false, platypus: false,
+    camoType: "black_stripe", color1: "#161920", color2: "#0a0c10", color3: "#f1f5f9", accent: "#e11d48", canards: true, fsw: true, singleTail: false, flatNozzle: false, platypus: false,
     cannon: "gsh_30v", pri: ["r_73v", 4], sec: null, nuke: null, rockets: ["s13_heavy", 10],
     flares: { name: "APP-50X Experimental", cap: 4, cd: "4.2s", dur: "1.7s" },
     traits: [
@@ -793,7 +934,7 @@ const JETS = [
     radarMod: "N035X PESA (20 kW Peak)", fuelKg: 11500, bypass: "0.57:1 TVC", sparMat: "Ti-Al Box-Spar", ramMm: "0.8 mm Intake RAM",
     hp: 185, maxSpd: 667, kmh: 2400, mach: "2.25", turn: 70, stealth: 35, detKm: 5.4, radKm: 9.5, cone: 44,
     planform: "Twin-Tail Flanker Blended Wing", engine: "2x AL-41X 3D TVC", engPitch: 0.90, engCount: 2,
-    camoType: "flanker_blue", color1: "#4d6780", color2: "#2c4054", color3: "#89b7db", canards: false, fsw: false, singleTail: false, flatNozzle: false, platypus: false,
+    camoType: "flanker_azure", color1: "#4b7499", color2: "#264766", color3: "#8ec4eb", accent: "#eab308", canards: false, fsw: false, singleTail: false, flatNozzle: false, platypus: false,
     cannon: "gsh_30v", pri: ["r_77s", 6], sec: ["r_74x", 4], nuke: ["kh_59n", 1], rockets: ["s8_kom", 40],
     flares: { name: "UV-26X High-Cap", cap: 7, cd: "3.5s", dur: "1.8s" },
     traits: [
@@ -810,7 +951,7 @@ const JETS = [
     radarMod: "RBE2-AA AESA (1,000 T/R)", fuelKg: 4700, bypass: "0.30:1 Twin", sparMat: "Kevlar-Carbon Delta", ramMm: "1.4 mm Sawtooth",
     hp: 162, maxSpd: 531, kmh: 1912, mach: "1.80", turn: 66, stealth: 62, detKm: 4.1, radKm: 8.2, cone: 38,
     planform: "Close-Coupled Canard Delta", engine: "2x M88-4X Turbofan", engPitch: 1.15, engCount: 2,
-    camoType: "euro_slate", color1: "#58626e", color2: "#363e47", color3: "#8894a0", canards: true, fsw: false, singleTail: true, flatNozzle: false, platypus: false,
+    camoType: "tiger_slate", color1: "#54616e", color2: "#2d353f", color3: "#f59e0b", accent: "#ef4444", canards: true, fsw: false, singleTail: true, flatNozzle: false, platypus: false,
     cannon: "g30m_791x", pri: ["mk_em", 4], sec: ["mk_ir", 4], nuke: ["asmp_r", 1], rockets: ["sn_68", 24],
     flares: { name: "ECLAIR-X Decoys", cap: 6, cd: "3.8s", dur: "1.6s" },
     traits: [
@@ -827,7 +968,7 @@ const JETS = [
     radarMod: "V004X Strike PESA", fuelKg: 12100, bypass: "0.59:1 Twin", sparMat: "17mm Ti-Armored Tub", ramMm: "0.5 mm Strike Coat",
     hp: 265, maxSpd: 528, kmh: 1900, mach: "1.80", turn: 50, stealth: 25, detKm: 5.8, radKm: 8.0, cone: 36,
     planform: "Platypus Canard Heavy Flanker", engine: "2x AL-31X Heavy", engPitch: 0.80, engCount: 2,
-    camoType: "flanker_blue", color1: "#333942", color2: "#1e2329", color3: "#68a8d8", canards: true, fsw: false, singleTail: false, flatNozzle: false, platypus: true,
+    camoType: "duckbill_teal", color1: "#2f576b", color2: "#182733", color3: "#6ec4db", accent: "#dc2626", canards: true, fsw: false, singleTail: false, flatNozzle: false, platypus: true,
     cannon: "gsh_30v", pri: ["r_77s", 2], sec: null, nuke: ["kh_102s", 2], rockets: ["s8_kom", 80],
     flares: { name: "Heavy UV-26X Salvo", cap: 8, cd: "3.2s", dur: "2.0s" },
     traits: [
@@ -879,19 +1020,22 @@ precision highp float;
 layout(location=0) in vec3 aPos;
 layout(location=1) in vec3 aNorm;
 layout(location=2) in vec2 aUV;
-layout(location=3) in float aMat; // 0=skin, 1=goldCanopy, 2=titanium, 3=missileWhite, 4=darkCavity, 5=radome, 6=warheadStripe, 7=compressor/navGlow
+layout(location=3) in float aMat; // 0=skin, 1=goldCanopy/seekerGlass, 2=titanium, 3=satinOrdnance, 4=rubber/cavity, 5=matteRAM, 6=glossEnamel, 7=chrome/steel, 8=amberHazard, 9=emissiveBeacon, 10=anodizedPod
+layout(location=4) in vec3 aCol;  // Per-vertex RGB color tint (1,1,1 = pure texture)
 uniform mat4 uMVP;
 uniform mat4 uModel;
 out vec3 vWorldPos;
 out vec3 vNorm;
 out vec2 vUV;
 out float vMat;
+out vec3 vCol;
 void main() {
   vec4 wp = uModel * vec4(aPos, 1.0);
   vWorldPos = wp.xyz;
   vNorm = normalize(mat3(uModel) * aNorm);
   vUV = aUV;
   vMat = aMat;
+  vCol = aCol;
   gl_Position = uMVP * vec4(aPos, 1.0);
 }`;
 
@@ -901,12 +1045,14 @@ in vec3 vWorldPos;
 in vec3 vNorm;
 in vec2 vUV;
 in float vMat;
+in vec3 vCol;
 uniform sampler2D uTex;
 uniform vec3 uCamPos;
 uniform float uXrayMode;
 uniform float uTime;
 uniform float uAbOn;
 uniform float uTailZ;
+uniform float uFinish; // 0=Satin, 1=Matte RAM, 2=Metallic Clearcoat, 3=Sci-Fi Cyber
 out vec4 outColor;
 
 vec3 acesToneMap(vec3 x) {
@@ -929,43 +1075,72 @@ void main() {
   }
 
   vec3 texCol = texture(uTex, clamp(vUV, 0.002, 0.998)).rgb;
-  vec3 baseCol = texCol;
-  float rough = 0.28;
-  float metal = 0.50;
+  float texLuma = dot(texCol, vec3(0.299, 0.587, 0.114));
+  // Procedural Normal Perturbation from Surface Texture Luma (Panel Seams, Rivets & Hatches)
+  if (vMat < 0.5 || (vMat > 2.5 && vMat < 3.5) || (vMat > 4.5 && vMat < 5.5) || vMat > 9.5) {
+    float du = 0.0014;
+    float lX = dot(texture(uTex, clamp(vUV + vec2(du, 0.0), 0.002, 0.998)).rgb, vec3(0.299, 0.587, 0.114));
+    float lY = dot(texture(uTex, clamp(vUV + vec2(0.0, du), 0.002, 0.998)).rgb, vec3(0.299, 0.587, 0.114));
+    vec3 T = normalize(cross(abs(N.y) < 0.9 ? vec3(0.0, 1.0, 0.0) : vec3(1.0, 0.0, 0.0), N));
+    vec3 B = normalize(cross(N, T));
+    N = normalize(N + (T * (texLuma - lX) + B * (texLuma - lY)) * 2.6);
+  }
+  vec3 tint = dot(vCol, vCol) > 0.001 ? vCol : vec3(1.0);
+  float panelShade = mix(0.76, 1.12, texLuma);
+  vec3 baseCol = texCol * tint;
+  float rough = 0.26;
+  float metal = 0.52;
 
-  if (vMat > 0.5 && vMat < 1.5) { // 24K Gold / Iridescent Stealth Canopy
-    baseCol = vec3(0.11, 0.08, 0.03);
+  if (vMat > 0.5 && vMat < 1.5) { // 24K Gold Canopy or Sapphire/Amber IR Seeker Glass
+    bool isCustomGlass = (tint.r < 0.95 || tint.g < 0.95 || tint.b < 0.95);
+    baseCol = isCustomGlass ? tint * 0.22 : vec3(0.09, 0.065, 0.025);
     vec3 R = reflect(-V, N);
     float skyBand = smoothstep(-0.25, 0.85, R.y);
-    vec3 goldTint = mix(vec3(0.45, 0.28, 0.06), vec3(1.0, 0.84, 0.34), skyBand);
+    vec3 sheenTint = isCustomGlass ? mix(tint * 0.45, tint * 1.35 + vec3(0.2), skyBand) : mix(vec3(0.45, 0.28, 0.06), vec3(1.0, 0.85, 0.36), skyBand);
     vec3 Lkey = normalize(vec3(0.55, 0.86, 0.42));
     vec3 Lrim = normalize(vec3(-0.78, 0.32, -0.58));
-    float specG = pow(max(dot(N, normalize(Lkey + V)), 0.0), 210.0);
-    float specR = pow(max(dot(N, normalize(Lrim + V)), 0.0), 120.0);
+    float specG = pow(max(dot(N, normalize(Lkey + V)), 0.0), 220.0);
+    float specR = pow(max(dot(N, normalize(Lrim + V)), 0.0), 130.0);
     vec3 glass = baseCol
-      + goldTint * (0.28 + fresnel * 0.96)
-      + vec3(1.0, 0.96, 0.82) * specG * 2.4
-      + vec3(0.42, 0.88, 1.0) * specR * 0.65;
+      + sheenTint * (0.28 + fresnel * 0.98)
+      + vec3(1.0, 0.96, 0.82) * specG * 2.5
+      + vec3(0.42, 0.88, 1.0) * specR * 0.70;
     outColor = vec4(acesToneMap(glass), 1.0);
     return;
-  } else if (vMat > 1.5 && vMat < 2.5) { // Gunmetal Titanium Nozzles & Bow Frame
-    baseCol = vec3(0.18, 0.19, 0.23);
-    rough = 0.19; metal = 0.92;
-  } else if (vMat > 2.5 && vMat < 3.5) { // Tactical White Missile / Pod Body
-    baseCol = vec3(0.82, 0.85, 0.88);
-    rough = 0.25; metal = 0.32;
-  } else if (vMat > 3.5 && vMat < 4.5) { // Deep Intake Throat & Cockpit Tub
-    baseCol = vec3(0.018, 0.022, 0.030);
-    rough = 0.94; metal = 0.04;
-  } else if (vMat > 4.5 && vMat < 5.5) { // Matte Dielectric Composite Radome
-    baseCol = texCol * 0.72 + vec3(0.045, 0.055, 0.070);
-    rough = 0.56; metal = 0.12;
-  } else if (vMat > 5.5 && vMat < 6.5) { // Crimson Tactical Ordnance Stripe / Nose Cone
-    baseCol = vec3(0.86, 0.16, 0.18);
-    rough = 0.30; metal = 0.25;
-  } else if (vMat > 6.5) { // Compressor Fan Blades / Wingtip Beacon Accent
-    baseCol = vec3(0.46, 0.52, 0.60);
-    rough = 0.16; metal = 0.95;
+  } else if (vMat > 1.5 && vMat < 2.5) { // Heat-Tempered Titanium Nozzles & Structural Alloy
+    float heatZone = smoothstep(uTailZ * 0.72, uTailZ * 1.04, vWorldPos.z);
+    vec3 tiSteel = vec3(0.20, 0.22, 0.26) * mix(vec3(1.0), tint * 1.4, 0.55);
+    vec3 tiBronze = vec3(0.32, 0.25, 0.20);
+    vec3 tiBlue = vec3(0.16, 0.22, 0.34);
+    baseCol = mix(tiSteel, mix(tiBronze, tiBlue, smoothstep(uTailZ * 0.88, uTailZ * 1.04, vWorldPos.z)), heatZone * 0.72);
+    rough = 0.17; metal = 0.94;
+  } else if (vMat > 2.5 && vMat < 3.5) { // Satin Tactical Paint / Weapon Body (Uses exact per-weapon color!)
+    baseCol = tint * panelShade;
+    rough = 0.24; metal = 0.34;
+  } else if (vMat > 3.5 && vMat < 4.5) { // Deep Carbon Intake Throat, Cockpit Tub & Rubber Tires
+    baseCol = tint * 0.09 + vec3(0.015, 0.018, 0.022);
+    rough = 0.92; metal = 0.05;
+  } else if (vMat > 4.5 && vMat < 5.5) { // Matte Dielectric Composite Radome / Stealth RAM (Uses exact tint!)
+    baseCol = tint * panelShade * 0.92;
+    rough = 0.52; metal = 0.16;
+  } else if (vMat > 5.5 && vMat < 6.5) { // Gloss Tactical Hazard / Warhead / Squadron Accent Enamel
+    baseCol = (tint.r > 0.98 && tint.g > 0.98 && tint.b > 0.98) ? vec3(0.88, 0.14, 0.16) : tint;
+    rough = 0.24; metal = 0.28;
+  } else if (vMat > 6.5 && vMat < 7.5) { // Polished Chrome / Oleo Strut / Gun Steel
+    baseCol = tint * 0.82;
+    rough = 0.13; metal = 0.96;
+  } else if (vMat > 7.5 && vMat < 8.5) { // Nuclear Amber-Gold / Brass Feed Ring
+    baseCol = (tint.r > 0.98 && tint.g > 0.98 && tint.b > 0.98) ? vec3(0.98, 0.72, 0.14) : tint;
+    rough = 0.22; metal = 0.55;
+  } else if (vMat > 8.5 && vMat < 9.5) { // Wingtip Strobe / Landing Light / HUD Combiner Beacon
+    float strobe = 0.65 + 0.35 * sin(uTime * 8.0);
+    vec3 beacon = (tint.r < 0.98 || tint.g < 0.98 || tint.b < 0.98) ? tint
+      : (vWorldPos.x < -0.5 ? vec3(1.0, 0.15, 0.15) : (vWorldPos.x > 0.5 ? vec3(0.15, 1.0, 0.45) : vec3(0.18, 0.95, 0.85)));
+    outColor = vec4(acesToneMap(beacon * (1.2 + strobe * 1.4)), 1.0);
+    return;
+  } else if (vMat > 9.5) { // Anodized Matte Rocket Pod / Launcher Finish
+    baseCol = tint * panelShade;
+    rough = 0.32; metal = 0.60;
   }
 
   // Hangar 3-Point Studio Lighting + Soft Floor Bounce
@@ -999,6 +1174,16 @@ void main() {
            + envRef * (0.11 + fresnel * 0.42) * metal
            + vec3(0.22, 0.80, 1.0) * fresnel * 0.22
            + abLight;
+
+  if (uFinish > 0.5 && uFinish < 1.5) { // Matte RAM Stealth Finish
+    lit = mix(lit, baseCol * (0.14 * hemiAO + diff1 * 0.82 + diff2 * 0.22 + diff3 * 0.24) + abLight, 0.55);
+  } else if (uFinish > 1.5 && uFinish < 2.5) { // Metallic Clearcoat Gloss
+    float clearSpec = pow(max(dot(N, normalize(L1 + V)), 0.0), 180.0);
+    lit += envRef * (0.28 + fresnel * 0.72) * 0.65 + vec3(1.0, 0.98, 0.94) * clearSpec * 0.95;
+  } else if (uFinish > 2.5) { // Sci-Fi Cyber Anodized + Neon Fresnel Rim
+    float pulseGrid = 0.75 + 0.25 * sin(uTime * 3.5 + vWorldPos.z * 1.4);
+    lit += envRef * 0.32 + mix(baseCol, vec3(0.18, 0.92, 1.0), 0.55) * fresnel * 0.85 * pulseGrid;
+  }
 
   outColor = vec4(acesToneMap(lit), 1.0);
 }`;
@@ -1107,113 +1292,189 @@ function linkProgram(vs, fs) {
   return p;
 }
 
-// Generate 1024x1024 Planform-Aligned Aerospace Skin Texture (Livery, Stencils, Insignia & RAM Seams)
-function createJetTexture(j) {
-  if (jetTextures[j.id]) return jetTextures[j.id];
-  const c = document.createElement("canvas");
-  c.width = 1024; c.height = 1024;
-  const x = c.getContext("2d");
-  x.fillStyle = j.color1;
-  x.fillRect(0, 0, 1024, 1024);
+// ================== METALSTORM-STYLE FULL-BODY JET SKIN REGISTRY ==================
+const JET_SKIN_PRESETS = [
+  { id:"factory", name:"Factory Signature", pattern:"factory", finish:0, canopy:"#f0b83a", custom:false },
+  { id:"obsidian_gold", name:"Obsidian Crimson Gold", pattern:"carbon_gold", c1:"#14171f", c2:"#2a303c", c3:"#dc2626", accent:"#f59e0b", radome:"#111318", canopy:"#ff3b4e", finish:2 },
+  { id:"cyber_plasma", name:"Cyber Plasma", pattern:"cyber_tron", c1:"#0a1324", c2:"#164e63", c3:"#1e293b", accent:"#22d3ee", radome:"#082f49", canopy:"#28a8ff", finish:3 },
+  { id:"arctic_ghost", name:"Arctic Ghost", pattern:"digital_pixel", c1:"#dbe6f2", c2:"#64748b", c3:"#1e293b", accent:"#38bdf8", radome:"#334155", canopy:"#28a8ff", finish:1 },
+  { id:"desert_viper", name:"Desert Viper", pattern:"tiger_stripes", c1:"#d4b483", c2:"#8a6642", c3:"#3b2d22", accent:"#f97316", radome:"#292524", canopy:"#f0b83a", finish:0 },
+  { id:"royal_sovereign", name:"Royal Sovereign", pattern:"gradient_ace", c1:"#0f172a", c2:"#1e40af", c3:"#312e81", accent:"#fbbf24", radome:"#1e293b", canopy:"#f0b83a", finish:2 },
+  { id:"emerald_venom", name:"Emerald Venom", pattern:"splinter_geo", c1:"#091016", c2:"#0f5e53", c3:"#10b981", accent:"#facc15", radome:"#18181b", canopy:"#22f098", finish:3 },
+  { id:"solar_chrome", name:"Titanium Solar", pattern:"metallic_chrome", c1:"#94a3b8", c2:"#475569", c3:"#1e293b", accent:"#ef4444", radome:"#0f172a", canopy:"#475569", finish:2 }
+];
+const jetSkins = {};
+function getJetSkin(j) {
+  if (!jetSkins[j.id]) {
+    jetSkins[j.id] = {
+      presetId: "factory",
+      name: "Factory Signature",
+      pattern: "factory",
+      c1: j.color1, c2: j.color2, c3: j.color3,
+      accent: j.accent,
+      radome: (j.id === "su35" || j.id === "su34") ? "#d8e0e8" : "#222830",
+      canopy: "#f0b83a",
+      finish: 0
+    };
+  }
+  return jetSkins[j.id];
+}
+function getJetSkinKey(j) {
+  const s = getJetSkin(j);
+  return `${s.pattern}|${s.c1}|${s.c2}|${s.c3}|${s.accent}|${s.radome}|${s.canopy}|${s.finish}`;
+}
 
-  if (j.camoType === "pixel") {
-    for (let i=0; i<380; i++) {
-      x.fillStyle = i % 3 === 0 ? j.color2 : j.color3;
-      const gx = ((i * 73) % 16) * 32;
-      const gy = ((i * 137) % 32) * 32;
-      const bw = ((i%3)+1)*22, bh = ((i%2)+1)*26;
-      x.fillRect(512 + gx, gy, bw, bh);
-      x.fillRect(512 - gx - bw, gy, bw, bh);
-    }
-    x.fillStyle = "rgba(185, 205, 222, 0.24)";
-    x.fillRect(0, 0, 1024, 1024);
-  } else if (j.camoType === "raptor_patch") {
-    for (let i=0; i<52; i++) {
-      x.fillStyle = i % 2 === 0 ? j.color2 : j.color3;
-      x.globalAlpha = 0.72;
-      const cx = (i * 97) % 512, cy = (i * 151) % 1024;
-      const r = 65 + (i%4)*32;
-      x.beginPath(); x.moveTo(512+cx, cy); x.lineTo(512+cx+r, cy+r*0.5); x.lineTo(512+cx+r*0.4, cy+r*1.3); x.closePath(); x.fill();
-      x.beginPath(); x.moveTo(512-cx, cy); x.lineTo(512-cx-r, cy+r*0.5); x.lineTo(512-cx-r*0.4, cy+r*1.3); x.closePath(); x.fill();
-    }
-    x.globalAlpha = 1.0;
-  } else if (j.camoType === "flanker_blue") {
-    for (let i=0; i<44; i++) {
-      x.fillStyle = i % 2 === 0 ? j.color2 : j.color3;
-      x.globalAlpha = 0.78;
-      const cx = (i * 109) % 512, cy = (i * 173) % 1024;
-      x.beginPath();
-      x.moveTo(512+cx, cy); x.lineTo(512+cx+160, cy+70); x.lineTo(512+cx+90, cy+210); x.lineTo(512+cx-30, cy+130);
-      x.closePath(); x.fill();
-      x.beginPath();
-      x.moveTo(512-cx, cy); x.lineTo(512-cx-160, cy+70); x.lineTo(512-cx-90, cy+210); x.lineTo(512-cx+30, cy+130);
-      x.closePath(); x.fill();
+// Generate 2048x2048 Ultra-Detailed Aerospace Skin Texture (10 Full-Body Multi-Color Patterns + Panel Seams)
+function createJetTexture(j) {
+  const sk = getJetSkin(j);
+  const key = getJetSkinKey(j);
+  if (jetTextures[j.id] && jetTextures[j.id]._key === key) return jetTextures[j.id];
+  const S = 2048;
+  const c = document.createElement("canvas");
+  c.width = S; c.height = S;
+  const x = c.getContext("2d");
+  const pat = sk.pattern === "factory" ? j.camoType : sk.pattern;
+  x.fillStyle = sk.c1;
+  x.fillRect(0, 0, S, S);
+
+  if (pat === "pixel" || pat === "digital_pixel") {
+    for (let i=0; i<680; i++) {
+      x.fillStyle = i % 3 === 0 ? sk.c2 : (i % 5 === 0 ? sk.accent : sk.c3);
+      x.globalAlpha = i % 5 === 0 ? 0.45 : 0.92;
+      const gx = ((i * 73) % 24) * 42, gy = ((i * 137) % 48) * 42;
+      const bw = ((i%3)+1)*32, bh = ((i%2)+1)*36;
+      x.fillRect(1024 + gx, gy, bw, bh); x.fillRect(1024 - gx - bw, gy, bw, bh);
     }
     x.globalAlpha = 1.0;
-  } else if (j.camoType === "black_stripe") {
-    x.fillStyle = j.color1; x.fillRect(0, 0, 1024, 1024);
-    x.fillStyle = "rgba(240, 246, 255, 0.92)";
-    x.fillRect(56, 372, 118, 16);
-    x.fillRect(850, 372, 118, 16);
-  } else if (j.camoType === "ram_dark" || j.camoType === "sawtooth") {
-    const g = x.createLinearGradient(0, 0, 0, 1024);
-    g.addColorStop(0, j.color1); g.addColorStop(0.5, j.color2); g.addColorStop(1, j.color1);
-    x.fillStyle = g; x.fillRect(0, 0, 1024, 1024);
-    x.strokeStyle = j.color3; x.lineWidth = 4;
-    for (let y=180; y<900; y+=110) {
+  } else if (pat === "splinter_jade" || pat === "splinter_geo" || pat === "raptor_patch" || pat === "flanker_azure" || pat === "duckbill_teal") {
+    for (let i=0; i<64; i++) {
+      x.fillStyle = i % 2 === 0 ? sk.c2 : sk.c3;
+      x.globalAlpha = 0.84;
+      const cx = (i * 179) % 1024, cy = (i * 273) % S;
+      x.beginPath(); x.moveTo(1024+cx, cy); x.lineTo(1024+cx+295, cy+95); x.lineTo(1024+cx+140, cy+330); x.lineTo(1024+cx-45, cy+200); x.closePath(); x.fill();
+      x.beginPath(); x.moveTo(1024-cx, cy); x.lineTo(1024-cx-295, cy+95); x.lineTo(1024-cx-140, cy+330); x.lineTo(1024-cx+45, cy+200); x.closePath(); x.fill();
+    }
+    x.globalAlpha = 1.0;
+    x.fillStyle = sk.accent; x.fillRect(960, 560, 128, 18); x.fillRect(970, 1580, 108, 16);
+  } else if (pat === "sawtooth_charcoal" || pat === "gradient_ace") {
+    const g = x.createLinearGradient(0, 180, 0, S - 120);
+    g.addColorStop(0.0, sk.c1); g.addColorStop(0.45, sk.c2); g.addColorStop(0.82, sk.c3); g.addColorStop(1.0, sk.c1);
+    x.fillStyle = g; x.fillRect(0, 0, S, S);
+    x.strokeStyle = sk.accent; x.lineWidth = 14;
+    for (let y=380; y<1740; y+=260) {
       x.beginPath();
-      for (let px=0; px<=1024; px+=32) x.lineTo(px, y + ((px/32)%2===0 ? -9 : 9));
+      for (let px=0; px<=S; px+=64) x.lineTo(px, y + ((px/64)%2===0 ? -24 : 24));
       x.stroke();
     }
-  } else {
-    const g = x.createLinearGradient(0, 0, 1024, 1024);
-    g.addColorStop(0, j.color1); g.addColorStop(0.5, j.color2); g.addColorStop(1, j.color1);
-    x.fillStyle = g; x.fillRect(0, 0, 1024, 1024);
+  } else if (pat === "two_tone_cobalt" || pat === "two_tone") {
+    const g = x.createLinearGradient(0, 0, S, 0);
+    g.addColorStop(0, sk.c2); g.addColorStop(0.32, sk.c1); g.addColorStop(0.5, sk.c3); g.addColorStop(0.68, sk.c1); g.addColorStop(1, sk.c2);
+    x.fillStyle = g; x.fillRect(0, 0, S, S);
+    x.fillStyle = sk.accent; x.fillRect(820, 540, 408, 18);
+  } else if (pat === "euro_ghost" || pat === "tri_tone") {
+    x.fillStyle = sk.c1; x.fillRect(0, 0, S, S);
+    x.fillStyle = sk.c2; x.fillRect(0, 0, 540, S); x.fillRect(1508, 0, 540, S);
+    x.fillStyle = sk.c3; x.fillRect(880, 340, 288, 1340);
+    x.fillStyle = sk.accent; x.fillRect(524, 0, 22, S); x.fillRect(1502, 0, 22, S);
+  } else if (pat === "black_stripe" || pat === "tiger_slate" || pat === "tiger_stripes") {
+    x.fillStyle = sk.c1; x.fillRect(0, 0, S, S);
+    for (let y=240; y<1860; y+=110) {
+      x.fillStyle = (y/110)%2===0 ? sk.c2 : sk.c3;
+      x.globalAlpha = 0.78;
+      x.beginPath(); x.moveTo(140, y); x.lineTo(1024, y+75); x.lineTo(1908, y); x.lineTo(1908, y+44); x.lineTo(1024, y+118); x.lineTo(140, y+44); x.closePath(); x.fill();
+    }
+    x.globalAlpha = 1.0;
+    x.fillStyle = sk.accent;
+    x.fillRect(120, 720, 280, 28); x.fillRect(1648, 720, 280, 28);
+  } else if (pat === "carbon_gold") {
+    x.fillStyle = sk.c1; x.fillRect(0, 0, S, S);
+    x.fillStyle = sk.c2;
+    for (let py=0; py<S; py+=24) for (let px=0; px<S; px+=24) { if (((px+py)/24)%2===0) x.fillRect(px, py, 12, 12); }
+    x.fillStyle = sk.c3; x.fillRect(0, 880, S, 180);
+    x.fillStyle = sk.accent; x.fillRect(0, 864, S, 16); x.fillRect(0, 1060, S, 16);
+    x.fillRect(940, 380, 168, 1200);
+  } else if (pat === "cyber_tron") {
+    x.fillStyle = sk.c1; x.fillRect(0, 0, S, S);
+    x.strokeStyle = sk.c2; x.lineWidth = 4;
+    for (let p=64; p<S; p+=64) { x.beginPath(); x.moveTo(p,0); x.lineTo(p,S); x.stroke(); x.beginPath(); x.moveTo(0,p); x.lineTo(S,p); x.stroke(); }
+    x.strokeStyle = sk.accent; x.lineWidth = 8;
+    for (let k=200; k<1800; k+=220) {
+      x.beginPath(); x.moveTo(1024, k); x.lineTo(1320, k+110); x.lineTo(1880, k+110); x.stroke();
+      x.beginPath(); x.moveTo(1024, k); x.lineTo(728, k+110); x.lineTo(168, k+110); x.stroke();
+    }
+  } else if (pat === "metallic_chrome") {
+    const g = x.createLinearGradient(0, 0, S, S);
+    g.addColorStop(0, sk.c1); g.addColorStop(0.35, "#f1f5f9"); g.addColorStop(0.65, sk.c2); g.addColorStop(1, sk.c3);
+    x.fillStyle = g; x.fillRect(0, 0, S, S);
+    x.fillStyle = sk.accent; x.fillRect(960, 260, 128, 1520);
   }
 
-  // Dark Metallic Rear Engine Heat-Shield Deck
-  const engGrad = x.createLinearGradient(0, 740, 0, 960);
+  // Wingtip & Dorsal Ace Trim Stripes across texture edges
+  x.fillStyle = sk.accent;
+  x.fillRect(42, 340, 28, 1360);
+  x.fillRect(S - 70, 340, 28, 1360);
+
+  // Subtle Aerodynamic Dirt / Weathering & Metallic Engine Heat-Shield Corrugation
+  const engGrad = x.createLinearGradient(0, 1460, 0, 1940);
   engGrad.addColorStop(0, "rgba(25, 28, 34, 0.0)");
-  engGrad.addColorStop(0.35, "rgba(40, 36, 32, 0.80)");
-  engGrad.addColorStop(1, "rgba(18, 20, 26, 0.94)");
+  engGrad.addColorStop(0.32, "rgba(44, 38, 34, 0.84)");
+  engGrad.addColorStop(1, "rgba(18, 20, 26, 0.96)");
   x.fillStyle = engGrad;
-  x.fillRect(360, 740, 304, 260);
+  x.fillRect(710, 1460, 628, 540);
+  x.strokeStyle = "rgba(140, 155, 175, 0.16)"; x.lineWidth = 2;
+  for (let gx=730; gx<1320; gx+=14) { x.beginPath(); x.moveTo(gx, 1520); x.lineTo(gx, 1940); x.stroke(); }
 
-  // Nose Radome Border Collar
-  x.fillStyle = "rgba(42, 48, 56, 0.65)";
-  x.fillRect(430, 60, 164, 115);
+  // Nose Radome Border Collar & Lightning Diverter Strips
+  x.fillStyle = j.id === "su35" || j.id === "su34" ? "rgba(220, 228, 236, 0.42)" : "rgba(38, 44, 52, 0.72)";
+  x.fillRect(860, 110, 328, 230);
+  x.strokeStyle = "rgba(210, 224, 240, 0.46)"; x.lineWidth = 3;
+  for (const lx of [-1, 1]) { x.beginPath(); x.moveTo(1024+lx*26, 70); x.lineTo(1024+lx*58, 310); x.stroke(); }
 
-  // Panel Grid & Bevel Highlights
-  x.strokeStyle = "rgba(8, 12, 18, 0.56)";
-  x.lineWidth = 2.0;
-  for (let p=64; p<1024; p+=64) {
-    x.beginPath(); x.moveTo(0, p); x.lineTo(1024, p); x.stroke();
-    x.beginPath(); x.moveTo(p, 0); x.lineTo(p, 1024); x.stroke();
+  // Crisp Primary & Secondary Panel Grid + Bevel Highlights + Rivet Rows
+  x.strokeStyle = "rgba(6, 10, 16, 0.62)"; x.lineWidth = 2.6;
+  for (let p=96; p<S; p+=96) {
+    x.beginPath(); x.moveTo(0, p); x.lineTo(S, p); x.stroke();
+    x.beginPath(); x.moveTo(p, 0); x.lineTo(p, S); x.stroke();
   }
-  x.strokeStyle = "rgba(220, 238, 255, 0.16)";
-  x.lineWidth = 1.1;
-  for (let p=66; p<1024; p+=64) {
-    x.beginPath(); x.moveTo(0, p); x.lineTo(1024, p); x.stroke();
+  x.strokeStyle = "rgba(230, 244, 255, 0.18)"; x.lineWidth = 1.4;
+  for (let p=99; p<S; p+=96) {
+    x.beginPath(); x.moveTo(0, p); x.lineTo(S, p); x.stroke();
+    x.beginPath(); x.moveTo(p, 0); x.lineTo(p, S); x.stroke();
   }
+  // Access Hatches & Avionics Inspection Panels (Symmetrical)
+  x.strokeStyle = "rgba(12, 18, 26, 0.72)"; x.lineWidth = 2.4;
+  for (const hx of [890, 1118]) {
+    for (const hy of [520, 740, 960, 1180]) {
+      x.strokeRect(hx, hy, 40, 64);
+      x.fillStyle = "rgba(255, 255, 255, 0.06)"; x.fillRect(hx+2, hy+2, 36, 60);
+    }
+  }
+  // Rivet Dots along Major Wing & Spine Seams
+  x.fillStyle = "rgba(210, 230, 250, 0.24)";
+  for (let ry=48; ry<S; ry+=96) for (let rx=24; rx<S; rx+=32) x.fillRect(rx, ry, 2.5, 2.5);
+
+  // "NO STEP" Tactical Walkway Boxes along Wing Roots & Spine
+  x.strokeStyle = j.accent || "rgba(255, 190, 55, 0.44)"; x.lineWidth = 3;
+  for (const wx of [660, 1300]) { x.strokeRect(wx, 920, 88, 440); }
 
   // Ejection Seat Warning Triangles & Intake Danger Chevrons
-  x.fillStyle = "rgba(240, 68, 56, 0.72)";
-  for (const sx of [462, 562]) {
-    x.beginPath(); x.moveTo(sx, 265); x.lineTo(sx-7, 279); x.lineTo(sx+7, 279); x.closePath(); x.fill();
+  x.fillStyle = "rgba(240, 56, 48, 0.88)";
+  for (const sx of [924, 1124]) {
+    x.beginPath(); x.moveTo(sx, 530); x.lineTo(sx-14, 558); x.lineTo(sx+14, 558); x.closePath(); x.fill();
   }
-  x.strokeStyle = "rgba(255, 182, 48, 0.55)"; x.lineWidth = 2;
-  for (const ix of [426, 598]) {
-    x.beginPath(); x.moveTo(ix-10, 405); x.lineTo(ix, 392); x.lineTo(ix+10, 405); x.stroke();
+  x.strokeStyle = "rgba(255, 182, 48, 0.74)"; x.lineWidth = 4;
+  for (const ix of [852, 1196]) {
+    x.beginPath(); x.moveTo(ix-20, 810); x.lineTo(ix, 784); x.lineTo(ix+20, 810); x.stroke();
   }
 
-  // Low-Vis Squadron Wing Roundels & Star Bars
-  x.strokeStyle = "rgba(230, 240, 250, 0.38)";
-  x.lineWidth = 2.2;
-  for (const wx of [220, 804]) {
-    x.beginPath(); x.arc(wx, 610, 18, 0, Math.PI*2); x.stroke();
-    x.beginPath(); x.arc(wx, 610, 8, 0, Math.PI*2); x.stroke();
-    x.beginPath(); x.moveTo(wx-30, 610); x.lineTo(wx-18, 610); x.stroke();
-    x.beginPath(); x.moveTo(wx+18, 610); x.lineTo(wx+30, 610); x.stroke();
+  // Colored Squadron Wing Roundels & Star Bars
+  x.strokeStyle = j.accent || "rgba(235, 245, 255, 0.65)"; x.lineWidth = 5;
+  for (const wx of [440, 1608]) {
+    x.beginPath(); x.arc(wx, 1220, 38, 0, Math.PI*2); x.stroke();
+    x.fillStyle = "rgba(235, 245, 255, 0.45)";
+    x.beginPath(); x.arc(wx, 1220, 18, 0, Math.PI*2); x.fill();
+    x.beginPath(); x.moveTo(wx-66, 1220); x.lineTo(wx-38, 1220); x.stroke();
+    x.beginPath(); x.moveTo(wx+38, 1220); x.lineTo(wx+66, 1220); x.stroke();
   }
 
   const tex = gl.createTexture();
@@ -1222,24 +1483,34 @@ function createJetTexture(j) {
   gl.generateMipmap(gl.TEXTURE_2D);
   gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_LINEAR);
   gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+  tex._key = key;
   jetTextures[j.id] = tex;
   return tex;
 }
 
+function hexToRgb(h) {
+  if (!h || h[0] !== "#") return [1, 1, 1];
+  const n = parseInt(h.slice(1), 16);
+  return [((n >> 16) & 255) / 255, ((n >> 8) & 255) / 255, (n & 255) / 255];
+}
+
 // ================== ULTRA-DETAILED MULTI-PART SCULPTED FIGHTER BUILDER ==================
 function buildHighResJetBuffers(j) {
-  if (jetBuffers[j.id]) return jetBuffers[j.id];
+  const sk = getJetSkin(j);
+  const skinKey = getJetSkinKey(j);
+  if (jetBuffers[j.id] && jetBuffers[j.id]._key === skinKey) return jetBuffers[j.id];
 
-  const pos = [], norm = [], uv = [], mat = [], idx = [];
+  const pos = [], norm = [], uv = [], mat = [], col = [], idx = [];
   const L = j.len * 0.50;
   const S = j.span * 0.56;
-  const W = j.platypus ? 1.68 : 1.24;
+  const W = j.platypus ? 1.72 : (j.id === "su57" ? 1.44 : 1.24);
+  const W1 = [1, 1, 1];
 
   function planUV(px, pz) {
     return [px / (S * 2.15) + 0.5, (pz + L * 1.06) / (L * 2.22)];
   }
 
-  function pushMeshTri(a, b, c, m) {
+  function pushMeshTri(a, b, c, m, rgb=W1) {
     const base = pos.length / 3;
     const ux = b[0]-a[0], uy = b[1]-a[1], uz = b[2]-a[2];
     const vx = c[0]-a[0], vy = c[1]-a[1], vz = c[2]-a[2];
@@ -1252,11 +1523,12 @@ function buildHighResJetBuffers(j) {
       const t = planUV(p[0], p[2]);
       uv.push(t[0], t[1]);
       mat.push(m);
+      col.push(rgb[0], rgb[1], rgb[2]);
     });
     idx.push(base, base+1, base+2);
   }
 
-  function addSmoothLoft(stations, segs, m, chineSharp=0.0, useRadomeMat=false) {
+  function addSmoothLoft(stations, segs, m, chineSharp=0.0, useRadomeMat=false, rgb=W1, radomeRgb=null) {
     const base = pos.length / 3;
     const ringCount = stations.length;
     for (let r=0; r<ringCount; r++) {
@@ -1277,7 +1549,10 @@ function buildHighResJetBuffers(j) {
         norm.push(nx/nl, ny/nl, nz/nl);
         const t = planUV(px, pz);
         uv.push(t[0], t[1]);
-        mat.push((useRadomeMat && r <= 2) ? 5.0 : m);
+        const isRad = (useRadomeMat && r <= 2);
+        mat.push(isRad ? 5.0 : m);
+        const rc = (isRad && radomeRgb) ? radomeRgb : rgb;
+        col.push(rc[0], rc[1], rc[2]);
       }
     }
     const stride = segs + 1;
@@ -1289,7 +1564,7 @@ function buildHighResJetBuffers(j) {
     }
   }
 
-  function addAirfoil(rootLE, rootTE, tipLE, tipTE, thickR, thickT, m, spanSteps=5) {
+  function addAirfoil(rootLE, rootTE, tipLE, tipTE, thickR, thickT, m, spanSteps=5, rgb=W1) {
     const chordFrac = [0.0, 0.14, 0.36, 0.68, 1.0];
     const thickProf = [0.0, 0.94, 1.00, 0.56, 0.0];
     function lerp3(p, q, t) { return [p[0]+(q[0]-p[0])*t, p[1]+(q[1]-p[1])*t, p[2]+(q[2]-p[2])*t]; }
@@ -1306,190 +1581,282 @@ function buildHighResJetBuffers(j) {
         const up10=[p10[0], p10[1]+th0*thickProf[c+1], p10[2]];
         const up01=[p01[0], p01[1]+th1*thickProf[c], p01[2]];
         const up11=[p11[0], p11[1]+th1*thickProf[c+1], p11[2]];
-        pushMeshTri(up00, up01, up11, m);
-        pushMeshTri(up00, up11, up10, m);
+        pushMeshTri(up00, up01, up11, m, rgb);
+        pushMeshTri(up00, up11, up10, m, rgb);
         const lo00=[p00[0], p00[1]-th0*thickProf[c]*0.42, p00[2]];
         const lo10=[p10[0], p10[1]-th0*thickProf[c+1]*0.42, p10[2]];
         const lo01=[p01[0], p01[1]-th1*thickProf[c]*0.42, p01[2]];
         const lo11=[p11[0], p11[1]-th1*thickProf[c+1]*0.42, p11[2]];
-        pushMeshTri(lo00, lo11, lo01, m);
-        pushMeshTri(lo00, lo10, lo11, m);
+        pushMeshTri(lo00, lo11, lo01, m, rgb);
+        pushMeshTri(lo00, lo10, lo11, m, rgb);
       }
     }
   }
 
-  function addFin(rootLE, rootTE, tipLE, tipTE, thick, m) {
+  function addFin(rootLE, rootTE, tipLE, tipTE, thick, m, rgb=W1) {
     function lerp3(p, q, t) { return [p[0]+(q[0]-p[0])*t, p[1]+(q[1]-p[1])*t, p[2]+(q[2]-p[2])*t]; }
     const rm = lerp3(rootLE, rootTE, 0.35), tm = lerp3(tipLE, tipTE, 0.35);
     for (const side of [-1, 1]) {
       const rmo = [rm[0]+side*thick, rm[1], rm[2]], tmo = [tm[0]+side*thick*0.55, tm[1], tm[2]];
-      pushMeshTri(rootLE, tipLE, tmo, m);
-      pushMeshTri(rootLE, tmo, rmo, m);
-      pushMeshTri(rmo, tmo, tipTE, m);
-      pushMeshTri(rmo, tipTE, rootTE, m);
+      pushMeshTri(rootLE, tipLE, tmo, m, rgb);
+      pushMeshTri(rootLE, tmo, rmo, m, rgb);
+      pushMeshTri(rmo, tmo, tipTE, m, rgb);
+      pushMeshTri(rmo, tipTE, rootTE, m, rgb);
     }
   }
 
-  function addDetailedMissile(xPos, yPos, zStart, zEnd, rad, opt={}) {
+  function addGearWheel(wx, wy, wz, rad, width) {
+    // Grooved Rubber Tire + Metallic Alloy Hubcap + Brake Disc
+    addSmoothLoft([[wz-rad, wx, wy, width, rad*0.25], [wz-rad*0.45, wx, wy, width, rad*0.92], [wz+rad*0.45, wx, wy, width, rad*0.92], [wz+rad, wx, wy, width, rad*0.25]], 12, 4.0, 0.15, false, [0.12,0.12,0.14]);
+    addSmoothLoft([[wz-rad*0.46, wx, wy, width*1.04, rad*0.46], [wz+rad*0.46, wx, wy, width*1.04, rad*0.46]], 10, 7.0, 0.0, false, [0.85,0.88,0.92]);
+  }
+
+  function addDetailedMissile(xPos, yPos, zStart, zEnd, rad, wId) {
+    const sp = (typeof getOrdSkin === "function") ? getOrdSkin(wId) : (ORD_DESIGN_SPECS[wId] || { body:"#d6dee8", nose:"#6c7682", band:"#eab308", motor:"#92400e", fin:"#475569", style:"bvr_radar", kind:"missile" });
+    const cBody = hexToRgb(sp.body), cNose = hexToRgb(sp.nose), cBand = hexToRgb(sp.band), cFin = hexToRgb(sp.fin);
+    const baseSpec = ORD_DESIGN_SPECS[wId] || sp;
+    const isStealth = ["stealth_cruise","box_stealth","twin_stealth"].includes(baseSpec.style);
+    const isIR = ["ir_slim","ir_strake","ir_wingless","strake_ir","canard_archer2","spoiler_archer"].includes(baseSpec.style);
+    const isRamjet = ["ramjet","ramjet_nuke"].includes(baseSpec.style);
+    const isLattice = ["lattice","lattice_boat"].includes(baseSpec.style);
+    const isNuke = baseSpec.kind === "nuke";
     const zMid = zStart + (zEnd - zStart) * 0.22;
-    const zBand1 = zStart + (zEnd - zStart) * 0.30;
-    const zBand2 = zStart + (zEnd - zStart) * 0.38;
-    const bodyMat = opt.stealth ? 5.0 : 3.0;
-    const noseMat = opt.ir ? 1.0 : (opt.stealth ? 5.0 : 3.0);
-    // Seeker Cone or Glass IR Dome
-    addSmoothLoft([[zStart, xPos, yPos, opt.ir ? rad*0.55 : rad*0.18, opt.ir ? rad*0.55 : rad*0.18], [zMid, xPos, yPos, rad, rad]], 8, noseMat, opt.stealth ? 0.65 : 0.0);
-    // Warhead / Nuclear Crimson Hazard Band
-    addSmoothLoft([[zMid, xPos, yPos, rad*1.03, rad*1.03], [zBand1, xPos, yPos, rad*1.03, rad*1.03]], 8, 6.0, opt.stealth ? 0.65 : 0.0);
-    // Main Airframe Body
-    addSmoothLoft([[zBand1, xPos, yPos, rad, rad], [zBand2, xPos, yPos, rad, rad], [zEnd, xPos, yPos, rad*0.92, rad*0.92]], 8, bodyMat, opt.stealth ? 0.65 : 0.0);
-    // Ramjet Cheek Intakes (MT-200 / ASMP-R)
-    if (opt.ramjet) {
+    const zBand1 = zStart + (zEnd - zStart) * 0.29;
+    const zBand2 = zStart + (zEnd - zStart) * 0.36;
+    const bodyMat = isStealth ? 5.0 : (baseSpec.style==="b61_glide" ? 7.0 : 3.0);
+    const noseMat = isIR ? 1.0 : (isStealth ? 5.0 : 3.0);
+    const chine = isStealth ? 0.78 : 0.0;
+    addSmoothLoft([[zStart, xPos, yPos, isIR ? rad*0.58 : rad*0.14, isIR ? rad*0.58 : rad*0.14], [zMid, xPos, yPos, rad, rad]], 12, noseMat, chine, false, cNose);
+    addSmoothLoft([[zMid, xPos, yPos, rad*1.04, rad*1.04], [zBand1, xPos, yPos, rad*1.04, rad*1.04]], 12, 6.0, chine, false, cBand);
+    if (isNuke) addSmoothLoft([[zBand1+0.02, xPos, yPos, rad*1.04, rad*1.04], [zBand2, xPos, yPos, rad*1.04, rad*1.04]], 12, 8.0, chine, false, hexToRgb(sp.motor));
+    addSmoothLoft([[zBand1, xPos, yPos, rad, rad], [zBand2, xPos, yPos, rad, rad], [zEnd, xPos, yPos, rad*0.90, rad*0.90]], 12, bodyMat, chine, false, cBody);
+    addSmoothLoft([[zBand1, xPos, yPos+rad*0.85, rad*0.24, rad*0.18], [zEnd-0.12, xPos, yPos+rad*0.85, rad*0.24, rad*0.18]], 6, 2.0, 0.3, false, cFin);
+    if (isRamjet) {
       for (const sd of [-1, 1]) {
-        addSmoothLoft([[zStart+0.55, xPos+sd*rad*1.05, yPos, rad*0.36, rad*0.36], [zEnd-0.25, xPos+sd*rad*1.05, yPos, rad*0.36, rad*0.36]], 6, 2.0, 0.4);
+        addSmoothLoft([[zStart+0.55, xPos+sd*rad*1.06, yPos, rad*0.36, rad*0.36], [zEnd-0.22, xPos+sd*rad*1.06, yPos, rad*0.36, rad*0.36]], 8, 3.0, 0.45, false, cFin);
+        addSmoothLoft([[zStart+0.54, xPos+sd*rad*1.06, yPos, rad*0.24, rad*0.24], [zStart+0.64, xPos+sd*rad*1.06, yPos, rad*0.24, rad*0.24]], 6, 4.0, 0.0);
       }
     }
-    // Cruise Swept Wings (Nuclear Cruise Missiles)
-    if (opt.cruiseWing) {
+    if (isNuke && sp.style !== "b61_glide") {
       for (const sd of [-1, 1]) {
-        addAirfoil([xPos+sd*rad*0.8, yPos, zBand2], [xPos+sd*rad*0.8, yPos, zBand2+0.35], [xPos+sd*rad*4.8, yPos, zBand2+0.65], [xPos+sd*rad*4.8, yPos, zBand2+0.90], 0.025, 0.012, bodyMat, 2);
+        addAirfoil([xPos+sd*rad*0.8, yPos, zBand2], [xPos+sd*rad*0.8, yPos, zBand2+0.38], [xPos+sd*rad*5.2, yPos, zBand2+0.70], [xPos+sd*rad*5.2, yPos, zBand2+0.96], 0.026, 0.012, bodyMat, 3, cBody);
       }
     }
-    // Cruciform Rear Fins (or Grid/Lattice Fins for R-77)
-    const fz0 = zEnd - 0.34, fz1 = zEnd - 0.04;
-    addFin([xPos, yPos+rad*0.7, fz0], [xPos, yPos+rad*0.7, fz1], [xPos, yPos+rad*2.5, fz0+0.1], [xPos, yPos+rad*2.5, fz1], opt.lattice ? 0.032 : 0.012, 2.0);
-    addFin([xPos, yPos-rad*0.7, fz0], [xPos, yPos-rad*0.7, fz1], [xPos, yPos-rad*2.5, fz0+0.1], [xPos, yPos-rad*2.5, fz1], opt.lattice ? 0.032 : 0.012, 2.0);
+    const fz0 = zEnd - 0.36, fz1 = zEnd - 0.04;
+    if (isLattice) {
+      for (const sd of [-1, 1]) {
+        addFin([xPos, yPos+sd*rad*0.8, fz0], [xPos, yPos+sd*rad*0.8, fz0+0.12], [xPos, yPos+sd*rad*2.5, fz0+0.02], [xPos, yPos+sd*rad*2.5, fz0+0.14], 0.045, 7.0, cFin);
+        addFin([xPos+sd*rad*0.8, yPos, fz0], [xPos+sd*rad*0.8, yPos, fz0+0.12], [xPos+sd*rad*2.5, yPos, fz0+0.02], [xPos+sd*rad*2.5, yPos, fz0+0.14], 0.045, 7.0, cFin);
+      }
+    } else {
+      addFin([xPos, yPos+rad*0.7, fz0], [xPos, yPos+rad*0.7, fz1], [xPos, yPos+rad*2.6, fz0+0.12], [xPos, yPos+rad*2.6, fz1], 0.014, 3.0, cFin);
+      addFin([xPos, yPos-rad*0.7, fz0], [xPos, yPos-rad*0.7, fz1], [xPos, yPos-rad*2.6, fz0+0.12], [xPos, yPos-rad*2.6, fz1], 0.014, 3.0, cFin);
+    }
   }
 
-  const isStealthChine = ["su57","j20","f22","f35","kf21"].includes(j.id) ? 0.90 : 0.25;
-  const noseW = j.platypus ? 1.48 : 0.96;
+  const isStealthChine = ["su57","j20","f22","f35","kf21"].includes(j.id) ? 0.92 : 0.25;
+  const noseW = j.platypus ? 1.56 : (j.id === "typhoon" || j.id === "rafale" ? 0.84 : 0.96);
+  const noseDrop = j.id === "su35" || j.id === "su34" ? -0.18 : -0.06;
+  const radomeCol = hexToRgb(sk.radome);
+  const accentCol = hexToRgb(sk.accent);
+  const canopyCol = sk.canopy === "#f0b83a" ? W1 : hexToRgb(sk.canopy);
+  const bellyCol = hexToRgb(sk.c3);
+  const wingEdgeCol = hexToRgb(sk.c2);
 
-  // 1. WIDE BLENDED LIFTING-BODY FUSELAGE + RADOME NOSE CONE
+  // 1. 12-STATION HIGH-RESOLUTION BLENDED FUSELAGE + DISTINCT NOSE CONE + PITOT PROBES
   addSmoothLoft([
-    [-L*1.05, 0, -0.06, 0.02, 0.02],
-    [-L*0.92, 0, -0.05, noseW*0.36, 0.23],
-    [-L*0.76, 0, -0.01, noseW*0.64, 0.38],
-    [-L*0.54, 0,  0.04, noseW*0.94, 0.50],
-    [-L*0.26, 0,  0.07, W*1.28, 0.54],
-    [ L*0.08, 0,  0.06, W*1.42, 0.52],
-    [ L*0.46, 0,  0.04, W*1.22, 0.46],
+    [-L*1.06, 0, noseDrop, 0.02, 0.02],
+    [-L*0.97, 0, noseDrop*0.9, noseW*0.26, 0.17],
+    [-L*0.88, 0, noseDrop*0.7, noseW*0.44, 0.28],
+    [-L*0.76, 0, -0.01, noseW*0.66, 0.39],
+    [-L*0.60, 0,  0.03, noseW*0.88, 0.48],
+    [-L*0.42, 0,  0.06, W*1.12, 0.53],
+    [-L*0.22, 0,  0.07, W*1.32, 0.55],
+    [ L*0.04, 0,  0.06, W*1.44, 0.53],
+    [ L*0.32, 0,  0.05, W*1.34, 0.49],
+    [ L*0.58, 0,  0.03, W*1.16, 0.44],
     [ L*0.84, 0,  0.01, W*0.92, 0.34]
-  ], 26, 0.0, isStealthChine, true);
+  ], 34, 0.0, isStealthChine, true, W1, radomeCol);
 
-  // Dorsal Avionics Spine / Speedbrake Ridge
-  addSmoothLoft([
-    [-L*0.20, 0, 0.34, 0.28, 0.14],
-    [ L*0.18, 0, 0.36, 0.34, 0.16],
-    [ L*0.66, 0, 0.26, 0.22, 0.10]
-  ], 10, 0.0, 0.3);
+  if (!["f22","f35","j20"].includes(j.id)) {
+    addSmoothLoft([[-L*1.18, 0, noseDrop, 0.006, 0.006], [-L*1.05, 0, noseDrop, 0.028, 0.028]], 8, 7.0, 0.0);
+  }
+  for (const s of [-1, 1]) {
+    addSmoothLoft([[-L*0.84, s*noseW*0.52, -0.02, 0.014, 0.014], [-L*0.74, s*noseW*0.52, -0.02, 0.014, 0.014]], 6, 7.0, 0.0);
+  }
 
-  // 2. MULTI-LAYER COCKPIT: DARK INTERIOR TUB + METALLIC BOW FRAME + 24K GOLD GLASS CANOPY + IRST BALL
+  // Dorsal Avionics Spine, Rafalis Fixed Refueling Probe & Blade Antennas
+  const spineH = j.id === "f35" ? 0.24 : (j.id === "su35" ? 0.22 : 0.16);
   addSmoothLoft([
-    [-L*0.62, 0, 0.32, 0.30, 0.14],
-    [-L*0.42, 0, 0.38, 0.32, 0.18],
-    [-L*0.22, 0, 0.34, 0.26, 0.14]
-  ], 14, 4.0, 0.0);
+    [-L*0.20, 0, 0.34, 0.28, spineH*0.85],
+    [ L*0.10, 0, 0.38, 0.38, spineH],
+    [ L*0.42, 0, 0.35, 0.32, spineH*0.9],
+    [ L*0.68, 0, 0.26, 0.22, 0.10]
+  ], 14, 0.0, 0.35);
+  addFin([0, 0.45, -L*0.08], [0, 0.45, -L*0.02], [0, 0.68, -L*0.05], [0, 0.68, -L*0.01], 0.012, 6.0, accentCol);
+  addFin([0, 0.36,  L*0.32], [0, 0.36,  L*0.40], [0, 0.56,  L*0.36], [0, 0.56,  L*0.42], 0.012, 2.0);
+  if (j.id === "rafale") { // Iconic Fixed Aerial Refueling Probe on Starboard Nose
+    addSmoothLoft([[-L*0.76, 0.42, 0.24, 0.018, 0.018], [-L*0.58, 0.36, 0.18, 0.036, 0.036]], 8, 7.0, 0.0);
+  }
+
+  // 2. FULL COCKPIT INTERIOR (Side-by-Side Dual Seats/HUDs on Fullback-B!) + 24K GOLD CANOPY + IRST/EOTS
+  addSmoothLoft([
+    [-L*0.62, 0, 0.32, j.platypus ? 0.64 : 0.32, 0.14],
+    [-L*0.42, 0, 0.38, j.platypus ? 0.68 : 0.34, 0.18],
+    [-L*0.22, 0, 0.34, j.platypus ? 0.54 : 0.28, 0.14]
+  ], 16, 4.0, 0.0);
+  const seatXs = j.platypus ? [-0.26, 0.26] : [0];
+  for (const sx of seatXs) {
+    addSmoothLoft([[-L*0.47, sx, 0.44, 0.13, 0.14], [-L*0.40, sx, 0.50, 0.14, 0.16]], 10, 4.0, 0.4);
+    addSmoothLoft([[-L*0.48, sx, 0.57, 0.07, 0.03], [-L*0.46, sx, 0.57, 0.07, 0.03]], 8, 6.0, 0.0, false, [0.95,0.2,0.2]);
+    addFin([sx, 0.42, -L*0.56], [sx, 0.42, -L*0.53], [sx, 0.54, -L*0.54], [sx, 0.54, -L*0.51], 0.07, 9.0);
+  }
   addSmoothLoft([
     [-L*0.66, 0, 0.30, 0.06, 0.04],
     [-L*0.56, 0, 0.50, j.platypus ? 0.74 : 0.44, 0.34],
     [-L*0.44, 0, 0.62, j.platypus ? 0.80 : 0.46, 0.42],
     [-L*0.30, 0, 0.56, j.platypus ? 0.72 : 0.42, 0.36],
     [-L*0.16, 0, 0.36, j.platypus ? 0.48 : 0.24, 0.16]
-  ], 20, 1.0, 0.0);
-  addSmoothLoft([
-    [-L*0.58, 0, 0.48, (j.platypus ? 0.75 : 0.45), 0.35],
-    [-L*0.55, 0, 0.52, (j.platypus ? 0.77 : 0.47), 0.37]
-  ], 16, 2.0, 0.0);
+  ], 26, 1.0, 0.0, false, canopyCol);
+  addSmoothLoft([[-L*0.58, 0, 0.48, (j.platypus ? 0.75 : 0.45), 0.35], [-L*0.55, 0, 0.52, (j.platypus ? 0.77 : 0.47), 0.37]], 20, 2.0, 0.0);
+  addSmoothLoft([[-L*0.38, 0, 0.58, (j.platypus ? 0.75 : 0.43), 0.37], [-L*0.36, 0, 0.57, (j.platypus ? 0.74 : 0.42), 0.36]], 20, 2.0, 0.0);
   if (!["f22","f35"].includes(j.id)) {
-    addSmoothLoft([[-L*0.69, 0.06, 0.34, 0.06, 0.06], [-L*0.65, 0.06, 0.36, 0.08, 0.08]], 10, 1.0, 0.0);
+    addSmoothLoft([[-L*0.69, 0.06, 0.34, 0.06, 0.06], [-L*0.65, 0.06, 0.36, 0.08, 0.08]], 12, 1.0, 0.0, false, [0.35, 0.82, 1.0]);
+  } else if (j.id === "f35") {
+    addSmoothLoft([[-L*0.72, 0, -0.26, 0.09, 0.09], [-L*0.65, 0, -0.28, 0.12, 0.11]], 10, 1.0, 0.7, false, [0.25, 0.85, 1.0]);
   }
 
-  // 3. DISTINCT RAISED DORSAL ENGINE NACELLES + COMPRESSOR FANS + TITANIUM NOZZLES
-  const engXs = j.engCount === 1 ? [0] : [-0.82, 0.82];
+  // 3. DISTINCT INTAKES, ENGINE NACELLES, 12-BLADE COMPRESSOR FANS & 14-PETAL / 2D NOZZLES
+  const engXs = j.engCount === 1 ? [0] : (j.id === "su57" ? [-0.94, 0.94] : (j.id === "typhoon" ? [-0.46, 0.46] : [-0.82, 0.82]));
+  if (j.id === "typhoon") { // Iconic Underslung Chin Twin-Wedge Splitter Intake Box
+    addSmoothLoft([[-L*0.54, 0, -0.34, 0.74, 0.24], [-L*0.26, 0, -0.28, 0.80, 0.26], [L*0.18, 0, -0.20, 0.78, 0.26]], 16, 0.0, 0.75);
+    addSmoothLoft([[-L*0.55, -0.36, -0.34, 0.28, 0.18], [-L*0.38, -0.36, -0.32, 0.26, 0.17]], 10, 4.0, 0.6);
+    addSmoothLoft([[-L*0.55,  0.36, -0.34, 0.28, 0.18], [-L*0.38,  0.36, -0.32, 0.26, 0.17]], 10, 4.0, 0.6);
+  }
   for (const ex of engXs) {
+    const inZ = (j.id === "j20" || j.id === "f35" || j.id === "rafale") ? -L*0.44 : -L*0.38;
+    const inY = j.id === "typhoon" ? -0.18 : (j.id === "rafale" ? 0.02 : -0.14);
     addSmoothLoft([
-      [-L*0.38, ex, -0.14, 0.46, 0.28],
+      [inZ, ex, inY, 0.46, 0.28],
       [-L*0.14, ex, -0.06, 0.54, 0.38],
       [ L*0.28, ex,  0.04, 0.56, 0.42],
       [ L*0.72, ex,  0.03, 0.50, 0.40],
       [ L*0.92, ex,  0.00, j.flatNozzle ? 0.52 : 0.42, j.flatNozzle ? 0.22 : 0.42]
-    ], 20, 0.0, 0.45);
-    // Intake Throat + Metallic Compressor Fan Disc
-    addSmoothLoft([
-      [-L*0.39, ex, -0.14, 0.36, 0.20],
-      [-L*0.25, ex, -0.12, 0.32, 0.18]
-    ], 14, 4.0, 0.5);
-    addSmoothLoft([
-      [-L*0.27, ex, -0.12, 0.26, 0.15],
-      [-L*0.26, ex, -0.12, 0.05, 0.05]
-    ], 12, 7.0, 0.0);
-    // Titanium Exhaust Nozzle Petals + Dark Inner Flameholder
+    ], 24, 0.0, (j.id === "j20" || j.id === "f35") ? 0.65 : 0.45);
+    if (j.id === "j20" || j.id === "f35") { // DSI Diverterless Supersonic Compression Bump
+      addSmoothLoft([[inZ-0.06, ex*0.86, inY+0.04, 0.18, 0.16], [inZ+0.24, ex*0.86, inY+0.04, 0.22, 0.18]], 10, 5.0, 0.3, false, [0.22,0.26,0.32]);
+    }
+    addSmoothLoft([[inZ-0.01, ex, inY, 0.36, 0.20], [-L*0.24, ex, -0.12, 0.32, 0.18]], 16, 4.0, 0.5);
+    addSmoothLoft([[-L*0.27, ex, -0.12, 0.10, 0.09], [-L*0.23, ex, -0.12, 0.03, 0.03]], 10, 7.0, 0.0);
+    for (let b=0; b<12; b++) {
+      const ba = (b/12)*Math.PI*2;
+      addFin([ex, -0.12, -L*0.26], [ex, -0.12, -L*0.23], [ex+Math.cos(ba)*0.28, -0.12+Math.sin(ba)*0.16, -L*0.26], [ex+Math.cos(ba)*0.28, -0.12+Math.sin(ba)*0.16, -L*0.23], 0.008, 7.0);
+    }
     addSmoothLoft([
       [L*0.90, ex, 0.0, j.flatNozzle ? 0.52 : 0.42, j.flatNozzle ? 0.22 : 0.42],
-      [L*1.05, ex, 0.0, j.flatNozzle ? 0.45 : 0.33, j.flatNozzle ? 0.16 : 0.33]
-    ], 18, 2.0, j.flatNozzle ? 0.82 : 0.0);
-    addSmoothLoft([
-      [L*0.96, ex, 0.0, j.flatNozzle ? 0.36 : 0.27, j.flatNozzle ? 0.12 : 0.27],
-      [L*1.05, ex, 0.0, j.flatNozzle ? 0.34 : 0.25, j.flatNozzle ? 0.11 : 0.25]
-    ], 14, 4.0, 0.0);
+      [L*1.06, ex, 0.0, j.flatNozzle ? 0.45 : 0.34, j.flatNozzle ? 0.16 : 0.34]
+    ], 24, 2.0, j.flatNozzle ? 0.82 : 0.0);
+    if (!j.flatNozzle) {
+      const petals = j.id === "f35" ? 16 : 14;
+      for (let p=0; p<petals; p++) {
+        const pa = (p/petals)*Math.PI*2;
+        addFin([ex+Math.cos(pa)*0.40, Math.sin(pa)*0.40, L*0.91], [ex+Math.cos(pa)*0.33, Math.sin(pa)*0.33, L*1.06],
+               [ex+Math.cos(pa+0.16)*0.41, Math.sin(pa+0.16)*0.41, L*0.91], [ex+Math.cos(pa+0.14)*0.33, Math.sin(pa+0.14)*0.33, L*1.06], 0.012, 2.0);
+      }
+    }
+    addSmoothLoft([[L*0.96, ex, 0.0, j.flatNozzle ? 0.36 : 0.28, j.flatNozzle ? 0.12 : 0.28], [L*1.06, ex, 0.0, j.flatNozzle ? 0.34 : 0.25, j.flatNozzle ? 0.11 : 0.25]], 16, 4.0, 0.0);
+    addSmoothLoft([[L*0.96, ex, 0.0, 0.11, 0.11], [L*1.03, ex, 0.0, 0.02, 0.02]], 10, 2.0, 0.0);
   }
 
-  // 4. BLENDED LERX/LEVCON STRAKES + MAIN CAMBERED WINGS + FINNED ORDNANCE + TAILS
-  const tipZ = j.fsw ? -1.05 : (j.canards && j.singleTail ? 3.85 : 2.65);
-  const rootZ = -1.65;
-  const trailZ = j.fsw ? 1.45 : 4.45;
+  // 4. TRICYCLE LANDING GEAR (Nose Twin-Wheel + Dual Main Struts, Rubber Tires, Hubs, Bay Doors & Taxi Lamp)
+  // Nose Gear
+  addSmoothLoft([[-L*0.64, 0, -0.34, 0.045, 0.045], [-L*0.62, 0, -1.36, 0.045, 0.045]], 10, 7.0, 0.0); // Chrome Oleo Strut
+  addSmoothLoft([[-L*0.64, 0, -0.34, 0.028, 0.028], [-L*0.50, 0, -0.95, 0.024, 0.024]], 8, 2.0, 0.0);  // Drag Brace
+  addSmoothLoft([[-L*0.67, 0, -0.82, 0.04, 0.04],   [-L*0.65, 0, -0.82, 0.04, 0.04]], 8, 9.0, 0.0, false, [1.0,0.95,0.78]); // Taxi LED Light
+  addGearWheel(-0.12, -1.44, -L*0.62, 0.22, 0.075);
+  addGearWheel( 0.12, -1.44, -L*0.62, 0.22, 0.075);
+  addFin([0.24, -0.34, -L*0.72], [0.24, -0.34, -L*0.46], [0.30, -0.88, -L*0.72], [0.30, -0.88, -L*0.46], 0.018, 0.0); // Nose Gear Door
+  // Main Landing Gear (Port & Starboard)
   for (const s of [-1, 1]) {
-    addAirfoil([s*W*0.68, 0.06, -L*0.64], [s*W*0.95, 0.05, rootZ+0.5], [s*W*1.38, 0.05, rootZ], [s*W*1.12, 0.04, rootZ+1.6], 0.14, 0.10, 0.0, 3);
-    addAirfoil([s*W*1.05, 0.05, rootZ], [s*W*1.05, 0.04, trailZ], [s*S, 0.01, tipZ], [s*S, 0.01, tipZ+1.15], 0.20, 0.06, 0.0, 6);
+    const gx = s * (W * 0.92 + 0.35), gz = L * 0.14;
+    addSmoothLoft([[gz, gx*0.82, -0.26, 0.06, 0.06], [gz, gx, -1.30, 0.055, 0.055]], 10, 7.0, 0.0); // Main Hydraulic Strut
+    addSmoothLoft([[gz-0.36, gx*0.75, -0.30, 0.032, 0.032], [gz, gx, -1.10, 0.028, 0.028]], 8, 2.0, 0.0); // Retraction Actuator
+    addGearWheel(gx + s*0.12, -1.36, gz, 0.31, 0.115);
+    addFin([gx+s*0.26, -0.26, gz-0.46], [gx+s*0.26, -0.26, gz+0.42], [gx+s*0.36, -0.96, gz-0.46], [gx+s*0.36, -0.96, gz+0.42], 0.02, 0.0);
+  }
 
-    // Wingtip Launch Rail + Equipped Specific A2A Missile Design
+  // 5. BESPOKE WINGS PER JET + FLAP ACTUATORS + WINGTIP STROBES + COLORED ARSENAL
+  const tipZ = j.fsw ? -1.45 : (j.id === "typhoon" || j.id === "rafale" ? 3.95 : (j.id === "j20" ? 2.85 : 2.65));
+  const rootZ = j.id === "typhoon" || j.id === "rafale" ? -0.95 : -1.65;
+  const trailZ = j.fsw ? 1.25 : (j.id === "typhoon" || j.id === "rafale" ? 4.85 : 4.45);
+  for (const s of [-1, 1]) {
+    addAirfoil([s*W*0.68, 0.06, -L*0.64], [s*W*0.95, 0.05, rootZ+0.5], [s*W*1.38, 0.05, rootZ], [s*W*1.12, 0.04, rootZ+1.6], 0.14, 0.10, 0.0, 4);
+    addAirfoil([s*W*1.05, 0.05, rootZ], [s*W*1.05, 0.04, trailZ], [s*S, 0.01, tipZ], [s*S, 0.01, tipZ+1.15], 0.20, 0.06, 0.0, 7);
+
+    // Colored Squadron Wingtip Accent Band
+    addAirfoil([s*(S*0.86), 0.02, tipZ + (rootZ-tipZ)*0.14], [s*(S*0.86), 0.02, tipZ+1.15 + (trailZ-tipZ-1.15)*0.14], [s*S, 0.015, tipZ], [s*S, 0.015, tipZ+1.15], 0.09, 0.065, 6.0, 2, accentCol);
+
+    for (const f of [0.28, 0.54, 0.78]) {
+      const fx = s*(W*1.05 + (S - W*1.05)*f);
+      const fz = trailZ + (tipZ + 1.10 - trailZ)*f;
+      addSmoothLoft([[fz-0.55, fx, -0.05, 0.04, 0.04], [fz+0.25, fx, -0.05, 0.015, 0.015]], 6, 2.0, 0.4);
+    }
+
     const tipId = j.sec ? j.sec[0] : j.pri[0];
-    const tipOpt = {
-      ir: ["am_9x","r_74x","r_73v","ir_t","as_132","mk_ir"].includes(tipId),
-      ramjet: tipId === "mt_200",
-      lattice: ["r_77v","r_77s"].includes(tipId)
-    };
-    addSmoothLoft([[tipZ-0.25, s*S, 0.02, 0.06, 0.06], [tipZ+1.25, s*S, 0.02, 0.06, 0.06]], 8, 2.0, 0.0);
-    addDetailedMissile(s*S, -0.07, tipZ-0.65, tipZ+1.08, 0.075, tipOpt);
+    addSmoothLoft([[tipZ-0.25, s*S, 0.02, 0.06, 0.06], [tipZ+1.25, s*S, 0.02, 0.06, 0.06]], 10, 2.0, 0.0);
+    addSmoothLoft([[tipZ-0.02, s*(S+0.07), 0.03, 0.04, 0.04], [tipZ+0.08, s*(S+0.07), 0.03, 0.04, 0.04]], 6, 9.0, 0.0);
+    addDetailedMissile(s*S, -0.08, tipZ-0.65, tipZ+1.12, 0.078, tipId);
+
+    if (!["f22","f35"].includes(j.id)) {
+      const px = s*(W*1.05 + 1.15);
+      addFin([px, -0.03, 0.2], [px, -0.03, 1.9], [px, -0.22, 0.3], [px, -0.22, 1.8], 0.022, 2.0);
+      addDetailedMissile(px, -0.30, -0.45, 1.95, 0.086, j.pri[0]);
+    }
 
     if (j.canards) {
-      addAirfoil([s*W*0.88, 0.15, -L*0.46], [s*W*0.88, 0.15, -L*0.18], [s*(W*0.88+1.82), 0.19, -L*0.24], [s*(W*0.88+1.72), 0.19, -L*0.09], 0.09, 0.03, 0.0, 3);
+      addAirfoil([s*W*0.88, 0.15, -L*0.46], [s*W*0.88, 0.15, -L*0.18], [s*(W*0.88+1.82), 0.19, -L*0.24], [s*(W*0.88+1.72), 0.19, -L*0.09], 0.09, 0.03, 0.0, 4);
+      addAirfoil([s*(W*0.88+1.45), 0.18, -L*0.28], [s*(W*0.88+1.45), 0.18, -L*0.12], [s*(W*0.88+1.82), 0.19, -L*0.24], [s*(W*0.88+1.72), 0.19, -L*0.09], 0.05, 0.03, 6.0, 2, accentCol);
     }
     if (!j.singleTail) {
-      addAirfoil([s*W*0.78, 0.02, L*0.54], [s*W*0.78, 0.02, L*0.94], [s*(W*0.78+2.45), 0.01, L*0.84], [s*(W*0.78+2.10), 0.01, L*1.06], 0.10, 0.03, 0.0, 4);
+      addAirfoil([s*W*0.78, 0.02, L*0.54], [s*W*0.78, 0.02, L*0.94], [s*(W*0.78+2.45), 0.01, L*0.84], [s*(W*0.78+2.10), 0.01, L*1.06], 0.10, 0.03, 0.0, 5);
       const cant = ["f22","su57","j20","f35","kf21"].includes(j.id) ? 0.68 : 0.18;
-      addFin([s*0.96, 0.30, L*0.36], [s*0.96, 0.30, L*0.94], [s*(0.96+cant), 2.28, L*0.70], [s*(0.96+cant), 2.28, L*1.00], 0.065, 0.0);
+      addFin([s*0.96, 0.30, L*0.36], [s*0.96, 0.30, L*0.94], [s*(0.96+cant), 2.30, L*0.70], [s*(0.96+cant), 2.30, L*1.00], 0.068, 0.0);
+      // Colored Squadron Fin Flash Stripe
+      addFin([s*(0.96+cant*0.62), 1.60, L*0.58], [s*(0.96+cant*0.62), 1.60, L*0.96], [s*(0.96+cant*0.84), 2.02, L*0.66], [s*(0.96+cant*0.84), 2.02, L*0.98], 0.072, 6.0, accentCol);
+      addSmoothLoft([[L*0.66, s*(0.96+cant), 2.30, 0.07, 0.07], [L*1.06, s*(0.96+cant), 2.30, 0.05, 0.05]], 8, 5.0, 0.0, false, radomeCol);
     }
     if (["j20","su35","su34","su47"].includes(j.id)) {
       addFin([s*0.96, -0.25, L*0.45], [s*0.96, -0.25, L*0.90], [s*1.08, -0.78, L*0.62], [s*1.08, -0.78, L*0.92], 0.03, 0.0);
     }
     if (j.rockets) {
       const rkId = j.rockets[0];
-      const rx = s*(W*1.05+2.05);
-      const podRad = rkId === "s13_heavy" ? 0.24 : 0.20;
-      const podMat = (rkId === "s8_kom" || rkId === "s13_heavy") ? 2.0 : 3.0;
-      addFin([rx, -0.04, 0.9], [rx, -0.04, 2.6], [rx, -0.28, 1.0], [rx, -0.28, 2.5], 0.025, 2.0);
-      addSmoothLoft([[0.65, rx, -0.32, podRad*0.55, podRad*0.55], [0.85, rx, -0.32, podRad, podRad]], 10, 6.0, 0.0);
-      addSmoothLoft([[0.85, rx, -0.32, podRad, podRad], [2.95, rx, -0.32, podRad*0.94, podRad*0.94]], 10, podMat, rkId === "log_70" ? 0.45 : 0.0);
-      // Dark Tube Nose Face + Exposed Rocket Tips
-      addSmoothLoft([[0.82, rx, -0.32, podRad*0.80, podRad*0.80], [0.86, rx, -0.32, podRad*0.80, podRad*0.80]], 8, 4.0, 0.0);
+      const rkSp = (typeof getOrdSkin === "function") ? getOrdSkin(rkId) : (ORD_DESIGN_SPECS[rkId] || { body:"#3a463d", nose:"#94a3b8", band:"#ef4444" });
+      const rx = s*(W*1.05+2.25);
+      const podRad = rkId === "s13_heavy" ? 0.25 : 0.21;
+      const podMat = (rkId === "s8_kom" || rkId === "s13_heavy") ? 10.0 : 3.0;
+      addFin([rx, -0.04, 0.8], [rx, -0.04, 2.7], [rx, -0.28, 0.9], [rx, -0.28, 2.6], 0.026, 2.0);
+      addSmoothLoft([[0.58, rx, -0.34, podRad*0.50, podRad*0.50], [0.85, rx, -0.34, podRad, podRad]], 12, 6.0, 0.0, false, hexToRgb(rkSp.band));
+      addSmoothLoft([[0.85, rx, -0.34, podRad, podRad], [3.05, rx, -0.34, podRad*0.92, podRad*0.92]], 14, podMat, rkId === "log_70" ? 0.50 : 0.0, false, hexToRgb(rkSp.body));
+      addSmoothLoft([[0.82, rx, -0.34, podRad*0.82, podRad*0.82], [0.86, rx, -0.34, podRad*0.82, podRad*0.82]], 12, 4.0, 0.0);
+      for (let rt=0; rt<6; rt++) {
+        const ra = (rt/6)*Math.PI*2;
+        const rtx = rx + Math.cos(ra)*podRad*0.46, rty = -0.34 + Math.sin(ra)*podRad*0.46;
+        addSmoothLoft([[0.74, rtx, rty, 0.01, 0.01], [0.84, rtx, rty, 0.034, 0.034]], 6, 6.0, 0.0, false, hexToRgb(rkSp.nose));
+      }
     }
     if (j.nuke) {
-      const nkId = j.nuke[0];
-      const nkOpt = {
-        stealth: ["kh_102x","storm_n","kh_102s"].includes(nkId),
-        ramjet: nkId === "asmp_r",
-        cruiseWing: nkId !== "b61n"
-      };
       if (j.nuke[1] >= 2 || s < 0) {
-        addDetailedMissile(j.nuke[1] >= 2 ? s*0.36 : 0.0, -0.44, -0.95, 1.55, 0.115, nkOpt);
+        addDetailedMissile(j.nuke[1] >= 2 ? s*0.36 : 0.0, -0.45, -1.05, 1.65, 0.12, j.nuke[0]);
       }
     }
   }
   if (j.singleTail) {
-    addFin([0, 0.34, L*0.26], [0, 0.34, L*0.96], [0, 2.55, L*0.74], [0, 2.55, L*1.02], 0.075, 0.0);
+    addFin([0, 0.34, L*0.26], [0, 0.34, L*0.96], [0, 2.58, L*0.74], [0, 2.58, L*1.02], 0.075, 0.0);
+    addFin([0, 1.80, L*0.58], [0, 1.80, L*0.98], [0, 2.22, L*0.66], [0, 2.22, L*1.00], 0.079, 6.0, accentCol);
+    addSmoothLoft([[L*0.72, 0, 2.58, 0.07, 0.07], [L*1.06, 0, 2.58, 0.05, 0.05]], 8, 5.0, 0.0, false, radomeCol);
   }
   if (j.platypus || j.id === "su35" || j.id === "su47") {
-    addSmoothLoft([[L*0.70, 0, 0.08, 0.30, 0.19], [L*1.20, 0, 0.08, 0.10, 0.08]], 10, 0.0, 0.0);
+    addSmoothLoft([[L*0.70, 0, 0.08, 0.30, 0.19], [L*1.24, 0, 0.08, 0.09, 0.08]], 12, 0.0, 0.0);
   }
 
   const vao = gl.createVertexArray();
@@ -1505,14 +1872,15 @@ function buildHighResJetBuffers(j) {
   makeVBO(norm, 1, 3);
   makeVBO(uv, 2, 2);
   makeVBO(mat, 3, 1);
+  makeVBO(col, 4, 3);
 
   const ibo = gl.createBuffer();
   gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, ibo);
-  gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(idx), gl.STATIC_DRAW);
+  gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint32Array(idx), gl.STATIC_DRAW);
   gl.bindVertexArray(null);
 
   const abPlumes = engXs.map(ex => ({ x: ex, zStart: L * 1.04 }));
-  const out = { vao, count: idx.length, L, S, W, abPlumes };
+  const out = { vao, count: idx.length, L, S, W, abPlumes, _key: skinKey };
   jetBuffers[j.id] = out;
   return out;
 }
@@ -1675,11 +2043,12 @@ function renderWebGL(nowMs) {
     gl.uniform1f(gl.getUniformLocation(progPBR, "uTime"), nowMs * 0.001);
     gl.uniform1f(gl.getUniformLocation(progPBR, "uAbOn"), showAfterburner ? 1.0 : 0.0);
     gl.uniform1f(gl.getUniformLocation(progPBR, "uTailZ"), mesh.L);
+    gl.uniform1f(gl.getUniformLocation(progPBR, "uFinish"), getJetSkin(j).finish || 0.0);
     gl.activeTexture(gl.TEXTURE0);
     gl.bindTexture(gl.TEXTURE_2D, tex);
     gl.uniform1i(gl.getUniformLocation(progPBR, "uTex"), 0);
     gl.bindVertexArray(mesh.vao);
-    gl.drawElements(gl.TRIANGLES, mesh.count, gl.UNSIGNED_SHORT, 0);
+    gl.drawElements(gl.TRIANGLES, mesh.count, gl.UNSIGNED_INT, 0);
 
     // 2B. Multi-Ring Mach Shock-Diamond Afterburner Plumes
     if (showAfterburner) {
@@ -1776,7 +2145,7 @@ function renderWebGL(nowMs) {
     gl.bindTexture(gl.TEXTURE_2D, tex);
     gl.uniform1i(gl.getUniformLocation(progPBR, "uTex"), 0);
     gl.bindVertexArray(mesh.vao);
-    gl.drawElements(gl.TRIANGLES, mesh.count, gl.UNSIGNED_SHORT, 0);
+    gl.drawElements(gl.TRIANGLES, mesh.count, gl.UNSIGNED_INT, 0);
     gl.depthMask(true);
 
     // 3C. Hi-DPI Crisp 2D Callout Tags
@@ -2104,7 +2473,90 @@ function selectJet(id) {
   renderMatrix();
 }
 
+function renderJetSkinUI() {
+  const sk = getJetSkin(selectedJet);
+  const badge = document.getElementById("jet-skin-badge");
+  if (badge) badge.textContent = sk.name.toUpperCase();
+  const row = document.getElementById("jet-skin-presets");
+  if (row) {
+    row.innerHTML = JET_SKIN_PRESETS.map(p => {
+      const c1 = p.c1 || selectedJet.color1, c2 = p.c2 || selectedJet.color2, c3 = p.c3 || selectedJet.color3, acc = p.accent || selectedJet.accent;
+      return `<button class="skin-chip ${sk.presetId===p.id?'active':''}" onclick="applyJetSkinPreset('${p.id}')">
+        <span class="swatch-dots"><i style="background:${c1}"></i><i style="background:${c2}"></i><i style="background:${c3}"></i><i style="background:${acc}"></i></span>
+        <span>${p.name}</span>
+      </button>`;
+    }).join("");
+  }
+  const elP = document.getElementById("js-pattern"); if (elP) elP.value = sk.pattern;
+  const elF = document.getElementById("js-finish"); if (elF) elF.value = String(sk.finish);
+  const elCan = document.getElementById("js-canopy"); if (elCan) elCan.value = sk.canopy;
+  const el1 = document.getElementById("js-c1"); if (el1) el1.value = sk.c1;
+  const el2 = document.getElementById("js-c2"); if (el2) el2.value = sk.c2;
+  const el3 = document.getElementById("js-c3"); if (el3) el3.value = sk.c3;
+  const elA = document.getElementById("js-acc"); if (elA) elA.value = sk.accent;
+  const elR = document.getElementById("js-rad"); if (elR) elR.value = sk.radome;
+}
+
+function applyJetSkinPreset(presetId) {
+  const j = selectedJet;
+  const p = JET_SKIN_PRESETS.find(x => x.id === presetId) || JET_SKIN_PRESETS[0];
+  if (p.id === "factory") {
+    delete jetSkins[j.id];
+    getJetSkin(j);
+  } else {
+    jetSkins[j.id] = {
+      presetId: p.id, name: p.name, pattern: p.pattern,
+      c1: p.c1, c2: p.c2, c3: p.c3, accent: p.accent, radome: p.radome,
+      canopy: p.canopy, finish: p.finish
+    };
+  }
+  renderJetSkinUI();
+}
+
+function onJetSkinControl() {
+  const sk = getJetSkin(selectedJet);
+  sk.presetId = "custom";
+  sk.name = "Custom Multi-Color";
+  sk.pattern = document.getElementById("js-pattern").value;
+  sk.finish = parseInt(document.getElementById("js-finish").value) || 0;
+  sk.canopy = document.getElementById("js-canopy").value;
+  sk.c1 = document.getElementById("js-c1").value;
+  sk.c2 = document.getElementById("js-c2").value;
+  sk.c3 = document.getElementById("js-c3").value;
+  sk.accent = document.getElementById("js-acc").value;
+  sk.radome = document.getElementById("js-rad").value;
+  renderJetSkinUI();
+}
+
+function resetJetSkin() {
+  applyJetSkinPreset("factory");
+}
+
+function applyJetSkinToAll() {
+  const src = getJetSkin(selectedJet);
+  for (const j of JETS) {
+    jetSkins[j.id] = { ...src };
+  }
+  renderJetSkinUI();
+}
+
+function syncOrdnanceToJetSkin() {
+  const sk = getJetSkin(selectedJet);
+  const all = getAllOrdnanceList();
+  for (const item of all) {
+    const cur = getOrdSkin(item.id);
+    ordSkins[item.id] = {
+      ...cur, presetId: "jet_sync", name: `Synced (${sk.name})`,
+      pattern: sk.pattern === "cyber_tron" ? "cyber_neon" : (sk.pattern === "carbon_gold" ? "carbon_gold" : "tri_tone"),
+      body: sk.c1, nose: sk.radome, band: sk.accent, motor: sk.c3, fin: sk.c2, finish: sk.finish
+    };
+  }
+  renderOrdSkinUI();
+  renderOrdnanceCatalog();
+}
+
 function renderSelectedJet() {
+  renderJetSkinUI();
   const j = selectedJet;
   const jLv = parseInt(document.getElementById("sl-jet").value);
   const mLv = parseInt(document.getElementById("sl-msl").value);
@@ -2275,42 +2727,72 @@ function renderMatrix() {
 
 // ================== ORDNANCE DESIGN STUDIO (ALL 31 WEAPONS: 12 MISSILES, 7 NUKES, 5 ROCKET PODS, 7 CANNONS) ==================
 const ORD_DESIGN_SPECS = {
-  // Missiles
-  am_120d: { kind:"missile", style:"bvr_radar", body:"#d6dee8", nose:"#6c7682", band:"#eab308", motor:"#92400e", fin:"#475569", desc:"Active BVR radar missile with ceramic radome, clipped mid-body wings, and high-impulse solid rocket motor." },
-  am_9x:   { kind:"missile", style:"ir_slim", body:"#dde4ee", nose:"#d97706", band:"#eab308", motor:"#78350f", fin:"#334155", desc:"High-off-boresight IR dogfight missile with smoky sapphire-amber seeker dome, small forward fins, and thrust-vectoring tail." },
-  mt_200:  { kind:"missile", style:"ramjet", body:"#cfd8e3", nose:"#475569", band:"#38bdf8", motor:"#334155", fin:"#1e293b", desc:"Throttleable ducted-rocket BVR missile with twin side air intakes feeding a Mach 4+ boron-fueled ramjet." },
-  ir_t:    { kind:"missile", style:"ir_strake", body:"#e2e8f0", nose:"#f59e0b", band:"#06b6d4", motor:"#475569", fin:"#334155", desc:"Agile short-range IR missile featuring long-chord mid-body strakes and a serrated thrust-vectoring exhaust nozzle." },
-  as_132:  { kind:"missile", style:"ir_wingless", body:"#d8e0ea", nose:"#b45309", band:"#ef4444", motor:"#64748b", fin:"#334155", desc:"Low-drag wingless high-acceleration IR interceptor with large hemispherical glass seeker and cropped rear tail fins." },
-  mk_em:   { kind:"missile", style:"strake_radar", body:"#cbd5e1", nose:"#64748b", band:"#38bdf8", motor:"#475569", fin:"#1e293b", desc:"Medium-range active radar missile with cruciform long-chord lifting strakes and low-smoke pulse motor." },
-  mk_ir:   { kind:"missile", style:"strake_ir", body:"#cbd5e1", nose:"#0ea5e9", band:"#f59e0b", motor:"#475569", fin:"#1e293b", desc:"Dual-color imaging IR dogfight missile sharing long-chord lifting strakes with a cyan-tinted optical dome." },
-  pl_15x:  { kind:"missile", style:"dual_pulse", body:"#dbe3ed", nose:"#525b66", band:"#3b82f6", motor:"#1f2937", fin:"#334155", desc:"Long-range dual-pulse AESA-guided BVR missile with cropped rectangular low-drag fins and stealth metallic aft collar." },
-  r_77v:   { kind:"missile", style:"lattice", body:"#e2e8f0", nose:"#64748b", band:"#ef4444", motor:"#475569", fin:"#94a3b8", desc:"Signature Adder-X BVR missile equipped with titanium drag-reducing lattice grid tail fins for high-AoA control." },
-  r_77s:   { kind:"missile", style:"lattice_boat", body:"#d1dae4", nose:"#475569", band:"#f97316", motor:"#334155", fin:"#94a3b8", desc:"Extended-range RVV-SD variant combining titanium lattice grid tail fins with a tapered aerodynamic boat-tail." },
-  r_74x:   { kind:"missile", style:"canard_ir", body:"#e2e8f0", nose:"#f59e0b", band:"#ef4444", motor:"#475569", fin:"#334155", desc:"Off-boresight IR missile with nose destabilizer vanes, forward cruciform canards, and wide rear delta stabilizers." },
-  r_73v:   { kind:"missile", style:"canard_ir", body:"#cbd5e1", nose:"#ea580c", band:"#eab308", motor:"#475569", fin:"#1e293b", desc:"Close-combat thrust-vectoring IR missile with forward control canards and signature rear spoiler paddles." },
-  // Nuclear Warheads
-  kh_102x: { kind:"nuke", style:"stealth_cruise", body:"#252b34", nose:"#161a20", band:"#ef4444", motor:"#f59e0b", fin:"#334155", desc:"Faceted hexagonal low-observable stealth nuclear cruise missile (250 kt) with ferrite RAM skin, deployed swept wings, and crimson hazard collar." },
-  cj_20x:  { kind:"nuke", style:"ventral_cruise", body:"#334155", nose:"#1e293b", band:"#ef4444", motor:"#eab308", fin:"#475569", desc:"Long-range subsonic nuclear cruise missile (200 kt) with underslung ventral turbofan nacelle and high-aspect swept wings." },
-  b61n:    { kind:"nuke", style:"b61_glide", body:"#94a3b8", nose:"#475569", band:"#ef4444", motor:"#eab308", fin:"#64748b", desc:"Sleek brushed-alloy tactical nuclear bay munition (80 kt) with blunt ogive nose, tapered tailcone, and 4 swept cruciform tail fins." },
-  storm_n: { kind:"nuke", style:"box_stealth", body:"#2c3440", nose:"#181c24", band:"#ef4444", motor:"#f59e0b", fin:"#3f4a5a", desc:"Trapezoidal stealth standoff nuclear missile (150 kt) with chin air intake, recessed dorsal wings, and dark RAM surface." },
-  kh_59n:  { kind:"nuke", style:"heavy_cruise", body:"#475569", nose:"#0ea5e9", band:"#ef4444", motor:"#eab308", fin:"#334155", desc:"Heavy tactical nuclear cruise missile (180 kt) with glazed nose optical/INS window, underslung turbojet pod, and dual hazard rings." },
-  asmp_r:  { kind:"nuke", style:"ramjet_nuke", body:"#e2e8f0", nose:"#334155", band:"#ef4444", motor:"#f59e0b", fin:"#475569", desc:"Mach 3 supersonic ramjet nuclear missile (300 kt) featuring twin cheek supersonic air-intakes and crimson radiation rings." },
-  kh_102s: { kind:"nuke", style:"twin_stealth", body:"#1f252d", nose:"#12161c", band:"#ef4444", motor:"#f59e0b", fin:"#334155", desc:"Heavy twin-rack tactical nuclear stealth cruise missile (250 kt ×2) with wide chined hull, dorsal saddle collar, and twin hazard bands." },
-  // Rocket Pods & Rockets
-  s8_kom:    { kind:"rocket", style:"pod_20", body:"#3a463d", nose:"#94a3b8", band:"#ef4444", motor:"#d97706", fin:"#1f2937", tubes:20, cal:80, desc:"20-tube cylindrical B-8V launcher pod in matte olive-gunmetal with conical nose cap and S-8K 80mm HEAT fin-folding rockets." },
-  s13_heavy: { kind:"rocket", style:"pod_5", body:"#2c3238", nose:"#64748b", band:"#f59e0b", motor:"#dc2626", fin:"#111827", tubes:5, cal:122, desc:"Heavy 5-tube B-13V steel bunker-buster pod firing massive 122mm S-13X armor-piercing rockets." },
-  log_70:    { kind:"rocket", style:"pod_7_stealth", body:"#4b5563", nose:"#0ea5e9", band:"#38bdf8", motor:"#475569", fin:"#1e293b", tubes:7, cal:70, desc:"Faceted semi-stealth 7-tube composite pod housing laser/IR semi-guided LOG-70 precision 70mm rockets." },
-  cr_70:     { kind:"rocket", style:"pod_19_dart", body:"#cbd5e1", nose:"#eab308", band:"#ef4444", motor:"#475569", fin:"#334155", tubes:19, cal:70, desc:"Aerodynamic 19-tube LAU-50V high-speed pod loaded with supersonic CR-70 kinetic flechette dart rockets." },
-  sn_68:     { kind:"rocket", style:"pod_12_euro", body:"#64748b", nose:"#e2e8f0", band:"#ef4444", motor:"#334155", fin:"#1e293b", tubes:12, cal:68, desc:"European tapered 12-tube TL-12 launcher pod with crimson safety collar and high-velocity 68mm SN-68 rockets." },
-  // Cannons
-  gsh_30v:       { kind:"cannon", style:"single_30", body:"#334155", nose:"#94a3b8", band:"#f97316", motor:"#1e293b", fin:"#0f172a", barrels:1, desc:"Single-barrel 30mm high-impulse internal autocannon with heavy recoil-damped receiver & 150-round drum." },
-  cs_23v_pod:    { kind:"cannon", style:"stealth_pod", body:"#1f2937", nose:"#475569", band:"#2cff96", motor:"#111827", fin:"#0f172a", barrels:4, desc:"Low-observable ventral stealth gun pod housing a compact 4-barrel 23mm rotary cannon & 240-round feeder." },
-  m61v_vulcanix: { kind:"cannon", style:"gatling_6", body:"#475569", nose:"#94a3b8", band:"#eab308", motor:"#1e293b", fin:"#0f172a", barrels:6, desc:"6-barrel hydraulically driven 20mm Gatling cannon (6,000 RPM) with helical drum magazine." },
-  m61k_precision:{ kind:"cannon", style:"gatling_6", body:"#64748b", nose:"#cbd5e1", band:"#38bdf8", motor:"#1e293b", fin:"#0f172a", barrels:6, desc:"Precision-stabilized 6-barrel 20mm rotary cannon tuned for tighter air-to-air dispersion." },
-  gau_22x:       { kind:"cannon", style:"gatling_4", body:"#374151", nose:"#9ca3af", band:"#f59e0b", motor:"#111827", fin:"#0f172a", barrels:4, desc:"Lightweight 4-barrel 25mm stealth-bay rotary cannon delivering heavy armor-piercing bursts." },
-  bk_27x:        { kind:"cannon", style:"revolver_1", body:"#4b5563", nose:"#9ca3af", band:"#ef4444", motor:"#1f2937", fin:"#0f172a", barrels:1, desc:"27mm gas-operated revolver cannon with rotating 5-chamber cylinder for instantaneous first-round snap." },
-  g30m_791x:     { kind:"cannon", style:"revolver_1", body:"#3f4a5a", nose:"#cbd5e1", band:"#f59e0b", motor:"#1e293b", fin:"#0f172a", barrels:1, desc:"High-cadence 30mm 7-chamber revolver cannon (2,500 RPM) engineered for air-to-air snap kills." }
+  // Missiles (12 distinct styles & rich multi-tone liveries)
+  am_120d: { kind:"missile", style:"bvr_radar", body:"#dce4ee", nose:"#475569", band:"#eab308", motor:"#b45309", fin:"#334155", desc:"Active BVR radar missile with dark ceramic radome, clipped mid-body wings, amber warhead ring, and bronze motor collar." },
+  am_9x:   { kind:"missile", style:"ir_slim", body:"#e2e8f0", nose:"#d97706", band:"#eab308", motor:"#78350f", fin:"#1e293b", desc:"High-off-boresight IR dogfight missile with amber sapphire seeker dome, compact forward fins, and thrust-vectoring tail." },
+  mt_200:  { kind:"missile", style:"ramjet", body:"#cbd5e1", nose:"#334155", band:"#0ea5e9", motor:"#1e293b", fin:"#0f172a", desc:"Throttleable ducted-rocket BVR missile with twin side air intakes feeding a Mach 4+ boron-fueled ramjet." },
+  ir_t:    { kind:"missile", style:"ir_strake", body:"#d8e4ec", nose:"#f59e0b", band:"#06b6d4", motor:"#334155", fin:"#0f172a", desc:"Agile short-range IR missile featuring long-chord mid-body strakes, cyan guidance band, and serrated thrust-vectoring nozzle." },
+  as_132:  { kind:"missile", style:"ir_wingless", body:"#d6cfc2", nose:"#b45309", band:"#dc2626", motor:"#475569", fin:"#1e293b", desc:"Low-drag wingless high-acceleration IR interceptor in desert-sand lacquer with crimson warhead band and cropped tail fins." },
+  mk_em:   { kind:"missile", style:"strake_radar", body:"#b8c5d4", nose:"#334155", band:"#2563eb", motor:"#1e293b", fin:"#0f172a", desc:"Medium-range active radar missile in French slate-blue with cruciform long-chord lifting strakes and cobalt guidance band." },
+  mk_ir:   { kind:"missile", style:"strake_ir", body:"#c2ccd8", nose:"#0ea5e9", band:"#f59e0b", motor:"#334155", fin:"#1e293b", desc:"Dual-color imaging IR dogfight missile pairing slate airframe & long-chord strakes with a cyan optical dome." },
+  pl_15x:  { kind:"missile", style:"dual_pulse", body:"#eef2f6", nose:"#3b424c", band:"#2563eb", motor:"#1e293b", fin:"#475569", desc:"Long-range dual-pulse AESA-guided BVR missile in Arctic white with cobalt band and cropped low-drag rectangular fins." },
+  r_77v:   { kind:"missile", style:"lattice", body:"#e2e8f0", nose:"#475569", band:"#dc2626", motor:"#334155", fin:"#94a3b8", desc:"Signature Adder-X BVR missile equipped with titanium drag-reducing 3D lattice grid tail fins and crimson hazard band." },
+  r_77s:   { kind:"missile", style:"lattice_boat", body:"#c7d2de", nose:"#334155", band:"#ea580c", motor:"#1e293b", fin:"#cbd5e1", desc:"Extended-range RVV-SD variant combining titanium lattice grid tail fins, orange guidance ring, and tapered boat-tail." },
+  r_74x:   { kind:"missile", style:"canard_archer2", body:"#dde6ee", nose:"#f59e0b", band:"#dc2626", motor:"#475569", fin:"#1e293b", desc:"Off-boresight IR missile with nose destabilizer vanes, 4 forward cruciform canards, crimson ring, and wide delta stabilizers." },
+  r_73v:   { kind:"missile", style:"spoiler_archer", body:"#8a9684", nose:"#ea580c", band:"#eab308", motor:"#374151", fin:"#1f2937", desc:"Close-combat thrust-vectoring IR missile in tactical olive-grey with nose AoA probes, amber band, and rear spoiler paddles." },
+  // Nuclear Warheads (7 distinct silhouettes & multi-tone hazard finishes)
+  kh_102x: { kind:"nuke", style:"stealth_cruise", body:"#232a35", nose:"#13171d", band:"#ef4444", motor:"#f59e0b", fin:"#384454", desc:"Faceted hexagonal low-observable stealth nuclear cruise missile (250 kt) with ferrite RAM skin, deployed swept wings, and crimson hazard collar." },
+  cj_20x:  { kind:"nuke", style:"ventral_cruise", body:"#39485c", nose:"#1e293b", band:"#ef4444", motor:"#eab308", fin:"#64748b", desc:"Long-range subsonic nuclear cruise missile (200 kt) with slate-blue fuselage, underslung ventral turbofan nacelle, and swept wings." },
+  b61n:    { kind:"nuke", style:"b61_glide", body:"#b8c4d0", nose:"#64748b", band:"#ef4444", motor:"#eab308", fin:"#94a3b8", desc:"Sleek brushed-chrome tactical nuclear bay munition (80 kt) with blunt ogive nose, tapered tailcone, and 4 swept cruciform tail fins." },
+  storm_n: { kind:"nuke", style:"box_stealth", body:"#2e3744", nose:"#181c24", band:"#ef4444", motor:"#f59e0b", fin:"#475569", desc:"Trapezoidal stealth standoff nuclear missile (150 kt) with chin air intake, recessed dorsal wings, and dark RAM surface." },
+  kh_59n:  { kind:"nuke", style:"heavy_cruise", body:"#4b5d70", nose:"#0ea5e9", band:"#ef4444", motor:"#eab308", fin:"#334155", desc:"Heavy tactical nuclear cruise missile (180 kt) with glazed sapphire nose optical window, underslung turbojet pod, and dual hazard rings." },
+  asmp_r:  { kind:"nuke", style:"ramjet_nuke", body:"#e5ebf2", nose:"#28323e", band:"#ef4444", motor:"#f59e0b", fin:"#475569", desc:"Mach 3 supersonic ramjet nuclear missile (300 kt) in pearl-white thermal coat with twin cheek air-intakes and crimson radiation rings." },
+  kh_102s: { kind:"nuke", style:"twin_stealth", body:"#1c232d", nose:"#0f131a", band:"#ef4444", motor:"#f59e0b", fin:"#334155", desc:"Heavy twin-rack tactical nuclear stealth cruise missile (250 kt ×2) with wide chined hull, dorsal saddle collar, and twin hazard bands." },
+  // Rocket Pods & Rockets (5 distinct calibers, finishes & tube layouts)
+  s8_kom:    { kind:"rocket", style:"pod_20", body:"#3e4f40", nose:"#cbd5e1", band:"#ef4444", motor:"#d97706", fin:"#1f2937", tubes:20, cal:80, desc:"20-tube cylindrical B-8V launcher pod in anodized olive-drab with crimson collar and S-8K 80mm HEAT fin-folding rockets." },
+  s13_heavy: { kind:"rocket", style:"pod_5", body:"#2f3640", nose:"#f59e0b", band:"#ef4444", motor:"#dc2626", fin:"#111827", tubes:5, cal:122, desc:"Heavy 5-tube B-13V gunmetal steel bunker-buster pod firing massive 122mm S-13X armor-piercing rockets." },
+  log_70:    { kind:"rocket", style:"pod_7_stealth", body:"#4b5766", nose:"#0ea5e9", band:"#38bdf8", motor:"#334155", fin:"#1e293b", tubes:7, cal:70, desc:"Faceted semi-stealth 7-tube composite pod housing sapphire-seeker laser/IR semi-guided LOG-70 precision 70mm rockets." },
+  cr_70:     { kind:"rocket", style:"pod_19_dart", body:"#d6e0eb", nose:"#eab308", band:"#dc2626", motor:"#475569", fin:"#334155", tubes:19, cal:70, desc:"Aerodynamic 19-tube LAU-50V high-speed white pod loaded with gold-tipped supersonic CR-70 kinetic flechette dart rockets." },
+  sn_68:     { kind:"rocket", style:"pod_12_euro", body:"#586a7e", nose:"#ef4444", band:"#2563eb", motor:"#334155", fin:"#1e293b", tubes:12, cal:68, desc:"European tapered 12-tube TL-12 cobalt-slate pod with tricolor safety band and high-velocity 68mm SN-68 rockets." },
+  // Cannons (7 completely distinct designs & colors)
+  gsh_30v:       { kind:"cannon", style:"single_30", body:"#334155", nose:"#94a3b8", band:"#f97316", motor:"#1e293b", fin:"#0f172a", barrels:1, desc:"Single-barrel 30mm high-impulse internal autocannon with heavy recoil-damped steel receiver & orange-banded drum." },
+  cs_23v_pod:    { kind:"cannon", style:"stealth_pod", body:"#1f2937", nose:"#64748b", band:"#10b981", motor:"#111827", fin:"#0f172a", barrels:4, desc:"Low-observable ventral stealth gun pod in matte charcoal housing a 4-barrel 23mm rotary cannon & emerald-accented feeder." },
+  m61v_vulcanix: { kind:"cannon", style:"gatling_6_heavy", body:"#3e4a3d", nose:"#b0bac5", band:"#eab308", motor:"#b45309", fin:"#1e293b", barrels:6, desc:"6-barrel hydraulically driven 20mm Vulcanix Gatling cannon (6,000 RPM) in olive-steel with brass-amber helical drum." },
+  m61k_precision:{ kind:"cannon", style:"gatling_6_shroud", body:"#4a6078", nose:"#cbd5e1", band:"#38bdf8", motor:"#1e293b", fin:"#0f172a", barrels:6, desc:"Precision-stabilized 6-barrel 20mm rotary cannon in Pacific cobalt-steel with perforated cooling shroud & cyan-banded drum." },
+  gau_22x:       { kind:"cannon", style:"gatling_4", body:"#2d343e", nose:"#9ca3af", band:"#f59e0b", motor:"#78350f", fin:"#111827", barrels:4, desc:"Lightweight 4-barrel 25mm stealth-bay rotary cannon in dark titanium with amber-bronze feed chute." },
+  bk_27x:        { kind:"cannon", style:"revolver_5ch", body:"#57534e", nose:"#a8a29e", band:"#ef4444", motor:"#b45309", fin:"#1c1917", barrels:1, desc:"27mm gas-operated revolver cannon in warm bronze-gunmetal with visible 5-chamber rotating cylinder & crimson heat band." },
+  g30m_791x:     { kind:"cannon", style:"revolver_7ch", body:"#3f4f63", nose:"#cbd5e1", band:"#f59e0b", motor:"#1e293b", fin:"#0f172a", barrels:1, desc:"High-cadence 30mm 7-chamber revolver cannon (2,500 RPM) in French naval slate with twin gas recoil tubes." }
 };
+
+// ================== FULL-BODY WEAPON SKIN REGISTRY (ALL 31 WEAPONS) ==================
+const WEAPON_SKIN_PRESETS = [
+  { id:"stock", name:"Stock Armory", pattern:"stock", finish:0 },
+  { id:"ace_gold", name:"Obsidian Crimson Gold", pattern:"carbon_gold", body:"#161922", nose:"#f59e0b", band:"#dc2626", motor:"#f59e0b", fin:"#272d3a", finish:2 },
+  { id:"cyber_neon", name:"Cyber Neon", pattern:"cyber_neon", body:"#0b1426", nose:"#22d3ee", band:"#a855f7", motor:"#0891b2", fin:"#1e293b", finish:3 },
+  { id:"stealth_ram", name:"Stealth Obsidian", pattern:"tri_tone", body:"#181c24", nose:"#0f172a", band:"#64748b", motor:"#334155", fin:"#111827", finish:1 },
+  { id:"titanium_ace", name:"Brushed Titanium", pattern:"chrome_steel", body:"#b8c4d0", nose:"#334155", band:"#ef4444", motor:"#64748b", fin:"#475569", finish:2 },
+  { id:"arctic_intercept", name:"Arctic Interceptor", pattern:"stripes", body:"#e2e8f0", nose:"#0ea5e9", band:"#1d4ed8", motor:"#334155", fin:"#1e293b", finish:0 },
+  { id:"hazard_viper", name:"Hazard Viper", pattern:"chevron", body:"#2c313a", nose:"#f97316", band:"#facc15", motor:"#dc2626", fin:"#18181b", finish:0 },
+  { id:"desert_tactical", name:"Desert Tactical", pattern:"gradient", body:"#c9ad82", nose:"#7c2d12", band:"#ea580c", motor:"#451a03", fin:"#3b2f24", finish:1 }
+];
+const ordSkins = {};
+const ordTextures = {};
+function getOrdSkin(id) {
+  const base = ORD_DESIGN_SPECS[id] || { body:"#d6dee8", nose:"#6c7682", band:"#eab308", motor:"#92400e", fin:"#475569", style:"bvr_radar", kind:"missile", desc:"" };
+  if (!ordSkins[id]) {
+    ordSkins[id] = {
+      presetId: "stock", name: "Stock Armory", pattern: "stock",
+      body: base.body, nose: base.nose, band: base.band, motor: base.motor, fin: base.fin,
+      finish: 0, style: base.style, kind: base.kind, desc: base.desc,
+      tubes: base.tubes, cal: base.cal, barrels: base.barrels
+    };
+  }
+  return ordSkins[id];
+}
+function getOrdSkinKey(id) {
+  const s = getOrdSkin(id);
+  return `${s.pattern}|${s.body}|${s.nose}|${s.band}|${s.motor}|${s.fin}|${s.finish}`;
+}
 
 function getAllOrdnanceList() {
   const arr = [];
@@ -2328,23 +2810,34 @@ function getAllOrdnanceList() {
 }
 
 function buildOrdnanceCardSVG(item) {
-  const s = item.spec, k = item.kind;
+  const s = getOrdSkin(item.id), k = item.kind;
+  const gid = `og_${item.id}`;
   if (k === "rocket") {
+    const rPts = [];
+    const cols = s.tubes <= 5 ? 5 : (s.tubes <= 7 ? 7 : 9);
+    for (let i=0; i<cols; i++) {
+      const ang = (i/cols)*Math.PI*2;
+      const rx = 48 + Math.cos(ang)*5.8, ry = 37 + Math.sin(ang)*5.8;
+      rPts.push(`<circle cx="${rx.toFixed(1)}" cy="${ry.toFixed(1)}" r="1.9" fill="${s.nose}" stroke="#0b121c" stroke-width="0.5"/>`);
+    }
     return `<svg viewBox="0 0 320 74" xmlns="http://www.w3.org/2000/svg">
+      <defs><linearGradient id="${gid}" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#fff" stop-opacity="0.22"/><stop offset="50%" stop-color="#000" stop-opacity="0"/><stop offset="100%" stop-color="#000" stop-opacity="0.38"/></linearGradient></defs>
       <line x1="10" y1="37" x2="310" y2="37" stroke="#2de2ff" stroke-opacity="0.16" stroke-dasharray="3 3"/>
-      <!-- Multi-Tube Rocket Pod -->
-      <path d="M58,20 L175,20 L182,24 L182,50 L175,54 L58,54 L40,42 L40,32 Z" fill="${s.body}" stroke="#94a3b8" stroke-width="1.2"/>
-      <rect x="64" y="20" width="8" height="34" fill="${s.band}" opacity="0.88"/>
-      <circle cx="48" cy="37" r="10" fill="#0b121c" stroke="#64748b"/>
-      <circle cx="45" cy="33" r="2.2" fill="${s.nose}"/><circle cx="51" cy="33" r="2.2" fill="${s.nose}"/>
-      <circle cx="45" cy="40" r="2.2" fill="${s.nose}"/><circle cx="51" cy="40" r="2.2" fill="${s.nose}"/>
-      <text x="112" y="13" fill="#7f9fbc" font-size="8" font-family="monospace" text-anchor="middle">${s.tubes}-TUBE POD (${s.cal}mm)</text>
-      <!-- Standalone Rocket Shown Below/Right -->
-      <rect x="215" y="32" width="76" height="10" rx="1" fill="#dce5ef" stroke="#475569"/>
-      <polygon points="215,32 197,37 215,42" fill="${s.nose}"/>
+      <rect x="88" y="13" width="12" height="7" fill="#64748b"/><rect x="136" y="13" width="12" height="7" fill="#64748b"/>
+      <path d="M56,20 L176,20 L185,25 L185,49 L176,54 L56,54 L36,42 L36,32 Z" fill="${s.body}" stroke="#94a3b8" stroke-width="1.2"/>
+      <path d="M56,20 L176,20 L185,25 L185,49 L176,54 L56,54 L36,42 L36,32 Z" fill="url(#${gid})"/>
+      <rect x="64" y="20" width="8" height="34" fill="${s.band}" opacity="0.9"/>
+      <line x1="104" y1="20" x2="104" y2="54" stroke="#0f172a" stroke-opacity="0.45"/><line x1="146" y1="20" x2="146" y2="54" stroke="#0f172a" stroke-opacity="0.45"/>
+      <circle cx="48" cy="37" r="10.5" fill="#09101a" stroke="#64748b" stroke-width="1.1"/>
+      <circle cx="48" cy="37" r="2.1" fill="${s.nose}"/>${rPts.join("")}
+      <text x="112" y="11" fill="#7f9fbc" font-size="7.5" font-family="monospace" text-anchor="middle">${s.tubes}-TUBE POD (${s.cal}mm)</text>
+      <rect x="215" y="32" width="76" height="10" rx="1" fill="${s.body}" stroke="#475569"/>
+      <rect x="215" y="32" width="76" height="10" fill="url(#${gid})"/>
+      <polygon points="215,32 195,37 215,42" fill="${s.nose}"/>
       <rect x="223" y="32" width="7" height="10" fill="${s.band}"/>
-      <polygon points="282,32 294,25 294,32" fill="${s.fin}"/><polygon points="282,42 294,49 294,42" fill="${s.fin}"/>
-      <text x="252" y="64" fill="#2cff96" font-size="8" font-family="monospace" text-anchor="middle">INDIVIDUAL ${s.cal}mm ROCKET</text>
+      <rect x="242" y="32" width="4" height="10" fill="${s.motor}"/>
+      <polygon points="280,32 294,24 294,32" fill="${s.fin}"/><polygon points="280,42 294,50 294,42" fill="${s.fin}"/>
+      <text x="252" y="65" fill="#2cff96" font-size="7.8" font-family="monospace" text-anchor="middle">INDIVIDUAL ${s.cal}mm ROCKET</text>
     </svg>`;
   }
   if (k === "cannon") {
@@ -2352,52 +2845,59 @@ function buildOrdnanceCardSVG(item) {
     let barrelsSvg = "";
     for (let i=0; i<bc; i++) {
       const y = 37 + (i - (bc-1)/2) * (bc > 1 ? 3.8 : 0);
-      barrelsSvg += `<rect x="44" y="${y-1.4}" width="118" height="2.8" fill="${s.nose}" stroke="#0f172a" stroke-width="0.4"/>`;
+      barrelsSvg += `<rect x="40" y="${y-1.4}" width="122" height="2.8" fill="${s.nose}" stroke="#0f172a" stroke-width="0.4"/>`;
     }
+    const isRev = s.style.startsWith("revolver");
+    const isShroud = s.style === "gatling_6_shroud";
     return `<svg viewBox="0 0 320 74" xmlns="http://www.w3.org/2000/svg">
-      <rect x="158" y="23" width="94" height="28" rx="3" fill="${s.body}" stroke="#64748b" stroke-width="1.2"/>
-      <circle cx="268" cy="37" r="16" fill="#1e293b" stroke="${s.band}" stroke-width="1.4"/>
-      <circle cx="268" cy="37" r="7" fill="${s.band}" opacity="0.5"/>
+      <defs><linearGradient id="${gid}" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#fff" stop-opacity="0.22"/><stop offset="100%" stop-color="#000" stop-opacity="0.42"/></linearGradient></defs>
+      <rect x="158" y="22" width="96" height="30" rx="3" fill="${s.body}" stroke="#64748b" stroke-width="1.2"/>
+      <rect x="158" y="22" width="96" height="30" rx="3" fill="url(#${gid})"/>
+      <rect x="172" y="26" width="24" height="8" fill="${s.motor}" stroke="#475569" stroke-width="0.6"/>
+      ${isRev ? `<rect x="168" y="20" width="32" height="34" rx="4" fill="${s.motor}" stroke="${s.band}" stroke-width="1.1"/>` : ""}
+      <circle cx="268" cy="37" r="17" fill="#1e293b" stroke="${s.band}" stroke-width="1.5"/>
+      <circle cx="268" cy="37" r="10" fill="none" stroke="${s.motor}" stroke-dasharray="3 2"/>
+      <circle cx="268" cy="37" r="5" fill="${s.band}" opacity="0.85"/>
       ${barrelsSvg}
-      <rect x="64" y="29" width="10" height="16" fill="#1e293b" stroke="#94a3b8"/>
-      <text x="160" y="67" fill="#b56cff" font-size="8" font-family="monospace" text-anchor="middle">${bc}-BARREL ${item.data.cal}mm • ${item.data.rpm} RPM</text>
+      ${isShroud ? `<rect x="64" y="27" width="84" height="20" rx="2" fill="none" stroke="${s.band}" stroke-width="1.2" stroke-dasharray="5 3"/>` : ""}
+      <rect x="52" y="29" width="12" height="16" fill="#1e293b" stroke="${s.band}"/>
+      <rect x="98" y="30" width="8" height="14" fill="${s.body}" stroke="#94a3b8" stroke-width="0.5"/>
+      <text x="160" y="67" fill="#b56cff" font-size="7.8" font-family="monospace" text-anchor="middle">${bc}-BARREL ${item.data.cal}mm • ${item.data.rpm} RPM</text>
     </svg>`;
   }
-  // Missile or Nuclear Warhead Profile
   const isNuke = k === "nuke";
   const isStealth = ["stealth_cruise","box_stealth","twin_stealth"].includes(s.style);
   const isRamjet = ["ramjet","ramjet_nuke"].includes(s.style);
   const isLattice = ["lattice","lattice_boat"].includes(s.style);
-  const isIR = ["ir_slim","ir_strake","ir_wingless","strake_ir","canard_ir"].includes(s.style);
+  const isIR = ["ir_slim","ir_strake","ir_wingless","strake_ir","canard_archer2","spoiler_archer"].includes(s.style);
   const bodyH = isNuke ? 18 : 11;
   const y0 = 37 - bodyH/2;
   return `<svg viewBox="0 0 320 74" xmlns="http://www.w3.org/2000/svg">
+    <defs><linearGradient id="${gid}" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#fff" stop-opacity="0.25"/><stop offset="48%" stop-color="#000" stop-opacity="0"/><stop offset="100%" stop-color="#000" stop-opacity="0.40"/></linearGradient></defs>
     <line x1="12" y1="37" x2="308" y2="37" stroke="#2de2ff" stroke-opacity="0.16" stroke-dasharray="3 3"/>
-    <!-- Main Body -->
     ${isStealth
-      ? `<polygon points="62,${y0+3} 252,${y0} 266,${y0+4} 266,${y0+bodyH-4} 252,${y0+bodyH} 62,${y0+bodyH-3} 32,37" fill="${s.body}" stroke="#64748b" stroke-width="1.2"/>`
-      : `<rect x="62" y="${y0}" width="194" height="${bodyH}" fill="${s.body}" stroke="#475569" stroke-width="1"/>`
+      ? `<polygon points="62,${y0+3} 252,${y0} 266,${y0+4} 266,${y0+bodyH-4} 252,${y0+bodyH} 62,${y0+bodyH-3} 32,37" fill="${s.body}" stroke="#64748b" stroke-width="1.2"/>
+         <polygon points="62,${y0+3} 252,${y0} 266,${y0+4} 266,${y0+bodyH-4} 252,${y0+bodyH} 62,${y0+bodyH-3} 32,37" fill="url(#${gid})"/>`
+      : `<rect x="62" y="${y0}" width="194" height="${bodyH}" fill="${s.body}" stroke="#475569" stroke-width="1"/><rect x="62" y="${y0}" width="194" height="${bodyH}" fill="url(#${gid})"/>`
     }
-    <!-- Nose / Seeker -->
     ${isStealth ? "" : (isIR
-      ? `<path d="M62,${y0} Q38,37 62,${y0+bodyH} Z" fill="${s.nose}"/>`
-      : `<polygon points="62,${y0} 26,37 62,${y0+bodyH}" fill="${s.nose}"/>`
+      ? `<path d="M62,${y0} Q35,37 62,${y0+bodyH} Z" fill="${s.nose}"/><circle cx="51" cy="37" r="2.6" fill="#fff" opacity="0.45"/>`
+      : `<polygon points="62,${y0} 24,37 62,${y0+bodyH}" fill="${s.nose}"/>`
     )}
-    <!-- Warhead / Nuclear Bands -->
     <rect x="86" y="${y0}" width="${isNuke ? 14 : 8}" height="${bodyH}" fill="${s.band}"/>
-    ${isNuke ? `<rect x="106" y="${y0}" width="7" height="${bodyH}" fill="${s.motor}"/>` : `<rect x="184" y="${y0}" width="9" height="${bodyH}" fill="${s.motor}"/>`}
-    <!-- Ramjet Cheek Intakes or Ventral Turbofan -->
+    ${isNuke ? `<rect x="105" y="${y0}" width="7" height="${bodyH}" fill="${s.motor}"/>` : `<rect x="184" y="${y0}" width="9" height="${bodyH}" fill="${s.motor}"/>`}
+    <line x1="138" y1="${y0}" x2="138" y2="${y0+bodyH}" stroke="#0f172a" stroke-opacity="0.45"/>
+    <line x1="208" y1="${y0}" x2="208" y2="${y0+bodyH}" stroke="#0f172a" stroke-opacity="0.45"/>
     ${isRamjet ? `<rect x="115" y="${y0-5}" width="110" height="5" fill="${s.fin}" stroke="#94a3b8" stroke-width="0.6"/><rect x="115" y="${y0+bodyH}" width="110" height="5" fill="${s.fin}" stroke="#94a3b8" stroke-width="0.6"/>` : ""}
     ${["ventral_cruise","heavy_cruise"].includes(s.style) ? `<rect x="186" y="${y0+bodyH}" width="46" height="8" rx="2" fill="${s.fin}" stroke="#94a3b8" stroke-width="0.6"/>` : ""}
-    <!-- Mid Wings / Canards / Tail Fins -->
     ${isNuke && s.style !== "b61_glide" ? `<polygon points="135,${y0} 172,${y0-17} 190,${y0-17} 166,${y0}" fill="${s.body}" stroke="#64748b"/><polygon points="135,${y0+bodyH} 172,${y0+bodyH+17} 190,${y0+bodyH+17} 166,${y0+bodyH}" fill="${s.body}" stroke="#64748b"/>` : ""}
-    ${s.style === "canard_ir" ? `<polygon points="68,${y0} 82,${y0-8} 88,${y0}" fill="${s.fin}"/><polygon points="68,${y0+bodyH} 82,${y0+bodyH+8} 88,${y0+bodyH}" fill="${s.fin}"/>` : ""}
+    ${["canard_archer2","spoiler_archer"].includes(s.style) ? `<polygon points="68,${y0} 82,${y0-8} 88,${y0}" fill="${s.fin}"/><polygon points="68,${y0+bodyH} 82,${y0+bodyH+8} 88,${y0+bodyH}" fill="${s.fin}"/>` : ""}
     ${isLattice
-      ? `<rect x="234" y="${y0-11}" width="18" height="11" fill="none" stroke="${s.fin}" stroke-width="1.5"/><line x1="234" y1="${y0-5.5}" x2="252" y2="${y0-5.5}" stroke="${s.fin}"/><line x1="243" y1="${y0-11}" x2="243" y2="${y0}" stroke="${s.fin}"/><rect x="234" y="${y0+bodyH}" width="18" height="11" fill="none" stroke="${s.fin}" stroke-width="1.5"/>`
+      ? `<rect x="234" y="${y0-11}" width="18" height="11" fill="none" stroke="${s.fin}" stroke-width="1.5"/><line x1="234" y1="${y0-5.5}" x2="252" y2="${y0-5.5}" stroke="${s.fin}"/><line x1="243" y1="${y0-11}" x2="243" y2="${y0}" stroke="${s.fin}"/><rect x="234" y="${y0+bodyH}" width="18" height="11" fill="none" stroke="${s.fin}" stroke-width="1.5"/><line x1="234" y1="${y0+bodyH+5.5}" x2="252" y2="${y0+bodyH+5.5}" stroke="${s.fin}"/><line x1="243" y1="${y0+bodyH}" x2="243" y2="${y0+bodyH+11}" stroke="${s.fin}"/>`
       : `<polygon points="224,${y0} 248,${y0-13} 256,${y0-13} 256,${y0}" fill="${s.fin}"/><polygon points="224,${y0+bodyH} 248,${y0+bodyH+13} 256,${y0+bodyH+13} 256,${y0+bodyH}" fill="${s.fin}"/>`
     }
     ${isNuke ? `<text x="155" y="40" fill="#ffae2b" font-size="10" font-weight="bold" text-anchor="middle">☢</text>` : ""}
-    <text x="160" y="69" fill="${isNuke ? '#ff8e99' : '#7f9fbc'}" font-size="8" font-family="monospace" text-anchor="middle">${item.data.cls} • ${item.data.spd} m/s</text>
+    <text x="160" y="69" fill="${isNuke ? '#ff8e99' : '#7f9fbc'}" font-size="7.8" font-family="monospace" text-anchor="middle">${item.data.cls} • ${item.data.spd} m/s</text>
   </svg>`;
 }
 
@@ -2421,21 +2921,80 @@ function oLinkProg(vs, fs) {
   ogl.linkProgram(p); return p;
 }
 
+function createOrdnanceTexture(item) {
+  const sk = item ? getOrdSkin(item.id) : { pattern:"stock", body:"#e4eaf2", nose:"#64748b", band:"#f59e0b", fin:"#334155" };
+  const key = item ? getOrdSkinKey(item.id) : "default";
+  if (ordTextures[key]) return ordTextures[key];
+  const tc = document.createElement("canvas"); tc.width = 1024; tc.height = 1024;
+  const tx = tc.getContext("2d");
+  tx.fillStyle = "#e6ecf4"; tx.fillRect(0, 0, 1024, 1024);
+
+  if (sk.pattern === "stripes") {
+    for (let y=0; y<1024; y+=128) {
+      tx.fillStyle = (y/128)%2===0 ? "#ffffff" : "#b8c4d4";
+      tx.fillRect(0, y, 1024, 64);
+    }
+    tx.fillStyle = sk.band; tx.fillRect(0, 440, 1024, 46);
+  } else if (sk.pattern === "chevron") {
+    tx.fillStyle = "#d8e0ea"; tx.fillRect(0, 0, 1024, 1024);
+    tx.strokeStyle = sk.band; tx.lineWidth = 22;
+    for (let y=120; y<980; y+=160) {
+      tx.beginPath(); tx.moveTo(0, y); tx.lineTo(512, y+90); tx.lineTo(1024, y); tx.stroke();
+    }
+  } else if (sk.pattern === "tri_tone") {
+    tx.fillStyle = "#e8edf5"; tx.fillRect(0, 0, 1024, 340);
+    tx.fillStyle = "#bcc8d8"; tx.fillRect(0, 340, 1024, 340);
+    tx.fillStyle = "#94a3b8"; tx.fillRect(0, 680, 1024, 344);
+  } else if (sk.pattern === "gradient") {
+    const g = tx.createLinearGradient(0, 0, 0, 1024);
+    g.addColorStop(0, "#ffffff"); g.addColorStop(0.55, "#c8d4e3"); g.addColorStop(1, "#7b8898");
+    tx.fillStyle = g; tx.fillRect(0, 0, 1024, 1024);
+  } else if (sk.pattern === "carbon_gold") {
+    tx.fillStyle = "#c8ced8"; tx.fillRect(0, 0, 1024, 1024);
+    tx.fillStyle = "rgba(15, 23, 42, 0.25)";
+    for (let py=0; py<1024; py+=24) for (let px=0; px<1024; px+=24) { if (((px+py)/24)%2===0) tx.fillRect(px, py, 12, 12); }
+    tx.fillStyle = sk.band; tx.fillRect(0, 460, 1024, 32);
+  } else if (sk.pattern === "cyber_neon") {
+    tx.fillStyle = "#cbd5e1"; tx.fillRect(0, 0, 1024, 1024);
+    tx.strokeStyle = sk.band; tx.lineWidth = 6;
+    for (let y=96; y<1024; y+=192) {
+      tx.beginPath(); tx.moveTo(0, y); tx.lineTo(360, y); tx.lineTo(480, y+64); tx.lineTo(1024, y+64); tx.stroke();
+    }
+  } else if (sk.pattern === "chrome_steel") {
+    const g = tx.createLinearGradient(0, 0, 1024, 0);
+    g.addColorStop(0, "#b8c2ce"); g.addColorStop(0.5, "#ffffff"); g.addColorStop(1, "#a8b4c2");
+    tx.fillStyle = g; tx.fillRect(0, 0, 1024, 1024);
+  }
+
+  for (let i=0; i<1800; i++) {
+    tx.fillStyle = i%2===0 ? "rgba(255,255,255,0.045)" : "rgba(15,23,42,0.055)";
+    tx.fillRect((i*173)%1024, (i*293)%1024, 2, 18+(i%40));
+  }
+  tx.strokeStyle = "rgba(15,23,42,0.34)"; tx.lineWidth = 2;
+  for (let y=64; y<1024; y+=96) {
+    tx.beginPath(); tx.moveTo(0, y); tx.lineTo(1024, y); tx.stroke();
+    tx.fillStyle = "rgba(255,255,255,0.22)";
+    for (let x=16; x<1024; x+=32) { tx.fillRect(x, y-5, 2.5, 2.5); tx.fillRect(x, y+3, 2.5, 2.5); }
+  }
+  for (let x=128; x<1024; x+=256) { tx.beginPath(); tx.moveTo(x, 0); tx.lineTo(x, 1024); tx.stroke(); }
+  tx.strokeStyle = sk.band || "rgba(245,158,11,0.55)"; tx.lineWidth = 3;
+  tx.strokeRect(210, 320, 90, 54); tx.strokeRect(690, 610, 90, 54);
+  const t = ogl.createTexture(); ogl.bindTexture(ogl.TEXTURE_2D, t);
+  ogl.texImage2D(ogl.TEXTURE_2D, 0, ogl.RGBA, ogl.RGBA, ogl.UNSIGNED_BYTE, tc);
+  ogl.generateMipmap(ogl.TEXTURE_2D);
+  ogl.texParameteri(ogl.TEXTURE_2D, ogl.TEXTURE_MIN_FILTER, ogl.LINEAR_MIPMAP_LINEAR);
+  ogl.texParameteri(ogl.TEXTURE_2D, ogl.TEXTURE_MAG_FILTER, ogl.LINEAR);
+  ordTextures[key] = t;
+  return t;
+}
+
 function initOrdGL() {
   ordProgPBR = oLinkProg(VS_PBR, FS_PBR);
   ordProgGlow = oLinkProg(VS_GLOW, FS_GLOW);
   ordProgDeck = oLinkProg(VS_DECK, FS_DECK);
+  ordTexWhite = createOrdnanceTexture(null);
 
-  // Neutral white/slate texture so vertex material IDs & custom UVs shine cleanly
-  const tc = document.createElement("canvas"); tc.width=256; tc.height=256;
-  const tx = tc.getContext("2d"); tx.fillStyle="#cfd8e3"; tx.fillRect(0,0,256,256);
-  tx.strokeStyle="rgba(15,23,42,0.35)"; tx.lineWidth=2;
-  for(let i=32;i<256;i+=32){ tx.beginPath(); tx.moveTo(0,i); tx.lineTo(256,i); tx.stroke(); }
-  ordTexWhite = ogl.createTexture(); ogl.bindTexture(ogl.TEXTURE_2D, ordTexWhite);
-  ogl.texImage2D(ogl.TEXTURE_2D, 0, ogl.RGBA, ogl.RGBA, ogl.UNSIGNED_BYTE, tc);
-  ogl.generateMipmap(ogl.TEXTURE_2D);
-
-  const cp=[], cn=[], ci=[]; const segs=18;
+  const cp=[], cn=[], ci=[]; const segs=22;
   for(let i=0;i<=segs;i++){const a=(i/segs)*Math.PI*2, c=Math.cos(a), s=Math.sin(a); cp.push(c,s,-0.5,c,s,0.5); cn.push(c,s,0,c,s,0);}
   for(let i=0;i<segs;i++){const b=i*2; ci.push(b,b+1,b+2, b+2,b+1,b+3);}
   ordCylVAO=ogl.createVertexArray(); ogl.bindVertexArray(ordCylVAO);
@@ -2461,28 +3020,35 @@ function initOrdGL() {
 }
 
 function buildOrdnance3D(item) {
-  if (ordBuffers[item.id]) return ordBuffers[item.id];
-  const pos=[], norm=[], uv=[], mat=[], idx=[];
-  const s = item.spec;
+  const skinKey = getOrdSkinKey(item.id);
+  if (ordBuffers[item.id] && ordBuffers[item.id]._key === skinKey) return ordBuffers[item.id];
+  const pos=[], norm=[], uv=[], mat=[], col=[], idx=[];
+  const s = getOrdSkin(item.id);
+  const cBody = hexToRgb(s.body), cNose = hexToRgb(s.nose), cBand = hexToRgb(s.band), cMotor = hexToRgb(s.motor), cFin = hexToRgb(s.fin);
 
-  function tri(a,b,c,m) {
+  function tri(a,b,c,m,rgb=[1,1,1]) {
     const base=pos.length/3;
     const ux=b[0]-a[0],uy=b[1]-a[1],uz=b[2]-a[2], vx=c[0]-a[0],vy=c[1]-a[1],vz=c[2]-a[2];
     let nx=uy*vz-uz*vy, ny=uz*vx-ux*vz, nz=ux*vy-uy*vx; const l=Math.hypot(nx,ny,nz)||1; nx/=l;ny/=l;nz/=l;
-    [a,b,c].forEach(p=>{pos.push(p[0],p[1],p[2]); norm.push(nx,ny,nz); uv.push(0.5,0.5); mat.push(m);});
+    [a,b,c].forEach(p=>{pos.push(p[0],p[1],p[2]); norm.push(nx,ny,nz); uv.push((p[0]+2)*0.25, (p[2]+3)*0.16); mat.push(m); col.push(rgb[0],rgb[1],rgb[2]);});
     idx.push(base,base+1,base+2);
   }
-  function loft(st, segs, m, chine=0) {
+  function box(cx,cy,cz, hx,hy,hz, m, rgb=[1,1,1]) {
+    const v=[[cx-hx,cy-hy,cz-hz],[cx+hx,cy-hy,cz-hz],[cx+hx,cy+hy,cz-hz],[cx-hx,cy+hy,cz-hz],
+             [cx-hx,cy-hy,cz+hz],[cx+hx,cy-hy,cz+hz],[cx+hx,cy+hy,cz+hz],[cx-hx,cy+hy,cz+hz]];
+    [[0,2,1],[0,3,2],[4,5,6],[4,6,7],[0,1,5],[0,5,4],[2,3,7],[2,7,6],[1,2,6],[1,6,5],[3,0,4],[3,4,7]].forEach(t=>tri(v[t[0]],v[t[1]],v[t[2]],m,rgb));
+  }
+  function loft(st, segs, m, chine=0, rgb=[1,1,1]) {
     const base=pos.length/3;
     for(let r=0;r<st.length;r++){
       const [z,cx,cy,rx,ry]=st[r];
       for(let i=0;i<=segs;i++){
         const a=(i/segs)*Math.PI*2; let ca=Math.cos(a), sa=Math.sin(a);
-        if(chine>0){ca=Math.sign(ca)*Math.pow(Math.abs(ca),1-chine*0.42); sa=Math.sign(sa)*Math.pow(Math.abs(sa),1+chine*0.28);}
+        if(chine>0){ca=Math.sign(ca)*Math.pow(Math.abs(ca),1-chine*0.44); sa=Math.sign(sa)*Math.pow(Math.abs(sa),1+chine*0.30);}
         const px=cx+ca*rx, py=cy+sa*ry;
-        let nx=ca/Math.max(0.05,rx), ny=sa/Math.max(0.05,ry), nz=(r===0?-0.35:(r===st.length-1?0.25:0));
+        let nx=ca/Math.max(0.04,rx), ny=sa/Math.max(0.04,ry), nz=(r===0?-0.35:(r===st.length-1?0.25:0));
         const nl=Math.hypot(nx,ny,nz)||1;
-        pos.push(px,py,z); norm.push(nx/nl,ny/nl,nz/nl); uv.push(i/segs, r/(st.length-1)); mat.push(m);
+        pos.push(px,py,z); norm.push(nx/nl,ny/nl,nz/nl); uv.push(i/segs, r/(st.length-1)); mat.push(m); col.push(rgb[0],rgb[1],rgb[2]);
       }
     }
     const stride=segs+1;
@@ -2491,7 +3057,7 @@ function buildOrdnance3D(item) {
       idx.push(a,c,b, b,c,d);
     }
   }
-  function fin4(z0, z1, r0, r1, thick, m, rotOffset=0, cx=0, cy=0) {
+  function fin4(z0, z1, r0, r1, thick, m, rotOffset=0, cx=0, cy=0, rgb=[1,1,1]) {
     for(let k=0;k<4;k++){
       const ang=rotOffset + k*Math.PI*0.5;
       const dx=Math.cos(ang), dy=Math.sin(ang), px=-dy*thick, py=dx*thick;
@@ -2499,108 +3065,164 @@ function buildOrdnance3D(item) {
       const c=[cx+dx*r1-px, cy+dy*r1-py, z1], d=[cx+dx*r0-px, cy+dy*r0-py, z1];
       const e=[cx+dx*r0+px, cy+dy*r0+py, z0], f=[cx+dx*r1+px, cy+dy*r1+py, z0+0.15];
       const g=[cx+dx*r1+px, cy+dy*r1+py, z1], h=[cx+dx*r0+px, cy+dy*r0+py, z1];
-      tri(a,b,c,m); tri(a,c,d,m); tri(e,g,f,m); tri(e,h,g,m);
-      tri(a,e,f,m); tri(a,f,b,m); tri(b,f,g,m); tri(b,g,c,m);
+      tri(a,b,c,m,rgb); tri(a,c,d,m,rgb); tri(e,g,f,m,rgb); tri(e,h,g,m,rgb);
+      tri(a,e,f,m,rgb); tri(a,f,b,m,rgb); tri(b,f,g,m,rgb); tri(b,g,c,m,rgb);
+    }
+  }
+  function latticeFin4(z0, z1, r0, r1, m, rgb=[1,1,1]) {
+    for(let k=0;k<4;k++){
+      const ang=Math.PI*0.25 + k*Math.PI*0.5;
+      const dx=Math.cos(ang), dy=Math.sin(ang), px=-dy, py=dx;
+      const midR=(r0+r1)*0.5, span=(r1-r0)*0.5, zMid=(z0+z1)*0.5;
+      for (const sOff of [-0.14, 0, 0.14]) {
+        const bx = dx*midR + px*sOff, by = dy*midR + py*sOff;
+        box(bx, by, zMid, 0.014, span, 0.028, m, rgb);
+      }
+      for (const rFrac of [r0, midR, r1]) {
+        const bx = dx*rFrac, by = dy*rFrac;
+        box(bx, by, zMid, Math.abs(px)*0.16+0.015, Math.abs(py)*0.16+0.015, 0.028, m, rgb);
+      }
     }
   }
 
   let tailZ = 2.0, hasPlume = true;
   if (item.kind === "rocket") {
     const rPod = s.cal >= 120 ? 0.56 : 0.48;
-    const podMat = (item.id==="s8_kom"||item.id==="s13_heavy") ? 2.0 : 3.0;
-    const chine = s.style === "pod_7_stealth" ? 0.55 : 0.0;
-    // Left-of-center: Multi-Tube Rocket Pod
-    loft([[-1.95,-0.55,0, rPod*0.35,rPod*0.35], [-1.45,-0.55,0, rPod,rPod], [1.45,-0.55,0, rPod,rPod], [1.75,-0.55,0, rPod*0.85,rPod*0.85]], 20, podMat, chine);
-    loft([[-1.48,-0.55,0, rPod*0.82,rPod*0.82], [-1.42,-0.55,0, rPod*0.82,rPod*0.82]], 16, 4.0, chine);
-    loft([[-1.42,-0.55,0, rPod*1.03,rPod*1.03], [-1.22,-0.55,0, rPod*1.03,rPod*1.03]], 20, 6.0, chine);
-    // Individual Launch Tubes & Protruding Warheads
-    const tRing = s.tubes <= 7 ? s.tubes : 8;
+    const podMat = (item.id==="s8_kom"||item.id==="s13_heavy") ? 10.0 : (s.style==="pod_7_stealth" ? 5.0 : 3.0);
+    const chine = s.style === "pod_7_stealth" ? 0.60 : 0.0;
+    // Left-of-center: Multi-Tube Rocket Pod in Exact Pod Colors + Pylon Sway Braces
+    loft([[-1.98,-0.55,0, rPod*0.32,rPod*0.32], [-1.45,-0.55,0, rPod,rPod], [1.45,-0.55,0, rPod,rPod], [1.78,-0.55,0, rPod*0.84,rPod*0.84]], 28, podMat, chine, cBody);
+    loft([[-1.48,-0.55,0, rPod*0.84,rPod*0.84], [-1.40,-0.55,0, rPod*0.84,rPod*0.84]], 24, 4.0, chine);
+    loft([[-1.42,-0.55,0, rPod*1.03,rPod*1.03], [-1.22,-0.55,0, rPod*1.03,rPod*1.03]], 28, 6.0, chine, cBand);
+    loft([[0.68,-0.55,0, rPod*1.02,rPod*1.02], [0.78,-0.55,0, rPod*1.02,rPod*1.02]], 28, 2.0, chine, cMotor);
+    box(-0.55, rPod+0.08, -0.55, 0.06, 0.10, 0.14, 2.0, cFin);
+    box(-0.55, rPod+0.08,  0.55, 0.06, 0.10, 0.14, 2.0, cFin);
+    const tRing = s.tubes <= 7 ? s.tubes : 10;
+    loft([[-1.50,-0.55,0, 0.06,0.06], [-1.40,-0.55,0, 0.08,0.08]], 10, 4.0);
+    loft([[-1.68,-0.55,0, 0.012,0.012], [-1.46,-0.55,0, 0.055,0.055]], 10, 6.0, 0.0, cNose);
     for(let i=0;i<tRing;i++){
-      const a=(i/tRing)*Math.PI*2, tx=-0.55+Math.cos(a)*rPod*0.52, ty=Math.sin(a)*rPod*0.52;
-      loft([[-1.52,tx,ty,0.06,0.06],[-1.40,tx,ty,0.08,0.08]],8, 4.0);
-      loft([[-1.66,tx,ty,0.015,0.015],[-1.46,tx,ty,0.055,0.055]],8, 6.0);
+      const a=(i/tRing)*Math.PI*2, tx=-0.55+Math.cos(a)*rPod*0.54, ty=Math.sin(a)*rPod*0.54;
+      loft([[-1.52,tx,ty,0.055,0.055],[-1.40,tx,ty,0.075,0.075]],10, 4.0);
+      loft([[-1.68,tx,ty,0.012,0.012],[-1.46,tx,ty,0.052,0.052]],10, 6.0, 0.0, i%2===0 ? cNose : cBand);
     }
-    // Right-of-center: Standalone Individual Rocket Design
+    // Right-of-center: Bespoke Individual Rocket in Distinct Colored Liveries
     const rr = s.cal >= 120 ? 0.16 : 0.11;
-    loft([[-1.45,0.72,0, 0.015,0.015], [-0.95,0.72,0, rr,rr], [1.15,0.72,0, rr,rr], [1.28,0.72,0, rr*0.75,rr*0.75]], 14, 3.0);
-    loft([[-0.95,0.72,0, rr*1.04,rr*1.04], [-0.72,0.72,0, rr*1.04,rr*1.04]], 14, 6.0);
-    fin4(0.85, 1.24, rr*0.8, rr*2.3, 0.015, 2.0, Math.PI*0.25, 0.72, 0);
-    tailZ = 1.32;
+    loft([[-1.50,0.72,0, 0.014,0.014], [-0.95,0.72,0, rr,rr]], 20, 6.0, 0.0, cNose);
+    loft([[-0.95,0.72,0, rr,rr], [1.15,0.72,0, rr,rr], [1.30,0.72,0, rr*0.72,rr*0.72]], 20, 3.0, 0.0, cBody);
+    loft([[-0.96,0.72,0, rr*1.04,rr*1.04], [-0.72,0.72,0, rr*1.04,rr*1.04]], 20, 6.0, 0.0, cBand);
+    loft([[-0.42,0.72,0, rr*1.03,rr*1.03], [-0.30,0.72,0, rr*1.03,rr*1.03]], 20, 8.0, 0.0, cMotor);
+    loft([[1.24,0.72,0, rr*0.72,rr*0.72], [1.34,0.72,0, rr*0.86,rr*0.86]], 16, 2.0, 0.0, cFin);
+    fin4(0.84, 1.25, rr*0.8, rr*2.45, 0.016, 3.0, Math.PI*0.25, 0.72, 0, cFin);
+    tailZ = 1.36;
   } else if (item.kind === "cannon") {
     hasPlume = false;
-    // Cannon Receiver + Ammo Drum + Multi-Barrel / Single Barrel Assembly
-    loft([[0.0,0,0, 0.36,0.32], [1.4,0,0, 0.38,0.34], [1.5,0,0, 0.15,0.15]], 12, 2.0, 0.5);
-    loft([[0.65,0.52,0, 0.40,0.40], [1.35,0.52,0, 0.40,0.40]], 16, 7.0); // Ammo Drum
+    // 7 Distinct Colored Cannon Assemblies
+    const isRev5 = s.style === "revolver_5ch", isRev7 = s.style === "revolver_7ch";
+    const isShroud = s.style === "gatling_6_shroud";
+    const isPod = s.style === "stealth_pod";
+    loft([[0.0,0,0, 0.36,0.32], [1.42,0,0, 0.38,0.34], [1.55,0,0, 0.16,0.16]], 16, isPod ? 5.0 : 3.0, 0.55, cBody);
+    loft([[0.58,0.52,0, 0.42,0.42], [1.38,0.52,0, 0.42,0.42]], 22, 3.0, 0.0, cMotor); // Colored Ammo Drum
+    loft([[0.90,0.52,0, 0.43,0.43], [1.04,0.52,0, 0.43,0.43]], 22, 6.0, 0.0, cBand);  // Drum Calibration Band
+    box(0.28, 0.25, 0.85, 0.22, 0.14, 0.16, 8.0, cBand); // Feed Chute
+    box(0.0, -0.34, 0.55, 0.16, 0.08, 0.45, 3.0, cFin); // Recoil Dampener
+    if (isRev5 || isRev7) { // Visible Rotating Revolver Chamber Cylinder
+      const chambers = isRev5 ? 5 : 7;
+      loft([[-0.12,0,0, 0.44,0.44], [0.46,0,0, 0.44,0.44]], 18, 3.0, 0.0, cMotor);
+      for (let ch=0; ch<chambers; ch++) {
+        const ca = (ch/chambers)*Math.PI*2;
+        loft([[-0.14,Math.cos(ca)*0.24,Math.sin(ca)*0.24, 0.08,0.08], [0.48,Math.cos(ca)*0.24,Math.sin(ca)*0.24, 0.08,0.08]], 10, 8.0, 0.0, cBand);
+      }
+      if (isRev7) { // Twin Gas Recoil Tubes for G-30M
+        loft([[-1.35,-0.16,0.14, 0.04,0.04], [0.05,-0.16,0.14, 0.04,0.04]], 8, 7.0, 0.0, cNose);
+        loft([[-1.35, 0.16,0.14, 0.04,0.04], [0.05, 0.16,0.14, 0.04,0.04]], 8, 7.0, 0.0, cNose);
+      }
+    }
     const bc = s.barrels;
     for(let i=0;i<bc;i++){
       const a = bc===1 ? 0 : (i/bc)*Math.PI*2;
       const bx = bc===1 ? 0 : Math.cos(a)*0.14, by = bc===1 ? 0 : Math.sin(a)*0.14;
-      loft([[-2.1,bx,by, 0.045,0.045], [0.05,bx,by, 0.045,0.045]], 10, 7.0);
+      loft([[-2.18,bx,by, 0.044,0.044], [0.05,bx,by, 0.044,0.044]], 14, 7.0, 0.0, cNose);
+      loft([[-2.22,bx,by, 0.026,0.026], [-2.16,bx,by, 0.026,0.026]], 10, 4.0);
     }
-    if(bc > 1) loft([[-1.65,0,0, 0.21,0.21], [-1.52,0,0, 0.21,0.21]], 14, 2.0); // Muzzle clamp
-    tailZ = 1.5;
+    if (isShroud) { // Perforated Cooling Shroud on M61K Precision
+      loft([[-1.85,0,0, 0.25,0.25], [-0.45,0,0, 0.25,0.25]], 18, 3.0, 0.0, cBody);
+      loft([[-1.45,0,0, 0.26,0.26], [-1.25,0,0, 0.26,0.26]], 18, 6.0, 0.0, cBand);
+    } else if (bc > 1) {
+      loft([[-1.72,0,0, 0.22,0.22], [-1.56,0,0, 0.22,0.22]], 18, 6.0, 0.0, cBand);
+      loft([[-0.82,0,0, 0.22,0.22], [-0.70,0,0, 0.22,0.22]], 18, 3.0, 0.0, cMotor);
+    } else {
+      loft([[-2.26,0,0, 0.09,0.09], [-1.98,0,0, 0.075,0.075]], 14, 6.0, 0.0, cBand);
+    }
+    tailZ = 1.55;
   } else {
-    // Missiles & Nuclear Warheads
     const isNuke = item.kind === "nuke";
     const isStealth = ["stealth_cruise","box_stealth","twin_stealth"].includes(s.style);
     const isRamjet = ["ramjet","ramjet_nuke"].includes(s.style);
-    const isIR = ["ir_slim","ir_strake","ir_wingless","strake_ir","canard_ir"].includes(s.style);
+    const isIR = ["ir_slim","ir_strake","ir_wingless","strake_ir","canard_archer2","spoiler_archer"].includes(s.style);
     const rad = isNuke ? 0.36 : 0.20;
     const len = isNuke ? 2.55 : 2.35;
     const bodyMat = isStealth ? 5.0 : (s.style==="b61_glide" ? 7.0 : 3.0);
-    const noseMat = isIR ? 1.0 : (isStealth ? 5.0 : 2.0);
-    const chine = isStealth ? 0.85 : 0.0;
+    const noseMat = isIR ? 1.0 : (isStealth ? 5.0 : 3.0);
+    const chine = isStealth ? 0.88 : 0.0;
 
-    // Seeker / Nose
     if (isIR) {
-      loft([[-len,0,0, 0.03,0.03], [-len+0.12,0,0, rad*0.76,rad*0.76], [-len+0.28,0,0, rad,rad]], 16, 1.0);
+      loft([[-len,0,0, 0.02,0.02], [-len+0.12,0,0, rad*0.78,rad*0.78], [-len+0.28,0,0, rad,rad]], 24, 1.0, 0.0, cNose);
+      loft([[-len+0.06,0,0, rad*0.34,rad*0.34], [-len+0.14,0,0, rad*0.42,rad*0.42]], 16, 7.0);
     } else {
-      loft([[-len,0,0, 0.02,0.02], [-len+0.35,0,0, rad*0.62,rad*0.62], [-len+0.68,0,0, rad,rad]], 16, noseMat, chine);
+      loft([[-len,0,0, 0.015,0.015], [-len+0.35,0,0, rad*0.62,rad*0.62], [-len+0.68,0,0, rad,rad]], 24, noseMat, chine, cNose);
     }
-    // Hazard / Warhead Band
-    loft([[-len+0.68,0,0, rad*1.04,rad*1.04], [-len+0.96,0,0, rad*1.04,rad*1.04]], 16, 6.0, chine);
-    if (isNuke) loft([[-len+1.02,0,0, rad*1.04,rad*1.04], [-len+1.16,0,0, rad*1.04,rad*1.04]], 16, 1.0, chine);
-    // Main Airframe + Exhaust Nozzle
-    loft([[-len+0.96,0,0, rad,rad], [len-0.25,0,0, rad,rad], [len,0,0, rad*(s.style==="lattice_boat"?0.72:0.90), rad*(s.style==="lattice_boat"?0.72:0.90)]], 18, bodyMat, chine);
-    loft([[len-0.08,0,0, rad*0.72,rad*0.72], [len+0.02,0,0, rad*0.68,rad*0.68]], 14, 4.0);
+    loft([[-len+0.68,0,0, rad*1.04,rad*1.04], [-len+0.96,0,0, rad*1.04,rad*1.04]], 24, 6.0, chine, cBand);
+    if (isNuke) {
+      loft([[-len+1.02,0,0, rad*1.04,rad*1.04], [-len+1.16,0,0, rad*1.04,rad*1.04]], 24, 8.0, chine, cMotor);
+      box(0, rad*1.02, 0.0, 0.05, 0.05, 0.10, 9.0, cBand);
+    } else {
+      loft([[len-1.10,0,0, rad*1.03,rad*1.03], [len-0.88,0,0, rad*1.03,rad*1.03]], 24, 6.0, chine, cMotor);
+    }
+    loft([[-len+0.96,0,0, rad,rad], [len-0.25,0,0, rad,rad], [len,0,0, rad*(s.style==="lattice_boat"?0.70:0.90), rad*(s.style==="lattice_boat"?0.70:0.90)]], 26, bodyMat, chine, cBody);
+    loft([[-len+0.96,0,rad*0.92, rad*0.18,rad*0.14], [len-0.25,0,rad*0.92, rad*0.18,rad*0.14]], 8, 3.0, 0.4, cFin);
+    loft([[len-0.08,0,0, rad*0.72,rad*0.72], [len+0.04,0,0, rad*0.68,rad*0.68]], 18, 4.0);
 
-    // Ramjet Cheek Intakes
     if (isRamjet) {
       for(const sd of [-1,1]) {
-        loft([[-0.65, sd*rad*1.12, 0, rad*0.36, rad*0.36], [len-0.35, sd*rad*1.12, 0, rad*0.36, rad*0.36]], 10, 2.0, 0.45);
-        loft([[-0.66, sd*rad*1.12, 0, rad*0.26, rad*0.26], [-0.45, sd*rad*1.12, 0, rad*0.26, rad*0.26]], 8, 4.0);
+        loft([[-0.65, sd*rad*1.12, 0, rad*0.38, rad*0.38], [len-0.35, sd*rad*1.12, 0, rad*0.38, rad*0.38]], 14, 3.0, 0.48, cFin);
+        loft([[-0.66, sd*rad*1.12, 0, rad*0.26, rad*0.26], [-0.40, sd*rad*1.12, 0, rad*0.26, rad*0.26]], 10, 4.0);
+        loft([[-0.72, sd*rad*1.12, 0, 0.015, 0.015], [-0.58, sd*rad*1.12, 0, rad*0.18, rad*0.18]], 10, 7.0);
       }
     }
-    // Ventral Turbofan Engine Pod
     if (["ventral_cruise","heavy_cruise"].includes(s.style)) {
-      loft([[0.45, 0, -rad*1.05, rad*0.46, rad*0.42], [1.75, 0, -rad*1.05, rad*0.42, rad*0.38]], 12, 2.0);
-      loft([[0.44, 0, -rad*1.05, rad*0.32, rad*0.28], [0.65, 0, -rad*1.05, rad*0.30, rad*0.26]], 10, 4.0);
+      loft([[0.45, 0, -rad*1.05, rad*0.46, rad*0.42], [1.75, 0, -rad*1.05, rad*0.42, rad*0.38]], 16, 3.0, 0.0, cFin);
+      loft([[0.44, 0, -rad*1.05, rad*0.32, rad*0.28], [0.65, 0, -rad*1.05, rad*0.30, rad*0.26]], 12, 4.0);
+      loft([[0.48, 0, -rad*1.05, 0.015, 0.015], [0.56, 0, -rad*1.05, rad*0.12, rad*0.12]], 10, 7.0);
     }
-    // Cruise Wings or Mid-Body Wings/Canards
     if (isNuke && s.style !== "b61_glide") {
       for(const sd of [-1,1]) {
         const zW = -0.35;
-        tri([sd*rad*0.8, 0.04, zW], [sd*rad*0.8, 0.04, zW+0.55], [sd*1.85, 0.02, zW+0.95], bodyMat);
-        tri([sd*rad*0.8, 0.04, zW+0.55], [sd*1.85, 0.02, zW+1.30], [sd*1.85, 0.02, zW+0.95], bodyMat);
-        tri([sd*rad*0.8,-0.02, zW], [sd*1.85,-0.02, zW+0.95], [sd*rad*0.8,-0.02, zW+0.55], bodyMat);
+        tri([sd*rad*0.8, 0.04, zW], [sd*rad*0.8, 0.04, zW+0.55], [sd*1.88, 0.02, zW+0.95], bodyMat, cBody);
+        tri([sd*rad*0.8, 0.04, zW+0.55], [sd*1.88, 0.02, zW+1.32], [sd*1.88, 0.02, zW+0.95], bodyMat, cBody);
+        tri([sd*rad*0.8,-0.02, zW], [sd*1.88,-0.02, zW+0.95], [sd*rad*0.8,-0.02, zW+0.55], bodyMat, cBody);
       }
     } else if (["bvr_radar","strake_radar","strake_ir","dual_pulse"].includes(s.style)) {
-      fin4(-0.25, 0.35, rad*0.95, rad*2.4, 0.02, bodyMat, Math.PI*0.25);
-    } else if (s.style === "canard_ir") {
-      fin4(-len+0.62, -len+0.95, rad*0.95, rad*2.1, 0.018, 2.0, Math.PI*0.25);
+      fin4(-0.25, 0.35, rad*0.95, rad*2.45, 0.022, bodyMat, Math.PI*0.25, 0, 0, cFin);
+    } else if (s.style === "canard_archer2") {
+      fin4(-len+0.42, -len+0.58, rad*0.90, rad*1.55, 0.014, 6.0, 0, 0, 0, cBand); // Nose destabilizer vanes
+      fin4(-len+0.68, -len+1.02, rad*0.95, rad*2.25, 0.018, 3.0, Math.PI*0.25, 0, 0, cFin);
+    } else if (s.style === "spoiler_archer") {
+      fin4(-len+0.62, -len+0.94, rad*0.95, rad*2.05, 0.018, 3.0, Math.PI*0.25, 0, 0, cFin);
+      box(0, rad*1.25, len-0.24, 0.08, 0.05, 0.14, 6.0, cBand); // Rear Spoiler Paddles
+      box(0,-rad*1.25, len-0.24, 0.08, 0.05, 0.14, 6.0, cBand);
     }
-    // Tail Fins (Lattice Grid Fins vs Cruciform)
     const isLat = ["lattice","lattice_boat"].includes(s.style);
-    fin4(len-0.65, len-0.12, rad*0.85, rad*(isLat?2.3:2.55), isLat?0.055:0.022, 2.0, Math.PI*0.25);
+    if (isLat) latticeFin4(len-0.55, len-0.15, rad*0.85, rad*2.35, 7.0, cFin);
+    else fin4(len-0.65, len-0.12, rad*0.85, rad*2.58, 0.022, 3.0, Math.PI*0.25, 0, 0, cFin);
     tailZ = len + 0.04;
   }
 
   const vao = ogl.createVertexArray(); ogl.bindVertexArray(vao);
   const mk = (arr, loc, sz) => { const b=ogl.createBuffer(); ogl.bindBuffer(ogl.ARRAY_BUFFER,b); ogl.bufferData(ogl.ARRAY_BUFFER,new Float32Array(arr),ogl.STATIC_DRAW); ogl.enableVertexAttribArray(loc); ogl.vertexAttribPointer(loc,sz,ogl.FLOAT,false,0,0); };
-  mk(pos,0,3); mk(norm,1,3); mk(uv,2,2); mk(mat,3,1);
-  const ib=ogl.createBuffer(); ogl.bindBuffer(ogl.ELEMENT_ARRAY_BUFFER,ib); ogl.bufferData(ogl.ELEMENT_ARRAY_BUFFER,new Uint16Array(idx),ogl.STATIC_DRAW);
+  mk(pos,0,3); mk(norm,1,3); mk(uv,2,2); mk(mat,3,1); mk(col,4,3);
+  const ib=ogl.createBuffer(); ogl.bindBuffer(ogl.ELEMENT_ARRAY_BUFFER,ib); ogl.bufferData(ogl.ELEMENT_ARRAY_BUFFER,new Uint32Array(idx),ogl.STATIC_DRAW);
   ogl.bindVertexArray(null);
-  const out = { vao, count: idx.length, tailZ, hasPlume, isNuke: item.kind==="nuke", isRocket: item.kind==="rocket" };
+  const out = { vao, count: idx.length, tailZ, hasPlume, isNuke: item.kind==="nuke", isRocket: item.kind==="rocket", _key: skinKey };
   ordBuffers[item.id] = out;
   return out;
 }
@@ -2645,23 +3267,33 @@ function renderOrdWebGL(nowMs) {
     ogl.uniform1f(ogl.getUniformLocation(ordProgPBR,"uTime"),nowMs*0.001);
     ogl.uniform1f(ogl.getUniformLocation(ordProgPBR,"uAbOn"),(showOrdPlume && mesh.hasPlume)?1:0);
     ogl.uniform1f(ogl.getUniformLocation(ordProgPBR,"uTailZ"),mesh.tailZ);
-    ogl.activeTexture(ogl.TEXTURE0); ogl.bindTexture(ogl.TEXTURE_2D, ordTexWhite);
+    ogl.uniform1f(ogl.getUniformLocation(ordProgPBR,"uFinish"), getOrdSkin(item.id).finish || 0.0);
+    ogl.activeTexture(ogl.TEXTURE0); ogl.bindTexture(ogl.TEXTURE_2D, createOrdnanceTexture(item));
     ogl.uniform1i(ogl.getUniformLocation(ordProgPBR,"uTex"),0);
-    ogl.bindVertexArray(mesh.vao); ogl.drawElements(ogl.TRIANGLES, mesh.count, ogl.UNSIGNED_SHORT, 0);
+    ogl.bindVertexArray(mesh.vao); ogl.drawElements(ogl.TRIANGLES, mesh.count, ogl.UNSIGNED_INT, 0);
 
-    // Rocket / Ramjet Exhaust Plume
+    // Rocket / Ramjet Exhaust Plume + Shock Diamonds
     if (showOrdPlume && mesh.hasPlume) {
       ogl.useProgram(ordProgGlow); ogl.enable(ogl.BLEND); ogl.blendFunc(ogl.SRC_ALPHA, ogl.ONE); ogl.depthMask(false);
       const pulse = 1 + Math.sin(nowMs*0.03)*0.12;
       const px = mesh.isRocket ? 0.72 : 0.0;
       const pr = mesh.isNuke ? 0.24 : (mesh.isRocket ? 0.08 : 0.14);
       ogl.bindVertexArray(ordConeVAO);
-      const m1 = mat4TRS(px, 0, mesh.tailZ, pr*1.2, pr*1.2, 1.8*pulse);
+      const m1 = mat4TRS(px, 0, mesh.tailZ, pr*1.2, pr*1.2, 2.0*pulse);
       ogl.uniformMatrix4fv(ogl.getUniformLocation(ordProgGlow,"uMVP"),false,mat4Mul(vp,m1));
       ogl.uniformMatrix4fv(ogl.getUniformLocation(ordProgGlow,"uModel"),false,m1);
       ogl.uniform3fv(ogl.getUniformLocation(ordProgGlow,"uCamPos"),camPos);
       ogl.uniform4f(ogl.getUniformLocation(ordProgGlow,"uColor"), mesh.isNuke?1.0:0.35, mesh.isNuke?0.55:0.82, mesh.isNuke?0.18:1.0, 0.72);
       ogl.drawElements(ogl.TRIANGLES, ordConeCnt, ogl.UNSIGNED_SHORT, 0);
+      ogl.bindVertexArray(ordCylVAO);
+      for (let d=0; d<3; d++) {
+        const f = (d+0.4)/3.0;
+        const md = mat4TRS(px, 0, mesh.tailZ + f*1.65*pulse, pr*0.65*(1-f*0.5), pr*0.65*(1-f*0.5), 0.14);
+        ogl.uniformMatrix4fv(ogl.getUniformLocation(ordProgGlow,"uMVP"),false,mat4Mul(vp,md));
+        ogl.uniformMatrix4fv(ogl.getUniformLocation(ordProgGlow,"uModel"),false,md);
+        ogl.uniform4f(ogl.getUniformLocation(ordProgGlow,"uColor"), 1.0, 0.90, 0.65, 0.85-f*0.4);
+        ogl.drawElements(ogl.TRIANGLES, ordCylCnt, ogl.UNSIGNED_SHORT, 0);
+      }
       ogl.depthMask(true);
     }
   }
@@ -2711,11 +3343,95 @@ function inspectOrdnance3D(id) {
   renderOrdnanceCatalog();
 }
 
+function renderOrdSkinUI() {
+  const sk = getOrdSkin(selectedOrdId);
+  const badge = document.getElementById("ord-skin-badge");
+  if (badge) badge.textContent = sk.name.toUpperCase();
+  const row = document.getElementById("ord-skin-presets");
+  if (row) {
+    const base = ORD_DESIGN_SPECS[selectedOrdId] || sk;
+    row.innerHTML = WEAPON_SKIN_PRESETS.map(p => {
+      const c1 = p.body || base.body, c2 = p.nose || base.nose, c3 = p.band || base.band, c4 = p.fin || base.fin;
+      return `<button class="skin-chip ${sk.presetId===p.id?'active':''}" onclick="applyOrdSkinPreset('${p.id}')">
+        <span class="swatch-dots"><i style="background:${c1}"></i><i style="background:${c2}"></i><i style="background:${c3}"></i><i style="background:${c4}"></i></span>
+        <span>${p.name}</span>
+      </button>`;
+    }).join("");
+  }
+  const elP = document.getElementById("os-pattern"); if (elP) elP.value = sk.pattern;
+  const elF = document.getElementById("os-finish"); if (elF) elF.value = String(sk.finish);
+  const elB = document.getElementById("os-body"); if (elB) elB.value = sk.body;
+  const elN = document.getElementById("os-nose"); if (elN) elN.value = sk.nose;
+  const elBa = document.getElementById("os-band"); if (elBa) elBa.value = sk.band;
+  const elFi = document.getElementById("os-fin"); if (elFi) elFi.value = sk.fin;
+}
+
+function applyOrdSkinPreset(presetId) {
+  const p = WEAPON_SKIN_PRESETS.find(x => x.id === presetId) || WEAPON_SKIN_PRESETS[0];
+  if (p.id === "stock") {
+    delete ordSkins[selectedOrdId];
+    getOrdSkin(selectedOrdId);
+  } else {
+    const cur = getOrdSkin(selectedOrdId);
+    ordSkins[selectedOrdId] = {
+      ...cur, presetId: p.id, name: p.name, pattern: p.pattern,
+      body: p.body, nose: p.nose, band: p.band, motor: p.motor, fin: p.fin, finish: p.finish
+    };
+  }
+  renderOrdSkinUI();
+  renderOrdnanceCatalog();
+}
+
+function onOrdSkinControl() {
+  const sk = getOrdSkin(selectedOrdId);
+  sk.presetId = "custom";
+  sk.name = "Custom Multi-Color";
+  sk.pattern = document.getElementById("os-pattern").value;
+  sk.finish = parseInt(document.getElementById("os-finish").value) || 0;
+  sk.body = document.getElementById("os-body").value;
+  sk.nose = document.getElementById("os-nose").value;
+  sk.band = document.getElementById("os-band").value;
+  sk.fin = document.getElementById("os-fin").value;
+  sk.motor = sk.band;
+  renderOrdSkinUI();
+  renderOrdnanceCatalog();
+}
+
+function resetOrdSkin() {
+  applyOrdSkinPreset("stock");
+}
+
+function applyOrdSkinToAll() {
+  const src = getOrdSkin(selectedOrdId);
+  for (const item of getAllOrdnanceList()) {
+    const cur = getOrdSkin(item.id);
+    ordSkins[item.id] = {
+      ...cur, presetId: src.presetId, name: src.name, pattern: src.pattern,
+      body: src.body, nose: src.nose, band: src.band, motor: src.motor, fin: src.fin, finish: src.finish
+    };
+  }
+  renderOrdSkinUI();
+  renderOrdnanceCatalog();
+}
+
+function syncCurrentWeaponToJet() {
+  const jsk = getJetSkin(selectedJet);
+  const cur = getOrdSkin(selectedOrdId);
+  ordSkins[selectedOrdId] = {
+    ...cur, presetId: "jet_sync", name: `Matched (${jsk.name})`,
+    pattern: jsk.pattern === "cyber_tron" ? "cyber_neon" : (jsk.pattern === "carbon_gold" ? "carbon_gold" : "tri_tone"),
+    body: jsk.c1, nose: jsk.radome, band: jsk.accent, motor: jsk.c3, fin: jsk.c2, finish: jsk.finish
+  };
+  renderOrdSkinUI();
+  renderOrdnanceCatalog();
+}
+
 function renderOrdnanceCatalog() {
   const all = getAllOrdnanceList();
   const filtered = ordFilter === "all" ? all : all.filter(x => x.kind === ordFilter);
   const sel = all.find(x => x.id === selectedOrdId) || filtered[0] || all[0];
   selectedOrdId = sel.id;
+  renderOrdSkinUI();
 
   document.getElementById("ord-cam-readout").textContent = `360° ORDNANCE // ${sel.name.toUpperCase()}`;
   document.getElementById("ord-sel-title").textContent = (sel.kind==="nuke" ? "☢ " : "") + sel.name;
