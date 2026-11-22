@@ -25,18 +25,8 @@ func launch(shooter: FighterController, tgt: FighterController, spec: WeaponData
 	velocity_vec = dir * spec.speed_mps
 	look_at(global_position + dir, Vector3.UP)
 
-	var mesh_inst := MeshInstance3D.new()
-	var cyl := CylinderMesh.new()
-	cyl.top_radius = 0.04; cyl.bottom_radius = 0.05; cyl.height = 1.1
-	mesh_inst.mesh = cyl
-	mesh_inst.rotation_degrees.x = 90.0
-	var mat := StandardMaterial3D.new()
-	mat.albedo_color = spec.plume_color
-	mat.emission_enabled = true
-	mat.emission = spec.plume_color
-	mat.emission_energy_multiplier = 2.0
-	mesh_inst.material_override = mat
-	add_child(mesh_inst)
+	var visual := OrdnanceMeshBuilder.build_rocket_visual(spec)
+	add_child(visual)
 
 func _physics_process(delta: float) -> void:
 	if rocket_spec == null:

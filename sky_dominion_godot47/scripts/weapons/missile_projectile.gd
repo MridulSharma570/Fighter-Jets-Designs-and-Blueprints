@@ -32,20 +32,8 @@ func launch(shooter: FighterController, tgt: FighterController, spec: WeaponData
 	_build_visual_mesh_and_plume()
 
 func _build_visual_mesh_and_plume() -> void:
-	var body := MeshInstance3D.new()
-	var cyl := CylinderMesh.new()
-	cyl.top_radius = 0.08 if not missile_spec.is_nuclear else 0.22
-	cyl.bottom_radius = 0.10 if not missile_spec.is_nuclear else 0.24
-	cyl.height = 2.6 if not missile_spec.is_nuclear else 4.8
-	body.mesh = cyl
-	body.rotation_degrees.x = 90.0
-	var mat := StandardMaterial3D.new()
-	mat.albedo_color = Color(0.88, 0.90, 0.94) if not missile_spec.is_nuclear else Color(0.22, 0.25, 0.28)
-	mat.emission_enabled = missile_spec.is_nuclear
-	mat.emission = Color(1.0, 0.65, 0.10)
-	mat.emission_energy_multiplier = 0.6
-	body.material_override = mat
-	add_child(body)
+	var visual := OrdnanceMeshBuilder.build_missile_visual(missile_spec)
+	add_child(visual)
 
 	_trail_particles = GPUParticles3D.new()
 	_trail_particles.amount = 64 if missile_spec.is_nuclear else 36

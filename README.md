@@ -1,15 +1,16 @@
 # Fighter Jets Designs and Blueprints (`Sky Dominion` — Godot 4.7)
 
-Complete fighter-jet combat project for **Godot Engine v4.7** (Forward+ / Jolt Physics / GDScript 2.0) paired with a self-contained **Interactive 360° Hangar & Blueprint HUD Showcase** (`fighter_blueprint_hud.html`).
+Complete fighter-jet combat project for **Godot Engine v4.7** (Forward+ / Jolt Physics / GDScript 2.0) paired with a self-contained **Interactive 360° Hangar, Ordnance Design Studio & Blueprint HUD Showcase** (`fighter_blueprint_hud.html`).
 
 ## Contents
 
 - **`fighter_blueprint_hud.html`** — Zero-dependency standalone HTML5/WebGL2 showcase featuring:
-  - **360° Free Hangar (WebGL2 ACES PBR)**: Unlimited orbit & zoom (top, belly, nose-on, rear exhaust, side, 3/4 hero), realistic multi-part airframes, 24K gold canopies, titanium exhausts, and real-world camos.
-  - **360° X-Ray Internals**: Volumetric glass hull with color-coded internal subsystems (AESA radar, cockpit/ejection bus, rotary cannon, fuel cells, weapons bay, turbofans) and projected callouts.
-  - **Studio Renders & Classified Cutaway SVG Blueprints**: 10 high-contrast aerospace renders + F1–F12 structural station blueprints.
-  - **Asymmetrical Loadouts & Level 1–20 Upgrades**: Primary & secondary missiles, cannons, rockets (non-stealth jets), flares, 7 nuclear-armed jets (`#1, #2, #3, #6, #8, #9, #10`), and real-time filtered-noise Web Audio SFX.
-- **`sky_dominion_godot47/`** — Full Godot Engine v4.7 project (`project.godot`, `scenes/`, `scripts/`, `shaders/`, `assets/jets/`, `docs/COMPLETE_GAME_DESIGN_BLUEPRINT.md`).
+  - **360° Free Hangar (WebGL2 ACES PBR)**: Reflective tactical hangar deck, Mach shock-diamond afterburners, unlimited orbit & zoom, dorsal spines, intake compressor fans, 24K gold canopies, and per-jet mounted 3D ordnance.
+  - **360° X-Ray Internals**: Volumetric glass hull with color-coded internal subsystems (AESA radar, cockpit/ejection bus, rotary cannon, fuel cells, weapons bay, turbofans) and Hi-DPI callouts.
+  - **360° Ordnance Design Studio (31 Weapons)**: Bespoke 2D side-profile schematics and interactive 360° 3D WebGL2 models for all **12 Missiles**, **7 Nuclear Warheads**, **5 Rocket Pods + Individual Rockets**, and **7 Cannons**.
+  - **Studio Renders & Classified Cutaway SVG Blueprints**: Dual-angle studio renders (`3/4 Hero` + `0° Head-On`) + F1–F12 structural station blueprints + Squadron Comparison Matrix.
+  - **Asymmetrical Loadouts & Level 1–20 Upgrades**: Real-life jet speeds, 7 nuclear-armed jets (`#1, #2, #3, #6, #8, #9, #10`), rockets only on non-stealth aircraft, and real-time filtered-noise Web Audio SFX.
+- **`sky_dominion_godot47/`** — Full Godot Engine v4.7 project (`project.godot`, `scenes/`, `scripts/` including `ordnance_mesh_builder.gd`, `shaders/`, `assets/jets/`, `docs/COMPLETE_GAME_DESIGN_BLUEPRINT.md`).
 
 ## Fighter Squadron & Real-Life Top Speeds
 

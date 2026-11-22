@@ -3,27 +3,38 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>SKY DOMINION // 360° Hangar PBR View, X-Ray Internals &amp; Cutaway Blueprints</title>
+<title>SKY DOMINION // 360° Tactical Hangar, X-Ray Internals &amp; Blueprint HUD</title>
 <style>
   :root {
-    --bg-deep: #040911;
-    --bg-panel: rgba(8, 18, 32, 0.92);
-    --bg-card: rgba(11, 25, 44, 0.94);
+    --bg-deep: #03070e;
+    --bg-panel: rgba(7, 16, 30, 0.90);
+    --bg-card: rgba(10, 22, 40, 0.92);
     --hud-cyan: #2de2ff;
+    --hud-cyan-dim: rgba(45, 226, 255, 0.14);
     --hud-green: #2cff96;
     --hud-amber: #ffae2b;
     --hud-red: #ff3b4e;
     --hud-purple: #b56cff;
-    --text-main: #e2f1ff;
+    --text-main: #e6f3ff;
     --text-dim: #7f9fbc;
     --border-glow: rgba(45, 226, 255, 0.28);
-    --grid-line: rgba(45, 226, 255, 0.055);
+    --grid-line: rgba(45, 226, 255, 0.045);
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
+  ::-webkit-scrollbar { width: 7px; height: 7px; }
+  ::-webkit-scrollbar-track { background: #040912; }
+  ::-webkit-scrollbar-thumb { background: rgba(45, 226, 255, 0.35); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--hud-cyan); }
+
   body {
     font-family: ui-monospace, "Cascadia Code", "SFMono-Regular", Consolas, Menlo, monospace;
-    background: radial-gradient(circle at 50% 15%, #0b1e36 0%, var(--bg-deep) 72%);
-    color: var(--text-main); min-height: 100vh; overflow-x: hidden;
+    background:
+      radial-gradient(ellipse at 55% 0%, rgba(18, 52, 92, 0.42) 0%, transparent 55%),
+      radial-gradient(circle at 12% 88%, rgba(45, 226, 255, 0.07) 0%, transparent 40%),
+      var(--bg-deep);
+    color: var(--text-main);
+    min-height: 100vh;
+    overflow-x: hidden;
   }
   .cad-grid {
     background-image:
@@ -31,155 +42,304 @@
       linear-gradient(to bottom, var(--grid-line) 1px, transparent 1px);
     background-size: 28px 28px;
   }
+
+  /* Header & Animated Radar Badge */
   header {
     display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between;
-    padding: 12px 20px; border-bottom: 1px solid var(--border-glow);
-    background: rgba(4, 10, 20, 0.96); gap: 12px;
+    padding: 12px 22px; border-bottom: 1px solid var(--border-glow);
+    background: linear-gradient(180deg, rgba(6, 15, 28, 0.98) 0%, rgba(4, 10, 20, 0.94) 100%);
+    backdrop-filter: blur(10px);
+    gap: 12px;
+    position: sticky; top: 0; z-index: 20;
+    box-shadow: 0 6px 28px rgba(0, 0, 0, 0.55);
   }
-  .brand { display: flex; align-items: center; gap: 12px; }
+  .brand { display: flex; align-items: center; gap: 13px; }
   .brand-badge {
-    width: 40px; height: 40px; border: 1.5px solid var(--hud-cyan);
-    display: grid; place-items: center; color: var(--hud-cyan);
-    font-weight: 700; font-size: 13px; box-shadow: 0 0 14px rgba(45,226,255,0.28);
+    width: 44px; height: 44px; border: 1.5px solid var(--hud-cyan); border-radius: 50%;
+    display: grid; place-items: center; color: var(--hud-cyan); position: relative;
+    font-weight: 800; font-size: 12px; letter-spacing: 0.5px;
+    background: radial-gradient(circle, rgba(45,226,255,0.16) 0%, rgba(3,10,18,0.9) 72%);
+    box-shadow: 0 0 18px rgba(45,226,255,0.32), inset 0 0 10px rgba(45,226,255,0.18);
+    overflow: hidden;
   }
-  .brand h1 { font-size: 15px; letter-spacing: 2px; color: var(--hud-cyan); text-transform: uppercase; }
-  .brand p { font-size: 11px; color: var(--text-dim); }
+  .brand-badge::after {
+    content: ""; position: absolute; inset: 0; border-radius: 50%;
+    background: conic-gradient(from 0deg, rgba(45,226,255,0.36) 0deg, transparent 70deg, transparent 360deg);
+    animation: radarSweep 4.5s linear infinite;
+    pointer-events: none;
+  }
+  @keyframes radarSweep { to { transform: rotate(360deg); } }
+  .brand h1 { font-size: 15px; letter-spacing: 2px; color: var(--hud-cyan); text-transform: uppercase; text-shadow: 0 0 12px rgba(45,226,255,0.28); }
+  .brand p { font-size: 10.5px; color: var(--text-dim); letter-spacing: 0.6px; margin-top: 2px; }
+
   .nav-tabs { display: flex; gap: 8px; flex-wrap: wrap; }
   .tab-btn {
-    background: rgba(16, 36, 62, 0.72); border: 1px solid var(--border-glow);
-    color: var(--text-dim); padding: 7px 14px; font-family: inherit; font-size: 11px;
-    letter-spacing: 1px; cursor: pointer; text-transform: uppercase; transition: 0.15s;
+    background: rgba(12, 28, 50, 0.78); border: 1px solid var(--border-glow);
+    color: var(--text-dim); padding: 8px 14px; font-family: inherit; font-size: 11px;
+    letter-spacing: 1px; cursor: pointer; text-transform: uppercase; transition: 0.18s;
+    clip-path: polygon(8px 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%, 0 8px);
   }
-  .tab-btn:hover, .tab-btn.active {
-    color: #03111c; background: var(--hud-cyan); border-color: var(--hud-cyan);
-    font-weight: 700; box-shadow: 0 0 15px rgba(45,226,255,0.45);
+  .tab-btn:hover { color: var(--text-main); border-color: var(--hud-cyan); background: rgba(24, 54, 92, 0.85); }
+  .tab-btn.active {
+    color: #03111c; background: linear-gradient(135deg, #2de2ff, #2cff96);
+    border-color: var(--hud-cyan); font-weight: 800;
+    box-shadow: 0 0 18px rgba(45,226,255,0.42);
   }
-  .main-shell { display: grid; grid-template-columns: 275px 1fr; min-height: calc(100vh - 66px); }
-  @media (max-width: 980px) { .main-shell { grid-template-columns: 1fr; } }
+
+  /* Main Layout */
+  .main-shell { display: grid; grid-template-columns: 286px 1fr; min-height: calc(100vh - 70px); }
+  @media (max-width: 1020px) { .main-shell { grid-template-columns: 1fr; } }
+
   aside {
-    border-right: 1px solid var(--border-glow); background: rgba(5, 12, 22, 0.92);
+    border-right: 1px solid var(--border-glow);
+    background: linear-gradient(180deg, rgba(5, 12, 24, 0.96) 0%, rgba(3, 8, 16, 0.98) 100%);
     padding: 12px; display: flex; flex-direction: column; gap: 7px;
   }
   .roster-title {
-    font-size: 11px; letter-spacing: 1.5px; color: var(--hud-amber);
-    padding: 4px 6px 8px; border-bottom: 1px solid rgba(255,174,43,0.22); margin-bottom: 4px;
+    font-size: 10.5px; letter-spacing: 1.5px; color: var(--hud-amber); font-weight: 700;
+    padding: 4px 6px 8px; border-bottom: 1px solid rgba(255,174,43,0.24); margin-bottom: 3px;
+    display: flex; justify-content: space-between; align-items: center;
   }
   .jet-btn {
-    text-align: left; background: var(--bg-panel); border: 1px solid rgba(45,226,255,0.16);
-    padding: 9px 10px; color: var(--text-main); cursor: pointer; font-family: inherit; transition: 0.15s;
+    text-align: left; background: rgba(9, 20, 36, 0.85);
+    border: 1px solid rgba(45,226,255,0.16);
+    padding: 9px 11px; color: var(--text-main); cursor: pointer; font-family: inherit;
+    transition: 0.16s ease; position: relative;
   }
-  .jet-btn:hover { border-color: var(--hud-cyan); background: rgba(20,48,82,0.72); }
+  .jet-btn:hover {
+    border-color: var(--hud-cyan); background: rgba(18, 44, 76, 0.78); transform: translateX(2px);
+  }
   .jet-btn.active {
     border-color: var(--hud-cyan);
-    background: linear-gradient(90deg, rgba(45,226,255,0.20), rgba(8,22,40,0.94));
-    box-shadow: inset 3px 0 0 var(--hud-cyan);
+    background: linear-gradient(90deg, rgba(45,226,255,0.20) 0%, rgba(9,24,44,0.95) 100%);
+    box-shadow: inset 3.5px 0 0 var(--hud-cyan), 0 0 16px rgba(45,226,255,0.14);
   }
-  .jet-btn .j-top { display: flex; justify-content: space-between; font-size: 12px; font-weight: 700; align-items: center; }
-  .jet-btn .j-sub { font-size: 10px; color: var(--text-dim); margin-top: 3px; }
-  .tag-pill { font-size: 9px; padding: 1px 5px; border: 1px solid currentColor; border-radius: 2px; text-transform: uppercase; }
-  .content-area { padding: 16px 20px; display: flex; flex-direction: column; gap: 16px; }
-  .panel { background: var(--bg-panel); border: 1px solid var(--border-glow); padding: 14px 16px; position: relative; }
-  .panel::before { content: ""; position: absolute; top: -1px; left: -1px; width: 10px; height: 10px; border-top: 2px solid var(--hud-cyan); border-left: 2px solid var(--hud-cyan); }
-  .panel::after { content: ""; position: absolute; bottom: -1px; right: -1px; width: 10px; height: 10px; border-bottom: 2px solid var(--hud-cyan); border-right: 2px solid var(--hud-cyan); }
+  .jet-btn .j-top { display: flex; justify-content: space-between; font-size: 11.5px; font-weight: 700; align-items: center; gap: 6px; }
+  .jet-btn .j-sub { font-size: 9.8px; color: var(--text-dim); margin-top: 3px; display: flex; justify-content: space-between; gap: 6px; }
+  .jet-btn .j-spd { color: var(--hud-green); font-weight: 700; white-space: nowrap; }
+  .tag-pill {
+    font-size: 9px; padding: 1.5px 6px; border: 1px solid currentColor;
+    border-radius: 2px; text-transform: uppercase; letter-spacing: 0.5px; white-space: nowrap;
+  }
+
+  .content-area { padding: 16px 20px 26px; display: flex; flex-direction: column; gap: 16px; }
+  .panel {
+    background: var(--bg-panel); border: 1px solid var(--border-glow);
+    padding: 15px 17px; position: relative;
+    box-shadow: 0 10px 34px rgba(0, 0, 0, 0.45);
+  }
+  .panel::before { content: ""; position: absolute; top: -1px; left: -1px; width: 12px; height: 12px; border-top: 2px solid var(--hud-cyan); border-left: 2px solid var(--hud-cyan); }
+  .panel::after { content: ""; position: absolute; bottom: -1px; right: -1px; width: 12px; height: 12px; border-bottom: 2px solid var(--hud-cyan); border-right: 2px solid var(--hud-cyan); }
   .panel-header {
     display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center;
-    gap: 10px; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid rgba(45,226,255,0.16);
+    gap: 10px; margin-bottom: 13px; padding-bottom: 9px; border-bottom: 1px solid rgba(45,226,255,0.16);
   }
-  .panel-title { font-size: 13px; letter-spacing: 1.4px; color: var(--hud-cyan); font-weight: 700; }
-  .blueprint-grid { display: grid; grid-template-columns: 1.54fr 1fr; gap: 16px; }
-  @media (max-width: 1240px) { .blueprint-grid { grid-template-columns: 1fr; } }
+  .panel-title { font-size: 13.5px; letter-spacing: 1.4px; color: var(--hud-cyan); font-weight: 800; }
+  .blueprint-grid { display: grid; grid-template-columns: 1.58fr 1fr; gap: 16px; }
+  @media (max-width: 1260px) { .blueprint-grid { grid-template-columns: 1fr; } }
 
+  /* 3D Hangar & Viewport Stage */
   .stage-shell {
-    background: radial-gradient(circle at 50% 42%, #0c1f38 0%, #03070e 78%);
-    border: 1px solid rgba(45,226,255,0.32);
+    background: radial-gradient(circle at 50% 44%, #0b1c32 0%, #02060c 82%);
+    border: 1px solid rgba(45,226,255,0.34);
     display: flex; flex-direction: column; justify-content: space-between;
-    padding: 10px; position: relative; overflow: hidden; min-height: 525px;
+    padding: 10px; position: relative; overflow: hidden; min-height: 550px;
+    box-shadow: inset 0 0 42px rgba(0, 0, 0, 0.72);
   }
   .mode-bar { display: flex; flex-wrap: wrap; gap: 6px; justify-content: space-between; align-items: center; margin-bottom: 6px; z-index: 4; }
   .mode-group { display: flex; flex-wrap: wrap; gap: 5px; }
   .mode-btn {
-    background: rgba(8,22,40,0.9); border: 1px solid rgba(45,226,255,0.28);
-    color: var(--text-dim); padding: 5px 10px; font-family: inherit; font-size: 10px;
+    background: rgba(8,22,40,0.92); border: 1px solid rgba(45,226,255,0.30);
+    color: var(--text-dim); padding: 5px 11px; font-family: inherit; font-size: 10px;
     cursor: pointer; text-transform: uppercase; letter-spacing: 0.6px; transition: 0.15s;
   }
-  .mode-btn:hover, .mode-btn.active {
-    background: var(--hud-cyan); color: #03111c; border-color: var(--hud-cyan); font-weight: 700;
+  .mode-btn:hover { color: var(--text-main); border-color: var(--hud-cyan); }
+  .mode-btn.active {
+    background: var(--hud-cyan); color: #03111c; border-color: var(--hud-cyan); font-weight: 800;
+    box-shadow: 0 0 14px rgba(45,226,255,0.35);
   }
+
   .sub-bar {
-    display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 6px; padding: 6px 8px;
-    background: rgba(4,12,24,0.88); border: 1px solid rgba(45,226,255,0.22); align-items: center; justify-content: space-between;
+    display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 6px; padding: 6px 9px;
+    background: rgba(4,11,22,0.90); border: 1px solid rgba(45,226,255,0.22);
+    align-items: center; justify-content: space-between; z-index: 4;
   }
   .xf-btn {
     background: transparent; border: 1px solid rgba(255,174,43,0.35); color: var(--hud-amber);
-    padding: 3px 8px; font-family: inherit; font-size: 9.5px; cursor: pointer;
+    padding: 3.5px 8px; font-family: inherit; font-size: 9.5px; cursor: pointer; transition: 0.14s;
   }
+  .xf-btn:hover { background: rgba(255,174,43,0.16); }
   .xf-btn.active { background: var(--hud-amber); color: #050a12; font-weight: 700; }
   .ang-btn {
-    background: rgba(12,28,48,0.85); border: 1px solid rgba(45,226,255,0.35); color: var(--hud-cyan);
-    padding: 3px 8px; font-family: inherit; font-size: 9.5px; cursor: pointer;
+    background: rgba(12,28,48,0.88); border: 1px solid rgba(45,226,255,0.32); color: var(--hud-cyan);
+    padding: 3.5px 8.5px; font-family: inherit; font-size: 9.5px; cursor: pointer; transition: 0.14s;
   }
   .ang-btn.active, .ang-btn:hover { background: var(--hud-cyan); color: #03111c; font-weight: 700; }
 
   .viewport-box {
-    flex: 1; display: grid; place-items: center; position: relative; min-height: 425px; overflow: hidden;
-    background: radial-gradient(circle at 50% 48%, #0a1b30 0%, #02050a 78%);
+    flex: 1; display: grid; place-items: center; position: relative; min-height: 445px; overflow: hidden;
+    background:
+      radial-gradient(ellipse at 50% 42%, rgba(22, 62, 108, 0.28) 0%, rgba(3, 8, 16, 0.94) 72%),
+      #02050a;
+    border: 1px solid rgba(45,226,255,0.12);
   }
-  #glWrap { position: relative; width: 100%; height: 425px; }
+  /* Subtle corner reticle marks inside viewport */
+  .viewport-box::before, .viewport-box::after {
+    content: ""; position: absolute; pointer-events: none; z-index: 3;
+  }
+  .viewport-box::before {
+    inset: 10px; border: 1px dashed rgba(45, 226, 255, 0.10);
+  }
+  #glWrap { position: relative; width: 100%; height: 445px; }
   #glCanvas, #xrayOverlay {
     position: absolute; inset: 0; width: 100%; height: 100%; display: block;
   }
   #glCanvas { cursor: grab; }
   #glCanvas:active { cursor: grabbing; }
   #xrayOverlay { pointer-events: none; }
+
   .cam-readout {
-    position: absolute; top: 10px; left: 10px; font-size: 10px; color: var(--hud-cyan);
-    background: rgba(4,10,20,0.86); padding: 4px 8px; border: 1px solid rgba(45,226,255,0.3); pointer-events: none; z-index: 4;
+    position: absolute; top: 12px; left: 12px; font-size: 10px; color: var(--hud-cyan);
+    background: rgba(4,10,20,0.86); padding: 4px 9px; border: 1px solid rgba(45,226,255,0.34);
+    pointer-events: none; z-index: 4; letter-spacing: 0.7px;
   }
-  .viewport-box img.studio-render { width: 100%; height: 425px; object-fit: contain; background: #010306; }
-  .viewport-box svg { width: 100%; max-height: 420px; }
+  .jet-hud-badge {
+    position: absolute; top: 12px; right: 12px; font-size: 10px; color: var(--hud-green);
+    background: rgba(4,10,20,0.86); padding: 4px 9px; border: 1px solid rgba(44,255,150,0.34);
+    pointer-events: none; z-index: 4; letter-spacing: 0.7px;
+  }
+  .studio-wrap {
+    width: 100%; height: 445px; display: flex; align-items: center; justify-content: center;
+    background: radial-gradient(circle at 50% 45%, #091525 0%, #010306 75%);
+    position: relative;
+  }
+  .studio-wrap img.studio-render { width: 100%; height: 100%; object-fit: contain; }
+  .viewport-box svg { width: 100%; max-height: 440px; }
+
   .hud-telemetry-bar {
     display: flex; justify-content: space-between; font-size: 10px; color: var(--hud-green);
-    letter-spacing: 0.8px; z-index: 2; padding-top: 6px; border-top: 1px solid rgba(45,226,255,0.12); flex-wrap: wrap; gap: 6px;
+    letter-spacing: 0.8px; z-index: 2; padding-top: 7px; border-top: 1px solid rgba(45,226,255,0.14); flex-wrap: wrap; gap: 6px;
   }
   .orbit-hint {
-    position: absolute; bottom: 10px; right: 10px; font-size: 10px; color: var(--hud-amber);
-    background: rgba(4,10,20,0.88); padding: 3px 8px; border: 1px solid rgba(255,174,43,0.35); pointer-events: none; z-index: 4;
+    position: absolute; bottom: 10px; right: 12px; font-size: 9.5px; color: var(--hud-amber);
+    background: rgba(4,10,20,0.88); padding: 3px 8px; border: 1px solid rgba(255,174,43,0.35);
+    pointer-events: none; z-index: 4;
   }
-  .stat-row { margin-bottom: 8px; }
-  .stat-label { display: flex; justify-content: space-between; font-size: 11px; margin-bottom: 3px; }
-  .stat-bar-bg { height: 7px; background: rgba(255,255,255,0.08); overflow: hidden; }
-  .stat-bar-fill { height: 100%; background: linear-gradient(90deg, var(--hud-cyan), var(--hud-green)); transition: width 0.25s ease; }
+
+  /* Stat Bars & Upgrade Telemetry */
+  .stat-row { margin-bottom: 9px; }
+  .stat-label { display: flex; justify-content: space-between; font-size: 11px; margin-bottom: 3.5px; align-items: center; }
+  .stat-delta { color: var(--hud-amber); font-size: 10px; margin-left: 6px; }
+  .stat-bar-bg { height: 7.5px; background: rgba(255,255,255,0.07); overflow: hidden; border: 1px solid rgba(45,226,255,0.12); }
+  .stat-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #1aa7ec, #2de2ff 55%, #2cff96);
+    box-shadow: 0 0 10px rgba(45, 226, 255, 0.35);
+    transition: width 0.25s ease;
+  }
   .phys-grid {
-    display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; margin: 10px 0;
-    background: rgba(5,13,24,0.8); padding: 8px 10px; border: 1px solid rgba(45,226,255,0.16);
+    display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px 10px; margin: 10px 0;
+    background: rgba(5,13,24,0.85); padding: 9px 11px; border: 1px solid rgba(45,226,255,0.18);
   }
-  .phys-item { font-size: 10px; display: flex; justify-content: space-between; color: var(--text-dim); }
-  .phys-item b { color: var(--hud-cyan); }
-  .upgrade-box { background: rgba(6,15,28,0.92); border: 1px solid rgba(255,174,43,0.32); padding: 10px 12px; margin-top: 8px; }
-  .slider-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(165px, 1fr)); gap: 10px; }
-  .slider-item label { display: flex; justify-content: space-between; font-size: 11px; color: var(--hud-amber); margin-bottom: 3px; }
+  .phys-item { font-size: 10px; display: flex; justify-content: space-between; color: var(--text-dim); gap: 6px; }
+  .phys-item b { color: var(--hud-cyan); text-align: right; }
+
+  .upgrade-box { background: rgba(6,15,28,0.94); border: 1px solid rgba(255,174,43,0.35); padding: 10px 12px; margin-top: 8px; }
+  .upgrade-hdr { display: flex; justify-content: space-between; align-items: center; margin-bottom: 7px; }
+  .preset-lv-btn {
+    background: rgba(255,174,43,0.12); border: 1px solid rgba(255,174,43,0.38);
+    color: var(--hud-amber); font-family: inherit; font-size: 9px; padding: 2px 6px; cursor: pointer;
+  }
+  .preset-lv-btn:hover { background: var(--hud-amber); color: #050a12; font-weight: 700; }
+  .slider-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(155px, 1fr)); gap: 10px; }
+  .slider-item label { display: flex; justify-content: space-between; font-size: 10.5px; color: var(--hud-amber); margin-bottom: 3px; }
   input[type="range"] { width: 100%; accent-color: var(--hud-amber); cursor: pointer; }
-  .cards-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(255px, 1fr)); gap: 12px; }
-  .cards-4 { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; }
-  .card { background: var(--bg-card); border: 1px solid rgba(45,226,255,0.2); padding: 12px; }
-  .card.nuke { border-color: rgba(255,59,78,0.55); background: rgba(36,10,18,0.88); }
-  .card.ability { border-color: rgba(181,108,255,0.55); }
-  .card.disabled-slot { border-color: rgba(127,159,188,0.22); opacity: 0.78; }
-  .card h4 { font-size: 12px; color: var(--hud-cyan); margin-bottom: 6px; letter-spacing: 0.7px; }
-  .card.nuke h4 { color: var(--hud-red); }
-  .card.ability h4 { color: var(--hud-purple); }
-  .card p { font-size: 11px; color: var(--text-dim); line-height: 1.45; }
-  .kv-line { display: flex; justify-content: space-between; font-size: 11px; padding: 3px 0; border-bottom: 1px dashed rgba(255,255,255,0.06); gap: 8px; }
-  .kv-line span:last-child { color: var(--hud-green); font-weight: 700; text-align: right; }
+
+  /* Sound Controls & Live Acoustic Visualizer */
   .sfx-bar { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 10px; }
   .sfx-btn {
     background: rgba(12,32,54,0.92); border: 1px solid var(--hud-green); color: var(--hud-green);
     padding: 7px 11px; font-family: inherit; font-size: 10px; cursor: pointer; text-transform: uppercase; transition: 0.15s;
   }
-  .sfx-btn:hover { background: var(--hud-green); color: #03150c; font-weight: 700; }
+  .sfx-btn:hover { background: var(--hud-green); color: #03150c; font-weight: 700; box-shadow: 0 0 12px rgba(44,255,150,0.35); }
+  .audio-meter {
+    margin-top: 8px; padding: 6px 9px; background: rgba(4, 12, 22, 0.9);
+    border: 1px solid rgba(45, 226, 255, 0.20); display: flex; align-items: center; justify-content: space-between; gap: 10px;
+  }
+  .eq-bars { display: flex; align-items: flex-end; gap: 2.5px; height: 16px; }
+  .eq-bars span { width: 3px; height: 3px; background: var(--hud-cyan); transition: height 0.08s ease; }
+
+  /* Cards & Matrix Table */
+  .cards-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(255px, 1fr)); gap: 12px; }
+  .cards-4 { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; }
+  .card {
+    background: var(--bg-card); border: 1px solid rgba(45,226,255,0.22); padding: 12px;
+    transition: border-color 0.15s;
+  }
+  .card:hover { border-color: rgba(45,226,255,0.45); }
+  .card.nuke { border-color: rgba(255,59,78,0.58); background: linear-gradient(160deg, rgba(44,10,20,0.92), rgba(20,6,12,0.95)); }
+  .card.ability { border-color: rgba(181,108,255,0.58); background: linear-gradient(160deg, rgba(24,14,44,0.92), rgba(10,16,32,0.95)); }
+  .card.disabled-slot { border-color: rgba(127,159,188,0.22); opacity: 0.78; }
+  .card h4 { font-size: 12px; color: var(--hud-cyan); margin-bottom: 6px; letter-spacing: 0.7px; }
+  .card.nuke h4 { color: var(--hud-red); }
+  .card.ability h4 { color: var(--hud-purple); }
+  .card p { font-size: 11px; color: var(--text-dim); line-height: 1.48; }
+  .kv-line { display: flex; justify-content: space-between; font-size: 11px; padding: 3.5px 0; border-bottom: 1px dashed rgba(255,255,255,0.06); gap: 8px; }
+  .kv-line span:last-child { color: var(--hud-green); font-weight: 700; text-align: right; }
+
+  .matrix-wrap { overflow-x: auto; }
+  table.matrix { width: 100%; border-collapse: collapse; font-size: 11px; }
+  table.matrix th {
+    text-align: left; padding: 9px 10px; border-bottom: 2px solid rgba(45,226,255,0.32);
+    color: var(--hud-amber); font-size: 10px; letter-spacing: 0.8px; text-transform: uppercase;
+  }
+  table.matrix td { padding: 8px 10px; border-bottom: 1px solid rgba(45,226,255,0.12); color: var(--text-main); }
+  table.matrix tr { cursor: pointer; transition: background 0.14s; }
+  table.matrix tbody tr:hover { background: rgba(45,226,255,0.10); }
+  table.matrix tbody tr.selected-row { background: rgba(45,226,255,0.18); }
+
+  /* Ordnance 3D Hangar & Card Artworks */
+  .ord-stage {
+    background: radial-gradient(circle at 50% 44%, #0b1c32 0%, #02060c 82%);
+    border: 1px solid rgba(45,226,255,0.34); padding: 10px; margin-bottom: 14px;
+    display: grid; grid-template-columns: 1.45fr 1fr; gap: 14px;
+  }
+  @media (max-width: 1120px) { .ord-stage { grid-template-columns: 1fr; } }
+  .ord-viewport {
+    position: relative; height: 340px;
+    background: radial-gradient(ellipse at 50% 45%, rgba(24, 62, 108, 0.28) 0%, #02050a 78%);
+    border: 1px solid rgba(45,226,255,0.18); overflow: hidden;
+  }
+  #ordCanvas { width: 100%; height: 100%; display: block; cursor: grab; }
+  #ordCanvas:active { cursor: grabbing; }
+  .ord-chip-grid { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 8px; max-height: 155px; overflow-y: auto; padding-right: 4px; }
+  .ord-chip {
+    background: rgba(9,20,38,0.9); border: 1px solid rgba(45,226,255,0.25); color: var(--text-dim);
+    padding: 4px 8px; font-family: inherit; font-size: 9.5px; cursor: pointer; transition: 0.14s;
+  }
+  .ord-chip:hover { border-color: var(--hud-cyan); color: var(--text-main); }
+  .ord-chip.active { background: var(--hud-cyan); color: #03111c; font-weight: 800; border-color: var(--hud-cyan); }
+  .ord-chip.nuke-chip { border-color: rgba(255,59,78,0.45); color: #ff8e99; }
+  .ord-chip.nuke-chip.active { background: var(--hud-red); color: #fff; border-color: var(--hud-red); }
+  .ord-art-box {
+    background: radial-gradient(circle at 50% 50%, rgba(16,38,68,0.65) 0%, rgba(3,8,16,0.96) 85%);
+    border: 1px solid rgba(45,226,255,0.16); border-radius: 2px;
+    padding: 6px; margin-bottom: 8px; display: grid; place-items: center;
+  }
+  .ord-art-box svg { width: 100%; height: 74px; display: block; }
+  .inspect-3d-btn {
+    margin-top: 8px; width: 100%; background: rgba(45,226,255,0.12);
+    border: 1px solid rgba(45,226,255,0.42); color: var(--hud-cyan);
+    padding: 5px 8px; font-family: inherit; font-size: 10px; font-weight: 700;
+    cursor: pointer; text-transform: uppercase; letter-spacing: 0.6px; transition: 0.14s;
+  }
+  .inspect-3d-btn:hover { background: var(--hud-cyan); color: #03111c; }
+  .card.nuke .inspect-3d-btn { border-color: rgba(255,59,78,0.55); color: #ff8e99; background: rgba(255,59,78,0.14); }
+  .card.nuke .inspect-3d-btn:hover { background: var(--hud-red); color: #fff; }
+
   .hidden { display: none !important; }
   .flash-nuke { animation: nukeFlash 1.0s ease-out; }
-  @keyframes nukeFlash { 0% { box-shadow: inset 0 0 140px rgba(255,220,120,0.98); } 100% { box-shadow: none; } }
+  @keyframes nukeFlash { 0% { box-shadow: inset 0 0 150px rgba(255,220,120,0.98); } 100% { box-shadow: none; } }
 </style>
 </head>
 <body class="cad-grid">
@@ -188,12 +348,13 @@
   <div class="brand">
     <div class="brand-badge">SD-47</div>
     <div>
-      <h1>SKY DOMINION // FREE 360° PBR HANGAR VIEW, X-RAY INTERNALS &amp; CUTAWAYS</h1>
-      <p>REAL-TIME WEBGL2 PBR METALLIC HIGHLIGHTING • ALL-ANGLE 360° FREE ORBIT • NUCLEAR STRIKERS (TOP-3 + MIDDLE-TO-LAST)</p>
+      <h1>SKY DOMINION // 360° TACTICAL HANGAR, X-RAY INTERNALS &amp; BLUEPRINTS</h1>
+      <p>ACES PBR WEBGL2 HANGAR • REAL-LIFE MACH SPEEDS • 7 NUCLEAR STRIKERS • GODOT 4.7 READY</p>
     </div>
   </div>
   <div class="nav-tabs">
     <button class="tab-btn active" onclick="switchTab('aircraft', this)">Fighter Jets (10)</button>
+    <button class="tab-btn" onclick="switchTab('matrix', this)">Squadron Matrix</button>
     <button class="tab-btn" onclick="switchTab('ordnance', this)">Missiles • Nukes • Rockets • Cannons</button>
     <button class="tab-btn" onclick="switchTab('controls', this)">Internal Systems &amp; Controls</button>
   </div>
@@ -208,7 +369,7 @@
         <div class="panel-header">
           <div>
             <div class="panel-title" id="hdr-jet-name">1. S-57 FELONIS</div>
-            <div style="font-size:11px;color:var(--text-dim)" id="hdr-jet-desc"></div>
+            <div style="font-size:11px;color:var(--text-dim);margin-top:2px;" id="hdr-jet-desc"></div>
           </div>
           <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
             <span class="tag-pill" style="color:var(--hud-green)" id="hdr-role"></span>
@@ -224,7 +385,7 @@
                 <button class="mode-btn active" id="mbtn-360" onclick="setViewMode('360')">🔄 360° Free Hangar</button>
                 <button class="mode-btn" id="mbtn-xray" onclick="setViewMode('xray')">🩻 360° X-Ray Internals</button>
                 <button class="mode-btn" id="mbtn-cad" onclick="setViewMode('cad')">📐 Cutaway Blueprint</button>
-                <button class="mode-btn" id="mbtn-studio" onclick="setViewMode('studio')">🎨 Studio Render</button>
+                <button class="mode-btn" id="mbtn-studio" onclick="setViewMode('studio')">🎨 Studio Renders</button>
               </div>
               <div class="mode-group">
                 <button class="mode-btn" id="btn-autospin" onclick="toggleSpin()">⟳ Auto-Orbit: ON</button>
@@ -235,12 +396,12 @@
             <div class="sub-bar" id="hangar-bar">
               <div style="display:flex;gap:5px;flex-wrap:wrap;align-items:center;">
                 <span style="font-size:9.5px;color:var(--text-dim);">CAMERA:</span>
-                <button class="ang-btn active" onclick="setCamPreset(2.42, 0.34, 1.05, this)">3/4 HERO</button>
-                <button class="ang-btn" onclick="setCamPreset(3.1416, 1.48, 1.02, this)">TOP PLANFORM</button>
-                <button class="ang-btn" onclick="setCamPreset(2.50, -1.22, 1.02, this)">BELLY / BAYS</button>
-                <button class="ang-btn" onclick="setCamPreset(1.5708, 0.06, 1.08, this)">SIDE PROFILE</button>
-                <button class="ang-btn" onclick="setCamPreset(0.0, 0.16, 1.15, this)">REAR EXHAUST</button>
-                <button class="ang-btn" onclick="setCamPreset(3.1416, 0.08, 1.18, this)">NOSE-ON</button>
+                <button class="ang-btn active" onclick="setCamPreset(2.42, 0.34, 1.08, this)">3/4 HERO</button>
+                <button class="ang-btn" onclick="setCamPreset(3.1416, 1.48, 1.04, this)">TOP PLANFORM</button>
+                <button class="ang-btn" onclick="setCamPreset(2.50, -1.22, 1.04, this)">BELLY / BAYS</button>
+                <button class="ang-btn" onclick="setCamPreset(1.5708, 0.06, 1.12, this)">SIDE PROFILE</button>
+                <button class="ang-btn" onclick="setCamPreset(0.0, 0.16, 1.18, this)">REAR EXHAUST</button>
+                <button class="ang-btn" onclick="setCamPreset(3.1416, 0.08, 1.20, this)">NOSE-ON</button>
               </div>
               <button class="ang-btn" id="btn-ab-glow" onclick="toggleAfterburner(this)">🔥 Afterburner: ON</button>
             </div>
@@ -257,21 +418,31 @@
               <button class="xf-btn active" id="btn-xray-labels" onclick="toggleXrayLabels(this)">🏷 Callouts: ON</button>
             </div>
 
+            <!-- STUDIO RENDER ANGLE SELECTOR -->
+            <div class="sub-bar hidden" id="studio-angle-bar" style="border-color:rgba(44,255,150,0.3);">
+              <div style="display:flex;gap:6px;align-items:center;">
+                <span style="font-size:9.5px;color:var(--text-dim);">STUDIO CAMERA:</span>
+                <button class="ang-btn active" id="st-btn-q34" onclick="setStudioAngle('q34', this)">3/4 STUDIO RENDER</button>
+                <button class="ang-btn" id="st-btn-front" onclick="setStudioAngle('front', this)">0° HEAD-ON STUDIO</button>
+              </div>
+              <span style="font-size:9.5px;color:var(--hud-green);">HIGH-CONTRAST STUDIO LIGHTING</span>
+            </div>
+
             <div class="viewport-box" id="viewport-box">
-              <!-- FULL 360 FREE WEBGL2 PBR HANGAR & X-RAY -->
               <div id="glWrap">
-                <canvas id="glCanvas" width="840" height="425"></canvas>
-                <canvas id="xrayOverlay" width="840" height="425"></canvas>
-                <div class="cam-readout" id="cam-readout">360° FREE ORBIT • YAW 37° • PITCH +18°</div>
+                <canvas id="glCanvas" width="900" height="445"></canvas>
+                <canvas id="xrayOverlay" width="900" height="445"></canvas>
+                <div class="cam-readout" id="cam-readout">360° FREE HANGAR • YAW 139° • PITCH +19°</div>
+                <div class="jet-hud-badge" id="jet-hud-badge">MACH 2.00 • 2,140 KM/H</div>
               </div>
 
-              <!-- STUDIO RENDER -->
-              <img id="studio-img" class="studio-render hidden" alt="Fighter Jet Color Render" />
+              <div id="studio-wrap" class="studio-wrap hidden">
+                <img id="studio-img" class="studio-render" alt="Fighter Jet Color Render" />
+              </div>
 
-              <!-- CUTAWAY SVG -->
               <div id="cad-svg-wrap" class="hidden" style="width:100%"></div>
 
-              <div id="orbit-hint" class="orbit-hint">DRAG ANYWHERE FOR FULL 360° (TOP / BOTTOM / REAR / SIDE) • SCROLL TO ZOOM</div>
+              <div id="orbit-hint" class="orbit-hint">DRAG ANYWHERE FOR FULL 360° (TOP / BELLY / REAR / SIDE) • SCROLL TO ZOOM</div>
             </div>
 
             <div class="hud-telemetry-bar">
@@ -286,8 +457,14 @@
             <div class="phys-grid" id="phys-grid"></div>
 
             <div class="upgrade-box">
-              <div style="font-size:11px;color:var(--hud-amber);font-weight:700;margin-bottom:7px;">
-                LEVEL-UP SIMULATOR (LV 1 – LV 20)
+              <div class="upgrade-hdr">
+                <span style="font-size:11px;color:var(--hud-amber);font-weight:700;">LEVEL-UP SIMULATOR (LV 1 – LV 20)</span>
+                <div style="display:flex;gap:4px;">
+                  <button class="preset-lv-btn" onclick="setAllLevels(1)">LV 1</button>
+                  <button class="preset-lv-btn" onclick="setAllLevels(8)">LV 8</button>
+                  <button class="preset-lv-btn" onclick="setAllLevels(16)">LV 16</button>
+                  <button class="preset-lv-btn" onclick="setAllLevels(20)">MAX 20</button>
+                </div>
               </div>
               <div class="slider-grid">
                 <div class="slider-item">
@@ -311,11 +488,17 @@
             </div>
 
             <div class="sfx-bar">
-              <button class="sfx-btn" onclick="playJetEngine()">▶ Real Jet Engine + AB</button>
-              <button class="sfx-btn" onclick="playCannon()">▶ Fire Cannon</button>
+              <button class="sfx-btn" onclick="playJetEngine()">▶ Jet Engine + AB</button>
+              <button class="sfx-btn" onclick="playCannon()">▶ Cannon Burst</button>
               <button class="sfx-btn" onclick="playMissile()">▶ Launch Missile</button>
               <button class="sfx-btn" onclick="playFlare()">▶ Deploy Flares</button>
-              <button class="sfx-btn hidden" id="btn-nuke-sfx" style="border-color:var(--hud-red);color:var(--hud-red)" onclick="playNuke()">☢ Tactical Nuke Blast</button>
+              <button class="sfx-btn hidden" id="btn-nuke-sfx" style="border-color:var(--hud-red);color:var(--hud-red)" onclick="playNuke()">☢ Nuke Detonation</button>
+            </div>
+            <div class="audio-meter">
+              <span id="audio-status" style="font-size:10px;color:var(--text-dim);">ACOUSTIC ENGINE IDLE // VOSS-MCCARTNEY FILTERED NOISE</span>
+              <div class="eq-bars" id="eq-bars">
+                <span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+              </div>
             </div>
           </div>
         </div>
@@ -338,11 +521,64 @@
       </div>
     </section>
 
+    <section id="tab-matrix" class="hidden">
+      <div class="panel">
+        <div class="panel-header">
+          <div class="panel-title">SQUADRON PERFORMANCE &amp; ARMAMENT COMPARISON MATRIX (CLICK ROW TO INSPECT)</div>
+          <div style="font-size:10.5px;color:var(--hud-green);">10 FIGHTERS • REAL-LIFE SPEEDS • 7 NUCLEAR ARMED</div>
+        </div>
+        <div class="matrix-wrap">
+          <table class="matrix" id="matrix-table"></table>
+        </div>
+      </div>
+    </section>
+
     <section id="tab-ordnance" class="hidden">
       <div class="panel">
         <div class="panel-header">
-          <div class="panel-title">LEGALLY CLEARED NAMED ORDNANCE ARSENAL (LV 1 – LV 20)</div>
+          <div class="panel-title">360° ORDNANCE DESIGN STUDIO &amp; ARSENAL INSPECTOR (MISSILES • NUKES • ROCKETS • CANNONS)</div>
+          <div style="display:flex;gap:5px;flex-wrap:wrap;" id="ord-filter-bar">
+            <button class="mode-btn active" onclick="setOrdFilter('all', this)">ALL (31)</button>
+            <button class="mode-btn" onclick="setOrdFilter('missile', this)">MISSILES (12)</button>
+            <button class="mode-btn" onclick="setOrdFilter('nuke', this)" style="border-color:rgba(255,59,78,0.5);color:#ff8e99;">☢ NUKES (7)</button>
+            <button class="mode-btn" onclick="setOrdFilter('rocket', this)">ROCKETS &amp; PODS (5)</button>
+            <button class="mode-btn" onclick="setOrdFilter('cannon', this)">CANNONS (7)</button>
+          </div>
         </div>
+
+        <div class="ord-stage">
+          <div>
+            <div class="sub-bar" style="margin-bottom:6px;">
+              <div style="display:flex;gap:5px;flex-wrap:wrap;align-items:center;">
+                <span style="font-size:9.5px;color:var(--text-dim);">VIEW:</span>
+                <button class="ang-btn active" onclick="setOrdCam(2.35, 0.28, 1.0, this)">3/4 HERO</button>
+                <button class="ang-btn" onclick="setOrdCam(1.5708, 0.04, 1.15, this)">SIDE</button>
+                <button class="ang-btn" onclick="setOrdCam(3.1416, 0.10, 1.25, this)">SEEKER / POD NOSE</button>
+                <button class="ang-btn" onclick="setOrdCam(0.0, 0.12, 1.25, this)">NOZZLE / FINS</button>
+                <button class="ang-btn" onclick="setOrdCam(3.1416, 1.42, 1.05, this)">TOP</button>
+              </div>
+              <button class="ang-btn" id="ord-plume-btn" onclick="toggleOrdPlume(this)">🔥 Motor Plume: ON</button>
+            </div>
+            <div class="ord-viewport">
+              <canvas id="ordCanvas" width="760" height="340"></canvas>
+              <div class="cam-readout" id="ord-cam-readout">360° ORDNANCE INSPECTOR</div>
+              <div class="orbit-hint">DRAG TO ORBIT 360° • SCROLL TO ZOOM</div>
+            </div>
+          </div>
+
+          <div style="display:flex;flex-direction:column;justify-content:space-between;gap:8px;">
+            <div>
+              <div id="ord-sel-title" style="font-size:13px;font-weight:800;color:var(--hud-cyan);margin-bottom:4px;"></div>
+              <div id="ord-sel-desc" style="font-size:11px;color:var(--text-dim);line-height:1.45;margin-bottom:8px;"></div>
+              <div id="ord-sel-specs" style="background:rgba(5,13,24,0.85);border:1px solid rgba(45,226,255,0.18);padding:8px 10px;"></div>
+            </div>
+            <div>
+              <div style="font-size:10px;color:var(--hud-amber);letter-spacing:1px;font-weight:700;">SELECT WEAPON DESIGN TO INSPECT IN 3D:</div>
+              <div class="ord-chip-grid" id="ord-chip-grid"></div>
+            </div>
+          </div>
+        </div>
+
         <div class="cards-3" id="ordnance-catalog"></div>
       </div>
     </section>
@@ -605,31 +841,45 @@ const JETS = [
 
 let selectedJet = JETS[0];
 let viewMode = "360";
+let studioAngle = "q34";
 let xrayFilter = "all";
 let showXrayLabels = true;
 let autoSpin = true;
 let showAfterburner = true;
 
-// Smooth Free 360 Camera State (ALL angles: yaw 0..360, pitch -88..+88 deg)
-let camYaw = 2.42, camPitch = 0.34, camDist = 20.5;
-let targetYaw = 2.42, targetPitch = 0.34, targetDist = 20.5;
+// Smooth Free 360 Camera State
+let camYaw = 2.42, camPitch = 0.34, camDist = 19.6;
+let targetYaw = 2.42, targetPitch = 0.34, targetDist = 19.6;
 let dragging = false, lastX = 0, lastY = 0;
 
-// ================== WEBGL2 PBR HANGAR ENGINE ==================
+// ================== WEBGL2 ACES PBR HANGAR ENGINE ==================
+const glWrap = document.getElementById("glWrap");
 const glCanvas = document.getElementById("glCanvas");
+const xrayOverlay = document.getElementById("xrayOverlay");
 const gl = glCanvas.getContext("webgl2", { antialias: true, alpha: true });
-const overlayCtx = document.getElementById("xrayOverlay").getContext("2d");
+const overlayCtx = xrayOverlay.getContext("2d");
 
-let progPBR = null, progGlow = null;
+let progPBR = null, progGlow = null, progDeck = null;
 const jetBuffers = {};
 const jetTextures = {};
+
+function syncCanvasHiDPI() {
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+  const w = Math.max(320, Math.round(glWrap.clientWidth * dpr));
+  const h = Math.max(240, Math.round(glWrap.clientHeight * dpr));
+  if (glCanvas.width !== w || glCanvas.height !== h) {
+    glCanvas.width = w; glCanvas.height = h;
+    xrayOverlay.width = w; xrayOverlay.height = h;
+  }
+}
+new ResizeObserver(syncCanvasHiDPI).observe(glWrap);
 
 const VS_PBR = `#version 300 es
 precision highp float;
 layout(location=0) in vec3 aPos;
 layout(location=1) in vec3 aNorm;
 layout(location=2) in vec2 aUV;
-layout(location=3) in float aMat; // 0=skin, 1=canopy, 2=nozzle, 3=ordnance, 4=intakeDark
+layout(location=3) in float aMat; // 0=skin, 1=goldCanopy, 2=titanium, 3=missileWhite, 4=darkCavity, 5=radome, 6=warheadStripe, 7=compressor/navGlow
 uniform mat4 uMVP;
 uniform mat4 uModel;
 out vec3 vWorldPos;
@@ -650,11 +900,13 @@ precision highp float;
 in vec3 vWorldPos;
 in vec3 vNorm;
 in vec2 vUV;
-in float vMat; // 0=skin, 1=canopy, 2=titanium/frame, 3=ordnance, 4=intake/cockpit dark, 5=radome nose
+in float vMat;
 uniform sampler2D uTex;
 uniform vec3 uCamPos;
 uniform float uXrayMode;
 uniform float uTime;
+uniform float uAbOn;
+uniform float uTailZ;
 out vec4 outColor;
 
 vec3 acesToneMap(vec3 x) {
@@ -666,68 +918,150 @@ void main() {
   if (!gl_FrontFacing) N = -N;
   vec3 V = normalize(uCamPos - vWorldPos);
   float ndv = max(dot(N, V), 0.001);
-  float fresnel = pow(1.0 - ndv, 3.2);
+  float fresnel = pow(1.0 - ndv, 3.4);
 
   if (uXrayMode > 0.5) {
-    vec3 holo = mix(vec3(0.05, 0.38, 0.68), vec3(0.18, 0.92, 1.0), fresnel);
-    float alpha = 0.07 + fresnel * 0.54;
-    if (vMat > 0.5 && vMat < 1.5) { holo = vec3(1.0, 0.72, 0.22); alpha = 0.16 + fresnel * 0.45; }
+    vec3 holo = mix(vec3(0.05, 0.42, 0.72), vec3(0.22, 0.94, 1.0), fresnel);
+    float alpha = 0.065 + fresnel * 0.56;
+    if (vMat > 0.5 && vMat < 1.5) { holo = vec3(1.0, 0.76, 0.25); alpha = 0.16 + fresnel * 0.48; }
     outColor = vec4(holo, alpha);
     return;
   }
 
   vec3 texCol = texture(uTex, clamp(vUV, 0.002, 0.998)).rgb;
   vec3 baseCol = texCol;
-  float rough = 0.30;
-  float metal = 0.48;
+  float rough = 0.28;
+  float metal = 0.50;
 
   if (vMat > 0.5 && vMat < 1.5) { // 24K Gold / Iridescent Stealth Canopy
-    baseCol = vec3(0.14, 0.10, 0.04);
-    rough = 0.06; metal = 0.96;
+    baseCol = vec3(0.11, 0.08, 0.03);
     vec3 R = reflect(-V, N);
-    float skyBand = smoothstep(-0.2, 0.8, R.y);
-    vec3 goldTint = mix(vec3(0.55, 0.36, 0.08), vec3(1.0, 0.82, 0.30), skyBand);
-    vec3 Lkey = normalize(vec3(0.55, 0.85, 0.45));
-    float specG = pow(max(dot(N, normalize(Lkey + V)), 0.0), 180.0);
-    vec3 glass = baseCol + goldTint * (0.28 + fresnel * 0.92) + vec3(1.0, 0.95, 0.78) * specG * 2.2;
+    float skyBand = smoothstep(-0.25, 0.85, R.y);
+    vec3 goldTint = mix(vec3(0.45, 0.28, 0.06), vec3(1.0, 0.84, 0.34), skyBand);
+    vec3 Lkey = normalize(vec3(0.55, 0.86, 0.42));
+    vec3 Lrim = normalize(vec3(-0.78, 0.32, -0.58));
+    float specG = pow(max(dot(N, normalize(Lkey + V)), 0.0), 210.0);
+    float specR = pow(max(dot(N, normalize(Lrim + V)), 0.0), 120.0);
+    vec3 glass = baseCol
+      + goldTint * (0.28 + fresnel * 0.96)
+      + vec3(1.0, 0.96, 0.82) * specG * 2.4
+      + vec3(0.42, 0.88, 1.0) * specR * 0.65;
     outColor = vec4(acesToneMap(glass), 1.0);
     return;
-  } else if (vMat > 1.5 && vMat < 2.5) { // Gunmetal Titanium Nozzles & Canopy Frame
-    baseCol = vec3(0.16, 0.17, 0.20);
-    rough = 0.20; metal = 0.90;
-  } else if (vMat > 2.5 && vMat < 3.5) { // White/Red Tactical Missiles & Pods
-    baseCol = vec3(0.76, 0.79, 0.82);
-    rough = 0.28; metal = 0.35;
+  } else if (vMat > 1.5 && vMat < 2.5) { // Gunmetal Titanium Nozzles & Bow Frame
+    baseCol = vec3(0.18, 0.19, 0.23);
+    rough = 0.19; metal = 0.92;
+  } else if (vMat > 2.5 && vMat < 3.5) { // Tactical White Missile / Pod Body
+    baseCol = vec3(0.82, 0.85, 0.88);
+    rough = 0.25; metal = 0.32;
   } else if (vMat > 3.5 && vMat < 4.5) { // Deep Intake Throat & Cockpit Tub
-    baseCol = vec3(0.02, 0.025, 0.035);
-    rough = 0.92; metal = 0.05;
-  } else if (vMat > 4.5) { // Matte Composite Nose Radome
-    baseCol = texCol * 0.72 + vec3(0.05, 0.06, 0.08);
-    rough = 0.52; metal = 0.15;
+    baseCol = vec3(0.018, 0.022, 0.030);
+    rough = 0.94; metal = 0.04;
+  } else if (vMat > 4.5 && vMat < 5.5) { // Matte Dielectric Composite Radome
+    baseCol = texCol * 0.72 + vec3(0.045, 0.055, 0.070);
+    rough = 0.56; metal = 0.12;
+  } else if (vMat > 5.5 && vMat < 6.5) { // Crimson Tactical Ordnance Stripe / Nose Cone
+    baseCol = vec3(0.86, 0.16, 0.18);
+    rough = 0.30; metal = 0.25;
+  } else if (vMat > 6.5) { // Compressor Fan Blades / Wingtip Beacon Accent
+    baseCol = vec3(0.46, 0.52, 0.60);
+    rough = 0.16; metal = 0.95;
   }
 
-  // Real Studio Hangar 3-Point Lighting with Crisp Shadow Contrast
-  vec3 L1 = normalize(vec3(0.55, 0.86, 0.40));   // Strong overhead studio softbox
-  vec3 L2 = normalize(vec3(-0.80, 0.30, -0.60)); // Cool cyan rim light
-  vec3 L3 = normalize(vec3(0.10, -0.95, 0.25));  // Subtle hangar floor bounce (reveals belly bays)
+  // Hangar 3-Point Studio Lighting + Soft Floor Bounce
+  vec3 L1 = normalize(vec3(0.55, 0.86, 0.42));   // Overhead softbox key
+  vec3 L2 = normalize(vec3(-0.82, 0.30, -0.58)); // Cool cyan rim light
+  vec3 L3 = normalize(vec3(0.08, -0.95, 0.22));  // Hangar floor deck bounce
 
   float diff1 = max(dot(N, L1), 0.0);
   float diff2 = max(dot(N, L2), 0.0);
   float diff3 = max(dot(N, L3), 0.0);
 
-  // Underside / crease natural occlusion
-  float hemiAO = clamp(N.y * 0.35 + 0.68, 0.32, 1.0);
-  float specPow = mix(150.0, 18.0, rough);
-  float spec1 = pow(max(dot(N, normalize(L1 + V)), 0.0), specPow) * mix(1.5, 0.25, rough);
-  float spec2 = pow(max(dot(N, normalize(L2 + V)), 0.0), specPow * 0.7) * 0.65;
+  float hemiAO = clamp(N.y * 0.36 + 0.68, 0.30, 1.0);
+  float specPow = mix(160.0, 20.0, rough);
+  float spec1 = pow(max(dot(N, normalize(L1 + V)), 0.0), specPow) * mix(1.65, 0.26, rough);
+  float spec2 = pow(max(dot(N, normalize(L2 + V)), 0.0), specPow * 0.75) * 0.70;
 
-  vec3 envRef = mix(vec3(0.03, 0.05, 0.08), vec3(0.28, 0.42, 0.58), clamp(reflect(-V, N).y * 0.5 + 0.5, 0.0, 1.0));
-  vec3 lit = baseCol * (0.09 * hemiAO + diff1 * 0.92 + diff2 * 0.26 + diff3 * 0.30)
-           + mix(vec3(1.0), baseCol, metal) * (spec1 * vec3(1.0, 0.98, 0.95) + spec2 * vec3(0.45, 0.85, 1.0))
-           + envRef * (0.10 + fresnel * 0.38) * metal
-           + vec3(0.24, 0.78, 1.0) * fresnel * 0.24;
+  // Dynamic Afterburner Rear-Section Plasma Bounce
+  vec3 abLight = vec3(0.0);
+  if (uAbOn > 0.5) {
+    float pulse = 0.88 + 0.12 * sin(uTime * 22.0);
+    float rearFactor = smoothstep(uTailZ - 4.2, uTailZ + 0.8, vWorldPos.z);
+    vec3 Ltail = normalize(vec3(0.0, 0.12, uTailZ + 1.8) - vWorldPos);
+    float tailDiff = max(dot(N, Ltail), 0.0);
+    abLight = vec3(1.0, 0.58, 0.22) * rearFactor * (0.28 + tailDiff * 0.9) * pulse
+            + vec3(0.22, 0.78, 1.0) * rearFactor * 0.22 * pulse;
+  }
+
+  vec3 envRef = mix(vec3(0.025, 0.045, 0.075), vec3(0.30, 0.46, 0.64), clamp(reflect(-V, N).y * 0.5 + 0.5, 0.0, 1.0));
+  vec3 lit = baseCol * (0.09 * hemiAO + diff1 * 0.94 + diff2 * 0.28 + diff3 * 0.32)
+           + mix(vec3(1.0), baseCol, metal) * (spec1 * vec3(1.0, 0.98, 0.94) + spec2 * vec3(0.42, 0.86, 1.0))
+           + envRef * (0.11 + fresnel * 0.42) * metal
+           + vec3(0.22, 0.80, 1.0) * fresnel * 0.22
+           + abLight;
 
   outColor = vec4(acesToneMap(lit), 1.0);
+}`;
+
+// Reflective Tactical Hangar Floor Deck Shader
+const VS_DECK = `#version 300 es
+precision highp float;
+layout(location=0) in vec3 aPos;
+uniform mat4 uMVP;
+out vec3 vPos;
+void main() {
+  vPos = aPos;
+  gl_Position = uMVP * vec4(aPos, 1.0);
+}`;
+
+const FS_DECK = `#version 300 es
+precision highp float;
+in vec3 vPos;
+uniform float uTime;
+uniform float uAbOn;
+uniform float uTailZ;
+uniform float uXray;
+out vec4 outColor;
+void main() {
+  float r = length(vPos.xz);
+  float fade = 1.0 - smoothstep(10.5, 22.0, r);
+  if (fade <= 0.01) discard;
+
+  // Base tactical epoxy hangar deck
+  vec3 col = mix(vec3(0.015, 0.032, 0.056), vec3(0.035, 0.072, 0.118), 1.0 - smoothstep(0.0, 11.0, r));
+
+  // Subtle floor panel tile grid
+  vec2 tile = abs(fract(vPos.xz * 0.42) - 0.5);
+  float gridLine = 1.0 - smoothstep(0.47, 0.495, max(tile.x, tile.y));
+  col += vec3(0.03, 0.14, 0.22) * (1.0 - gridLine) * 0.42;
+
+  // Concentric radar / turntable rings
+  float ring1 = smoothstep(0.06, 0.0, abs(r - 9.8));
+  float ring2 = smoothstep(0.04, 0.0, abs(r - 6.6));
+  float ring3 = smoothstep(0.03, 0.0, abs(r - 3.3));
+  float ang = atan(vPos.z, vPos.x);
+  float ticks = smoothstep(0.95, 1.0, cos(ang * 36.0)) * smoothstep(0.25, 0.0, abs(r - 9.4));
+
+  vec3 ringCol = uXray > 0.5 ? vec3(0.18, 0.92, 1.0) : vec3(0.22, 0.84, 1.0);
+  col += ringCol * (ring1 * 0.85 + ring2 * 0.35 + ring3 * 0.22 + ticks * 0.55);
+
+  // Caution amber outer strobe segments
+  float warn = smoothstep(0.05, 0.0, abs(r - 10.25)) * step(0.25, sin(ang * 12.0));
+  col += vec3(1.0, 0.65, 0.15) * warn * 0.45;
+
+  // Soft aircraft contact shadow under fuselage
+  float shadow = smoothstep(1.2, 5.2, length(vec2(vPos.x * 0.85, vPos.z * 0.55)));
+  col *= mix(0.22, 1.0, shadow);
+
+  // Afterburner deck glow reflection behind tail
+  if (uAbOn > 0.5 && uXray < 0.5) {
+    float abDist = length(vec2(vPos.x * 1.15, (vPos.z - (uTailZ + 2.4)) * 0.58));
+    float pulse = 0.85 + 0.15 * sin(uTime * 22.0);
+    col += vec3(0.18, 0.68, 1.0) * exp(-abDist * 0.55) * 0.45 * pulse;
+    col += vec3(1.0, 0.56, 0.18) * exp(-abDist * 0.95) * 0.35 * pulse;
+  }
+
+  outColor = vec4(col, fade * 0.94);
 }`;
 
 const VS_GLOW = `#version 300 es
@@ -754,7 +1088,7 @@ out vec4 outColor;
 void main() {
   vec3 V = normalize(uCamPos - vPos);
   float rim = pow(max(dot(normalize(vNorm), V), 0.0), 0.65);
-  outColor = vec4(uColor.rgb * (0.65 + rim * 0.9), uColor.a * (0.45 + rim * 0.55));
+  outColor = vec4(uColor.rgb * (0.68 + rim * 0.95), uColor.a * (0.48 + rim * 0.52));
 }`;
 
 function compileShader(src, type) {
@@ -773,7 +1107,7 @@ function linkProgram(vs, fs) {
   return p;
 }
 
-// Generate 1024x1024 Planform-Aligned Aerospace Skin Texture (Real Livery, Markings, Engine Shields & Panel Seams!)
+// Generate 1024x1024 Planform-Aligned Aerospace Skin Texture (Livery, Stencils, Insignia & RAM Seams)
 function createJetTexture(j) {
   if (jetTextures[j.id]) return jetTextures[j.id];
   const c = document.createElement("canvas");
@@ -783,8 +1117,7 @@ function createJetTexture(j) {
   x.fillRect(0, 0, 1024, 1024);
 
   if (j.camoType === "pixel") {
-    // Authentic S-57 Digital Splinter Pixel Shark Camo (symmetrical across center X=512)
-    for (let i=0; i<360; i++) {
+    for (let i=0; i<380; i++) {
       x.fillStyle = i % 3 === 0 ? j.color2 : j.color3;
       const gx = ((i * 73) % 16) * 32;
       const gy = ((i * 137) % 32) * 32;
@@ -792,12 +1125,10 @@ function createJetTexture(j) {
       x.fillRect(512 + gx, gy, bw, bh);
       x.fillRect(512 - gx - bw, gy, bw, bh);
     }
-    // Lighter leading-edge & chine trim
-    x.fillStyle = "rgba(185, 205, 222, 0.28)";
+    x.fillStyle = "rgba(185, 205, 222, 0.24)";
     x.fillRect(0, 0, 1024, 1024);
   } else if (j.camoType === "raptor_patch") {
-    // Authentic F-22 Two-Tone Metallic Patch Camo + Sawtooth Borders
-    for (let i=0; i<48; i++) {
+    for (let i=0; i<52; i++) {
       x.fillStyle = i % 2 === 0 ? j.color2 : j.color3;
       x.globalAlpha = 0.72;
       const cx = (i * 97) % 512, cy = (i * 151) % 1024;
@@ -807,8 +1138,7 @@ function createJetTexture(j) {
     }
     x.globalAlpha = 1.0;
   } else if (j.camoType === "flanker_blue") {
-    // Authentic Flanker Splinter Sky-Blue / Slate-Blue / Navy Camo
-    for (let i=0; i<40; i++) {
+    for (let i=0; i<44; i++) {
       x.fillStyle = i % 2 === 0 ? j.color2 : j.color3;
       x.globalAlpha = 0.78;
       const cx = (i * 109) % 512, cy = (i * 173) % 1024;
@@ -821,13 +1151,11 @@ function createJetTexture(j) {
     }
     x.globalAlpha = 1.0;
   } else if (j.camoType === "black_stripe") {
-    // Authentic Berkut Matte Black + Crisp White Leading Edge Accents
     x.fillStyle = j.color1; x.fillRect(0, 0, 1024, 1024);
-    x.fillStyle = "rgba(235, 242, 250, 0.90)";
-    x.fillRect(60, 380, 110, 16);
-    x.fillRect(854, 380, 110, 16);
+    x.fillStyle = "rgba(240, 246, 255, 0.92)";
+    x.fillRect(56, 372, 118, 16);
+    x.fillRect(850, 372, 118, 16);
   } else if (j.camoType === "ram_dark" || j.camoType === "sawtooth") {
-    // Stealth Dark Graphite with Contrasting Silver-Grey RAM Tape Seams
     const g = x.createLinearGradient(0, 0, 0, 1024);
     g.addColorStop(0, j.color1); g.addColorStop(0.5, j.color2); g.addColorStop(1, j.color1);
     x.fillStyle = g; x.fillRect(0, 0, 1024, 1024);
@@ -843,20 +1171,20 @@ function createJetTexture(j) {
     x.fillStyle = g; x.fillRect(0, 0, 1024, 1024);
   }
 
-  // Dark Metallic Rear Engine Heat-Shield Deck (z > 0.72 -> v > 0.72)
+  // Dark Metallic Rear Engine Heat-Shield Deck
   const engGrad = x.createLinearGradient(0, 740, 0, 960);
   engGrad.addColorStop(0, "rgba(25, 28, 34, 0.0)");
-  engGrad.addColorStop(0.35, "rgba(38, 35, 32, 0.78)");
-  engGrad.addColorStop(1, "rgba(18, 20, 26, 0.92)");
+  engGrad.addColorStop(0.35, "rgba(40, 36, 32, 0.80)");
+  engGrad.addColorStop(1, "rgba(18, 20, 26, 0.94)");
   x.fillStyle = engGrad;
   x.fillRect(360, 740, 304, 260);
 
-  // Dark Nose Radome Border Collar (v ~ 0.16)
+  // Nose Radome Border Collar
   x.fillStyle = "rgba(42, 48, 56, 0.65)";
   x.fillRect(430, 60, 164, 115);
 
-  // Realistic Panel Grid, Control Surface Hinge Lines & Walkways
-  x.strokeStyle = "rgba(8, 12, 18, 0.55)";
+  // Panel Grid & Bevel Highlights
+  x.strokeStyle = "rgba(8, 12, 18, 0.56)";
   x.lineWidth = 2.0;
   for (let p=64; p<1024; p+=64) {
     x.beginPath(); x.moveTo(0, p); x.lineTo(1024, p); x.stroke();
@@ -868,12 +1196,24 @@ function createJetTexture(j) {
     x.beginPath(); x.moveTo(0, p); x.lineTo(1024, p); x.stroke();
   }
 
-  // Subtle Low-Vis Wing Insignia Stars / Roundels
-  x.strokeStyle = "rgba(230, 240, 250, 0.35)";
+  // Ejection Seat Warning Triangles & Intake Danger Chevrons
+  x.fillStyle = "rgba(240, 68, 56, 0.72)";
+  for (const sx of [462, 562]) {
+    x.beginPath(); x.moveTo(sx, 265); x.lineTo(sx-7, 279); x.lineTo(sx+7, 279); x.closePath(); x.fill();
+  }
+  x.strokeStyle = "rgba(255, 182, 48, 0.55)"; x.lineWidth = 2;
+  for (const ix of [426, 598]) {
+    x.beginPath(); x.moveTo(ix-10, 405); x.lineTo(ix, 392); x.lineTo(ix+10, 405); x.stroke();
+  }
+
+  // Low-Vis Squadron Wing Roundels & Star Bars
+  x.strokeStyle = "rgba(230, 240, 250, 0.38)";
   x.lineWidth = 2.2;
   for (const wx of [220, 804]) {
     x.beginPath(); x.arc(wx, 610, 18, 0, Math.PI*2); x.stroke();
-    x.beginPath(); x.moveTo(wx-28, 610); x.lineTo(wx+28, 610); x.stroke();
+    x.beginPath(); x.arc(wx, 610, 8, 0, Math.PI*2); x.stroke();
+    x.beginPath(); x.moveTo(wx-30, 610); x.lineTo(wx-18, 610); x.stroke();
+    x.beginPath(); x.moveTo(wx+18, 610); x.lineTo(wx+30, 610); x.stroke();
   }
 
   const tex = gl.createTexture();
@@ -886,7 +1226,7 @@ function createJetTexture(j) {
   return tex;
 }
 
-// ================== REALISTIC MULTI-PART SCULPTED FIGHTER BUILDER ==================
+// ================== ULTRA-DETAILED MULTI-PART SCULPTED FIGHTER BUILDER ==================
 function buildHighResJetBuffers(j) {
   if (jetBuffers[j.id]) return jetBuffers[j.id];
 
@@ -895,7 +1235,6 @@ function buildHighResJetBuffers(j) {
   const S = j.span * 0.56;
   const W = j.platypus ? 1.68 : 1.24;
 
-  // Planform UV projection maps every surface point directly to real (X, Z) paint/markings!
   function planUV(px, pz) {
     return [px / (S * 2.15) + 0.5, (pz + L * 1.06) / (L * 2.22)];
   }
@@ -991,6 +1330,36 @@ function buildHighResJetBuffers(j) {
     }
   }
 
+  function addDetailedMissile(xPos, yPos, zStart, zEnd, rad, opt={}) {
+    const zMid = zStart + (zEnd - zStart) * 0.22;
+    const zBand1 = zStart + (zEnd - zStart) * 0.30;
+    const zBand2 = zStart + (zEnd - zStart) * 0.38;
+    const bodyMat = opt.stealth ? 5.0 : 3.0;
+    const noseMat = opt.ir ? 1.0 : (opt.stealth ? 5.0 : 3.0);
+    // Seeker Cone or Glass IR Dome
+    addSmoothLoft([[zStart, xPos, yPos, opt.ir ? rad*0.55 : rad*0.18, opt.ir ? rad*0.55 : rad*0.18], [zMid, xPos, yPos, rad, rad]], 8, noseMat, opt.stealth ? 0.65 : 0.0);
+    // Warhead / Nuclear Crimson Hazard Band
+    addSmoothLoft([[zMid, xPos, yPos, rad*1.03, rad*1.03], [zBand1, xPos, yPos, rad*1.03, rad*1.03]], 8, 6.0, opt.stealth ? 0.65 : 0.0);
+    // Main Airframe Body
+    addSmoothLoft([[zBand1, xPos, yPos, rad, rad], [zBand2, xPos, yPos, rad, rad], [zEnd, xPos, yPos, rad*0.92, rad*0.92]], 8, bodyMat, opt.stealth ? 0.65 : 0.0);
+    // Ramjet Cheek Intakes (MT-200 / ASMP-R)
+    if (opt.ramjet) {
+      for (const sd of [-1, 1]) {
+        addSmoothLoft([[zStart+0.55, xPos+sd*rad*1.05, yPos, rad*0.36, rad*0.36], [zEnd-0.25, xPos+sd*rad*1.05, yPos, rad*0.36, rad*0.36]], 6, 2.0, 0.4);
+      }
+    }
+    // Cruise Swept Wings (Nuclear Cruise Missiles)
+    if (opt.cruiseWing) {
+      for (const sd of [-1, 1]) {
+        addAirfoil([xPos+sd*rad*0.8, yPos, zBand2], [xPos+sd*rad*0.8, yPos, zBand2+0.35], [xPos+sd*rad*4.8, yPos, zBand2+0.65], [xPos+sd*rad*4.8, yPos, zBand2+0.90], 0.025, 0.012, bodyMat, 2);
+      }
+    }
+    // Cruciform Rear Fins (or Grid/Lattice Fins for R-77)
+    const fz0 = zEnd - 0.34, fz1 = zEnd - 0.04;
+    addFin([xPos, yPos+rad*0.7, fz0], [xPos, yPos+rad*0.7, fz1], [xPos, yPos+rad*2.5, fz0+0.1], [xPos, yPos+rad*2.5, fz1], opt.lattice ? 0.032 : 0.012, 2.0);
+    addFin([xPos, yPos-rad*0.7, fz0], [xPos, yPos-rad*0.7, fz1], [xPos, yPos-rad*2.5, fz0+0.1], [xPos, yPos-rad*2.5, fz1], opt.lattice ? 0.032 : 0.012, 2.0);
+  }
+
   const isStealthChine = ["su57","j20","f22","f35","kf21"].includes(j.id) ? 0.90 : 0.25;
   const noseW = j.platypus ? 1.48 : 0.96;
 
@@ -1006,28 +1375,35 @@ function buildHighResJetBuffers(j) {
     [ L*0.84, 0,  0.01, W*0.92, 0.34]
   ], 26, 0.0, isStealthChine, true);
 
+  // Dorsal Avionics Spine / Speedbrake Ridge
+  addSmoothLoft([
+    [-L*0.20, 0, 0.34, 0.28, 0.14],
+    [ L*0.18, 0, 0.36, 0.34, 0.16],
+    [ L*0.66, 0, 0.26, 0.22, 0.10]
+  ], 10, 0.0, 0.3);
+
   // 2. MULTI-LAYER COCKPIT: DARK INTERIOR TUB + METALLIC BOW FRAME + 24K GOLD GLASS CANOPY + IRST BALL
-  addSmoothLoft([ // Dark Cockpit Tub / Ejection Seat
+  addSmoothLoft([
     [-L*0.62, 0, 0.32, 0.30, 0.14],
     [-L*0.42, 0, 0.38, 0.32, 0.18],
     [-L*0.22, 0, 0.34, 0.26, 0.14]
   ], 14, 4.0, 0.0);
-  addSmoothLoft([ // 24K Gold / Iridescent Bubble Canopy
+  addSmoothLoft([
     [-L*0.66, 0, 0.30, 0.06, 0.04],
     [-L*0.56, 0, 0.50, j.platypus ? 0.74 : 0.44, 0.34],
     [-L*0.44, 0, 0.62, j.platypus ? 0.80 : 0.46, 0.42],
     [-L*0.30, 0, 0.56, j.platypus ? 0.72 : 0.42, 0.36],
     [-L*0.16, 0, 0.36, j.platypus ? 0.48 : 0.24, 0.16]
   ], 20, 1.0, 0.0);
-  addSmoothLoft([ // Metallic Canopy Frame Bow & Windshield Arch
+  addSmoothLoft([
     [-L*0.58, 0, 0.48, (j.platypus ? 0.75 : 0.45), 0.35],
     [-L*0.55, 0, 0.52, (j.platypus ? 0.77 : 0.47), 0.37]
   ], 16, 2.0, 0.0);
-  if (!["f22","f35"].includes(j.id)) { // IRST Electro-Optical Glass Sensor Sphere in front of windshield
+  if (!["f22","f35"].includes(j.id)) {
     addSmoothLoft([[-L*0.69, 0.06, 0.34, 0.06, 0.06], [-L*0.65, 0.06, 0.36, 0.08, 0.08]], 10, 1.0, 0.0);
   }
 
-  // 3. DISTINCT RAISED DORSAL ENGINE NACELLES + CARET/CHIN INTAKES + TITANIUM NOZZLES
+  // 3. DISTINCT RAISED DORSAL ENGINE NACELLES + COMPRESSOR FANS + TITANIUM NOZZLES
   const engXs = j.engCount === 1 ? [0] : [-0.82, 0.82];
   for (const ex of engXs) {
     addSmoothLoft([
@@ -1037,11 +1413,15 @@ function buildHighResJetBuffers(j) {
       [ L*0.72, ex,  0.03, 0.50, 0.40],
       [ L*0.92, ex,  0.00, j.flatNozzle ? 0.52 : 0.42, j.flatNozzle ? 0.22 : 0.42]
     ], 20, 0.0, 0.45);
-    // Deep Dark Intake Cavity Throat
+    // Intake Throat + Metallic Compressor Fan Disc
     addSmoothLoft([
       [-L*0.39, ex, -0.14, 0.36, 0.20],
       [-L*0.25, ex, -0.12, 0.32, 0.18]
     ], 14, 4.0, 0.5);
+    addSmoothLoft([
+      [-L*0.27, ex, -0.12, 0.26, 0.15],
+      [-L*0.26, ex, -0.12, 0.05, 0.05]
+    ], 12, 7.0, 0.0);
     // Titanium Exhaust Nozzle Petals + Dark Inner Flameholder
     addSmoothLoft([
       [L*0.90, ex, 0.0, j.flatNozzle ? 0.52 : 0.42, j.flatNozzle ? 0.22 : 0.42],
@@ -1053,35 +1433,56 @@ function buildHighResJetBuffers(j) {
     ], 14, 4.0, 0.0);
   }
 
-  // 4. BLENDED LERX/LEVCON STRAKES + MAIN CAMBERED WINGS + CONTROL SURFACES + ORDNANCE
+  // 4. BLENDED LERX/LEVCON STRAKES + MAIN CAMBERED WINGS + FINNED ORDNANCE + TAILS
   const tipZ = j.fsw ? -1.05 : (j.canards && j.singleTail ? 3.85 : 2.65);
   const rootZ = -1.65;
   const trailZ = j.fsw ? 1.45 : 4.45;
   for (const s of [-1, 1]) {
-    // Smooth LERX / LEVCON Strake blending fuselage nose into wing leading edge
     addAirfoil([s*W*0.68, 0.06, -L*0.64], [s*W*0.95, 0.05, rootZ+0.5], [s*W*1.38, 0.05, rootZ], [s*W*1.12, 0.04, rootZ+1.6], 0.14, 0.10, 0.0, 3);
-    // Main Wing Airfoil
     addAirfoil([s*W*1.05, 0.05, rootZ], [s*W*1.05, 0.04, trailZ], [s*S, 0.01, tipZ], [s*S, 0.01, tipZ+1.15], 0.20, 0.06, 0.0, 6);
-    // Wingtip Launch Rail + Detailed A2A Missile
-    addSmoothLoft([[tipZ-0.25, s*S, 0.02, 0.06, 0.06], [tipZ+1.25, s*S, 0.02, 0.06, 0.06]], 8, 2.0, 0.0);
-    addSmoothLoft([[tipZ-0.62, s*S, -0.07, 0.075, 0.075], [tipZ+1.05, s*S, -0.07, 0.075, 0.075]], 10, 3.0, 0.0);
 
-    // Canards
+    // Wingtip Launch Rail + Equipped Specific A2A Missile Design
+    const tipId = j.sec ? j.sec[0] : j.pri[0];
+    const tipOpt = {
+      ir: ["am_9x","r_74x","r_73v","ir_t","as_132","mk_ir"].includes(tipId),
+      ramjet: tipId === "mt_200",
+      lattice: ["r_77v","r_77s"].includes(tipId)
+    };
+    addSmoothLoft([[tipZ-0.25, s*S, 0.02, 0.06, 0.06], [tipZ+1.25, s*S, 0.02, 0.06, 0.06]], 8, 2.0, 0.0);
+    addDetailedMissile(s*S, -0.07, tipZ-0.65, tipZ+1.08, 0.075, tipOpt);
+
     if (j.canards) {
       addAirfoil([s*W*0.88, 0.15, -L*0.46], [s*W*0.88, 0.15, -L*0.18], [s*(W*0.88+1.82), 0.19, -L*0.24], [s*(W*0.88+1.72), 0.19, -L*0.09], 0.09, 0.03, 0.0, 3);
     }
-    // Horizontal Stabilators & Canted Twin Tails
     if (!j.singleTail) {
       addAirfoil([s*W*0.78, 0.02, L*0.54], [s*W*0.78, 0.02, L*0.94], [s*(W*0.78+2.45), 0.01, L*0.84], [s*(W*0.78+2.10), 0.01, L*1.06], 0.10, 0.03, 0.0, 4);
       const cant = ["f22","su57","j20","f35","kf21"].includes(j.id) ? 0.68 : 0.18;
       addFin([s*0.96, 0.30, L*0.36], [s*0.96, 0.30, L*0.94], [s*(0.96+cant), 2.28, L*0.70], [s*(0.96+cant), 2.28, L*1.00], 0.065, 0.0);
     }
-    // Underwing Rocket Pods / Ordnance if equipped
+    if (["j20","su35","su34","su47"].includes(j.id)) {
+      addFin([s*0.96, -0.25, L*0.45], [s*0.96, -0.25, L*0.90], [s*1.08, -0.78, L*0.62], [s*1.08, -0.78, L*0.92], 0.03, 0.0);
+    }
     if (j.rockets) {
-      addSmoothLoft([[0.8, s*(W*1.05+2.05), -0.30, 0.20, 0.20], [2.9, s*(W*1.05+2.05), -0.30, 0.20, 0.20]], 10, 3.0, 0.0);
+      const rkId = j.rockets[0];
+      const rx = s*(W*1.05+2.05);
+      const podRad = rkId === "s13_heavy" ? 0.24 : 0.20;
+      const podMat = (rkId === "s8_kom" || rkId === "s13_heavy") ? 2.0 : 3.0;
+      addFin([rx, -0.04, 0.9], [rx, -0.04, 2.6], [rx, -0.28, 1.0], [rx, -0.28, 2.5], 0.025, 2.0);
+      addSmoothLoft([[0.65, rx, -0.32, podRad*0.55, podRad*0.55], [0.85, rx, -0.32, podRad, podRad]], 10, 6.0, 0.0);
+      addSmoothLoft([[0.85, rx, -0.32, podRad, podRad], [2.95, rx, -0.32, podRad*0.94, podRad*0.94]], 10, podMat, rkId === "log_70" ? 0.45 : 0.0);
+      // Dark Tube Nose Face + Exposed Rocket Tips
+      addSmoothLoft([[0.82, rx, -0.32, podRad*0.80, podRad*0.80], [0.86, rx, -0.32, podRad*0.80, podRad*0.80]], 8, 4.0, 0.0);
     }
     if (j.nuke) {
-      addSmoothLoft([[-0.9, s*0.36, -0.44, 0.105, 0.105], [1.4, s*0.36, -0.44, 0.105, 0.105]], 8, 3.0, 0.0);
+      const nkId = j.nuke[0];
+      const nkOpt = {
+        stealth: ["kh_102x","storm_n","kh_102s"].includes(nkId),
+        ramjet: nkId === "asmp_r",
+        cruiseWing: nkId !== "b61n"
+      };
+      if (j.nuke[1] >= 2 || s < 0) {
+        addDetailedMissile(j.nuke[1] >= 2 ? s*0.36 : 0.0, -0.44, -0.95, 1.55, 0.115, nkOpt);
+      }
     }
   }
   if (j.singleTail) {
@@ -1116,8 +1517,11 @@ function buildHighResJetBuffers(j) {
   return out;
 }
 
-// Reusable 3D Primitive Builders for X-Ray Internals & Afterburner Cones
-let unitCylVAO = null, unitCylCount = 0, unitBoxVAO = null, unitBoxCount = 0, ringVAO = null, ringCount = 0;
+// Reusable 3D Primitives: Cylinder, Cone, Sphere, and Hangar Deck Quad
+let unitCylVAO = null, unitCylCount = 0;
+let unitConeVAO = null, unitConeCount = 0;
+let deckVAO = null, deckCount = 0;
+
 function initPrimitives() {
   // Unit Cylinder along Z (-0.5..0.5, r=1)
   const cp=[], cn=[], ci=[]; const segs=18;
@@ -1127,12 +1531,9 @@ function initPrimitives() {
     cn.push(c, s, 0, c, s, 0);
   }
   for (let i=0; i<segs; i++) { const b=i*2; ci.push(b,b+1,b+2, b+2,b+1,b+3); }
-  // Caps
   const cBase = cp.length/3;
   cp.push(0,0,-0.5, 0,0,0.5); cn.push(0,0,-1, 0,0,1);
-  for (let i=0; i<segs; i++) {
-    const b=i*2; ci.push(cBase, b+2, b); ci.push(cBase+1, b+1, b+3);
-  }
+  for (let i=0; i<segs; i++) { const b=i*2; ci.push(cBase, b+2, b); ci.push(cBase+1, b+1, b+3); }
   unitCylVAO = gl.createVertexArray(); gl.bindVertexArray(unitCylVAO);
   const b1 = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, b1); gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(cp), gl.STATIC_DRAW);
   gl.enableVertexAttribArray(0); gl.vertexAttribPointer(0,3,gl.FLOAT,false,0,0);
@@ -1141,21 +1542,30 @@ function initPrimitives() {
   const ib1 = gl.createBuffer(); gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, ib1); gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(ci), gl.STATIC_DRAW);
   unitCylCount = ci.length;
 
-  // Hangar Turntable Ring
-  const rp=[], rn=[], ri=[]; const rSegs=64;
-  for (let i=0; i<=rSegs; i++) {
-    const a=(i/rSegs)*Math.PI*2, c=Math.cos(a), s=Math.sin(a);
-    rp.push(c*9.6, -1.65, s*9.6, c*10.0, -1.65, s*10.0);
-    rn.push(0, 1, 0, 0, 1, 0);
+  // Tapered Afterburner Cone (Z=0 wide base r=1 -> Z=1 tip r=0.08)
+  const kp=[], kn=[], ki=[]; const kSegs=18;
+  for (let i=0; i<=kSegs; i++) {
+    const a=(i/kSegs)*Math.PI*2, c=Math.cos(a), s=Math.sin(a);
+    kp.push(c, s, 0.0, c*0.08, s*0.08, 1.0);
+    kn.push(c, s, 0.3, c, s, 0.3);
   }
-  for (let i=0; i<rSegs; i++) { const b=i*2; ri.push(b,b+1,b+2, b+2,b+1,b+3); }
-  ringVAO = gl.createVertexArray(); gl.bindVertexArray(ringVAO);
-  const rb1 = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, rb1); gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(rp), gl.STATIC_DRAW);
+  for (let i=0; i<kSegs; i++) { const b=i*2; ki.push(b,b+1,b+2, b+2,b+1,b+3); }
+  unitConeVAO = gl.createVertexArray(); gl.bindVertexArray(unitConeVAO);
+  const kb1 = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, kb1); gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(kp), gl.STATIC_DRAW);
   gl.enableVertexAttribArray(0); gl.vertexAttribPointer(0,3,gl.FLOAT,false,0,0);
-  const rb2 = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, rb2); gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(rn), gl.STATIC_DRAW);
+  const kb2 = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, kb2); gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(kn), gl.STATIC_DRAW);
   gl.enableVertexAttribArray(1); gl.vertexAttribPointer(1,3,gl.FLOAT,false,0,0);
-  const rib = gl.createBuffer(); gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, rib); gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(ri), gl.STATIC_DRAW);
-  ringCount = ri.length;
+  const kib = gl.createBuffer(); gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, kib); gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(ki), gl.STATIC_DRAW);
+  unitConeCount = ki.length;
+
+  // Hangar Floor Deck Quad (y = -1.75)
+  const dp = new Float32Array([-24,-1.75,-24,  24,-1.75,-24,  24,-1.75,24,  -24,-1.75,24]);
+  const di = new Uint16Array([0, 2, 1, 0, 3, 2]);
+  deckVAO = gl.createVertexArray(); gl.bindVertexArray(deckVAO);
+  const db = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, db); gl.bufferData(gl.ARRAY_BUFFER, dp, gl.STATIC_DRAW);
+  gl.enableVertexAttribArray(0); gl.vertexAttribPointer(0,3,gl.FLOAT,false,0,0);
+  const dib = gl.createBuffer(); gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, dib); gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, di, gl.STATIC_DRAW);
+  deckCount = di.length;
   gl.bindVertexArray(null);
 }
 
@@ -1201,11 +1611,13 @@ function renderWebGL(nowMs) {
   if (!progPBR) {
     progPBR = linkProgram(VS_PBR, FS_PBR);
     progGlow = linkProgram(VS_GLOW, FS_GLOW);
+    progDeck = linkProgram(VS_DECK, FS_DECK);
     initPrimitives();
+    syncCanvasHiDPI();
   }
 
   // Smooth shortest-angle camera damping & auto-orbit
-  if (autoSpin && !dragging) targetYaw += 0.0065;
+  if (autoSpin && !dragging) targetYaw += 0.006;
   let dy = ((targetYaw - camYaw + Math.PI) % (Math.PI * 2)) - Math.PI;
   if (dy < -Math.PI) dy += Math.PI * 2;
   camYaw += dy * 0.14;
@@ -1232,27 +1644,27 @@ function renderWebGL(nowMs) {
   const eyeZ = Math.cos(camYaw) * Math.cos(camPitch) * camDist;
   const camPos = [eyeX, eyeY, eyeZ];
   const proj = mat4Persp(0.68, W / H, 0.3, 120.0);
-  const view = mat4LookAt(camPos, [0, 0, 0], [0, 1, 0]);
+  const view = mat4LookAt(camPos, [0, 0.1, 0], [0, 1, 0]);
   const vp = mat4Mul(proj, view);
   const ident = mat4TRS(0, 0, 0, 1, 1, 1);
-
   const isXray = viewMode === "xray";
   overlayCtx.clearRect(0, 0, W, H);
 
-  // 1. Hangar Turntable Ring
-  gl.useProgram(progGlow);
+  // 1. Tactical Hangar Floor Deck (with shadow, grid & AB reflection)
+  gl.useProgram(progDeck);
   gl.enable(gl.BLEND);
   gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
   gl.depthMask(false);
-  gl.uniformMatrix4fv(gl.getUniformLocation(progGlow, "uMVP"), false, vp);
-  gl.uniformMatrix4fv(gl.getUniformLocation(progGlow, "uModel"), false, ident);
-  gl.uniform3fv(gl.getUniformLocation(progGlow, "uCamPos"), camPos);
-  gl.uniform4f(gl.getUniformLocation(progGlow, "uColor"), 0.18, 0.88, 1.0, 0.42);
-  gl.bindVertexArray(ringVAO);
-  gl.drawElements(gl.TRIANGLES, ringCount, gl.UNSIGNED_SHORT, 0);
+  gl.uniformMatrix4fv(gl.getUniformLocation(progDeck, "uMVP"), false, vp);
+  gl.uniform1f(gl.getUniformLocation(progDeck, "uTime"), nowMs * 0.001);
+  gl.uniform1f(gl.getUniformLocation(progDeck, "uAbOn"), showAfterburner ? 1.0 : 0.0);
+  gl.uniform1f(gl.getUniformLocation(progDeck, "uTailZ"), mesh.L);
+  gl.uniform1f(gl.getUniformLocation(progDeck, "uXray"), isXray ? 1.0 : 0.0);
+  gl.bindVertexArray(deckVAO);
+  gl.drawElements(gl.TRIANGLES, deckCount, gl.UNSIGNED_SHORT, 0);
 
   if (!isXray) {
-    // 2A. FULL-COLOR PBR METALLIC HIGHLIGHTED JET
+    // 2A. FULL-COLOR ACES PBR FIGHTER
     gl.depthMask(true);
     gl.disable(gl.BLEND);
     gl.useProgram(progPBR);
@@ -1261,54 +1673,76 @@ function renderWebGL(nowMs) {
     gl.uniform3fv(gl.getUniformLocation(progPBR, "uCamPos"), camPos);
     gl.uniform1f(gl.getUniformLocation(progPBR, "uXrayMode"), 0.0);
     gl.uniform1f(gl.getUniformLocation(progPBR, "uTime"), nowMs * 0.001);
+    gl.uniform1f(gl.getUniformLocation(progPBR, "uAbOn"), showAfterburner ? 1.0 : 0.0);
+    gl.uniform1f(gl.getUniformLocation(progPBR, "uTailZ"), mesh.L);
     gl.activeTexture(gl.TEXTURE0);
     gl.bindTexture(gl.TEXTURE_2D, tex);
     gl.uniform1i(gl.getUniformLocation(progPBR, "uTex"), 0);
     gl.bindVertexArray(mesh.vao);
     gl.drawElements(gl.TRIANGLES, mesh.count, gl.UNSIGNED_SHORT, 0);
 
-    // 2B. Glowing Afterburner Plumes
+    // 2B. Multi-Ring Mach Shock-Diamond Afterburner Plumes
     if (showAfterburner) {
       gl.useProgram(progGlow);
       gl.enable(gl.BLEND);
       gl.blendFunc(gl.SRC_ALPHA, gl.ONE);
       gl.depthMask(false);
-      const pulse = 1.0 + Math.sin(nowMs * 0.025) * 0.14;
-      gl.bindVertexArray(unitCylVAO);
+      const pulse = 1.0 + Math.sin(nowMs * 0.028) * 0.12;
+      const sx = j.flatNozzle ? 0.34 : 0.25;
+      const sy = j.flatNozzle ? 0.14 : 0.24;
+
       for (const ab of mesh.abPlumes) {
-        const mOuter = mat4TRS(ab.x, 0, ab.zStart + 1.15 * pulse, 0.28, 0.24, 2.3 * pulse);
+        // Outer Blue-Violet Plasma Cone
+        gl.bindVertexArray(unitConeVAO);
+        const mOuter = mat4TRS(ab.x, 0, ab.zStart, sx * 1.15, sy * 1.15, 3.3 * pulse);
         gl.uniformMatrix4fv(gl.getUniformLocation(progGlow, "uMVP"), false, mat4Mul(vp, mOuter));
         gl.uniformMatrix4fv(gl.getUniformLocation(progGlow, "uModel"), false, mOuter);
-        gl.uniform4f(gl.getUniformLocation(progGlow, "uColor"), 0.22, 0.85, 1.0, 0.65);
-        gl.drawElements(gl.TRIANGLES, unitCylCount, gl.UNSIGNED_SHORT, 0);
+        gl.uniform3fv(gl.getUniformLocation(progGlow, "uCamPos"), camPos);
+        gl.uniform4f(gl.getUniformLocation(progGlow, "uColor"), 0.20, 0.72, 1.0, 0.56);
+        gl.drawElements(gl.TRIANGLES, unitConeCount, gl.UNSIGNED_SHORT, 0);
 
-        const mCore = mat4TRS(ab.x, 0, ab.zStart + 0.65 * pulse, 0.15, 0.14, 1.3 * pulse);
+        // Inner Amber-White Core Cone
+        const mCore = mat4TRS(ab.x, 0, ab.zStart, sx * 0.72, sy * 0.72, 1.85 * pulse);
         gl.uniformMatrix4fv(gl.getUniformLocation(progGlow, "uMVP"), false, mat4Mul(vp, mCore));
         gl.uniformMatrix4fv(gl.getUniformLocation(progGlow, "uModel"), false, mCore);
-        gl.uniform4f(gl.getUniformLocation(progGlow, "uColor"), 1.0, 0.72, 0.25, 0.88);
-        gl.drawElements(gl.TRIANGLES, unitCylCount, gl.UNSIGNED_SHORT, 0);
+        gl.uniform4f(gl.getUniformLocation(progGlow, "uColor"), 1.0, 0.76, 0.30, 0.85);
+        gl.drawElements(gl.TRIANGLES, unitConeCount, gl.UNSIGNED_SHORT, 0);
+
+        // 4 Pulsing Mach Shock-Diamond Rings
+        gl.bindVertexArray(unitCylVAO);
+        for (let k=0; k<4; k++) {
+          const frac = (k + 0.45) / 4.0;
+          const sc = (1.0 - frac * 0.65) * 0.78;
+          const mDia = mat4TRS(ab.x, 0, ab.zStart + frac * 2.55 * pulse, sx * sc, sy * sc, 0.22);
+          gl.uniformMatrix4fv(gl.getUniformLocation(progGlow, "uMVP"), false, mat4Mul(vp, mDia));
+          gl.uniformMatrix4fv(gl.getUniformLocation(progGlow, "uModel"), false, mDia);
+          gl.uniform4f(gl.getUniformLocation(progGlow, "uColor"), 1.0, 0.92, 0.68, 0.92 - frac * 0.45);
+          gl.drawElements(gl.TRIANGLES, unitCylCount, gl.UNSIGNED_SHORT, 0);
+        }
       }
       gl.depthMask(true);
     }
   } else {
-    // 3A. CLEAN X-RAY INTERNAL SUBSYSTEMS (Z-buffered solid glowing modules!)
+    // 3A. DETAILED Z-BUFFERED X-RAY INTERNALS
     const L = mesh.L;
     const mods = [
-      { pos:[0, -0.02, -L*0.78], scale:[0.38, 0.26, 0.55], col:[0.17, 1.0, 0.58, 0.92], grp:"avionics", lbl:"AESA RADAR" },
-      { pos:[0, 0.36, -L*0.46],  scale:[0.26, 0.32, 0.85], col:[1.0, 0.89, 0.35, 0.90], grp:"avionics", lbl:"COCKPIT / FBW" },
-      { pos:[-0.58, 0.04, -L*0.30], scale:[0.16, 0.16, 1.45], col:[0.71, 0.42, 1.0, 0.90], grp:"weapons", lbl:"CANNON DRUM" },
-      { pos:[0, 0.24, L*0.04],   scale:[0.82, 0.20, L*0.42], col:[0.0, 0.78, 1.0, 0.72], grp:"weapons", lbl:"FUEL BLADDERS" },
+      { pos:[0, -0.02, -L*0.80], scale:[0.42, 0.28, 0.24], col:[0.17, 1.0, 0.58, 0.95], grp:"avionics", lbl:"AESA RADAR DISH" },
+      { pos:[0, -0.02, -L*0.66], scale:[0.22, 0.20, 0.36], col:[0.12, 0.85, 0.48, 0.82], grp:"avionics", lbl:null },
+      { pos:[0, 0.36, -L*0.46],  scale:[0.24, 0.32, 0.82], col:[1.0, 0.89, 0.35, 0.92], grp:"avionics", lbl:"COCKPIT / QUAD-FBW" },
+      { pos:[-0.58, 0.04, -L*0.30], scale:[0.15, 0.15, 1.45], col:[0.71, 0.42, 1.0, 0.92], grp:"weapons", lbl:"ROTARY CANNON" },
+      { pos:[0, 0.24, L*0.04],   scale:[0.84, 0.18, L*0.42], col:[0.0, 0.78, 1.0, 0.72], grp:"weapons", lbl:"FUEL BLADDERS" },
       { pos:[-0.30, -0.26, L*0.04], scale:[0.09, 0.09, L*0.34], col:[0.18, 0.88, 1.0, 0.92], grp:"weapons", lbl:null },
       { pos:[0.30, -0.26, L*0.04], scale:[0.09, 0.09, L*0.34], col:[0.18, 0.88, 1.0, 0.92], grp:"weapons", lbl: j.nuke ? null : "WEAPONS BAY" }
     ];
     if (j.nuke) {
-      mods.push({ pos:[0, -0.28, L*0.06], scale:[0.17, 0.17, L*0.34], col:[1.0, 0.23, 0.30, 0.96], grp:"weapons", lbl:"☢ NUCLEAR BAY" });
+      mods.push({ pos:[0, -0.28, L*0.06], scale:[0.17, 0.17, L*0.34], col:[1.0, 0.23, 0.30, 0.98], grp:"weapons", lbl:"☢ NUCLEAR BAY" });
     }
-    const engXs = j.engCount === 1 ? [0] : [-0.66, 0.66];
+    const engXs = j.engCount === 1 ? [0] : [-0.72, 0.72];
     engXs.forEach((ex, k) => {
       mods.push({ pos:[ex, -0.06, -L*0.10], scale:[0.23, 0.20, L*0.32], col:[0.22, 0.72, 1.0, 0.85], grp:"prop", lbl: k===0 ? "S-DUCT INTAKE" : null });
-      mods.push({ pos:[ex, -0.02, L*0.32],  scale:[0.32, 0.32, L*0.42], col:[1.0, 0.68, 0.17, 0.92], grp:"prop", lbl: k===0 ? "TURBOFAN CORE" : null });
-      mods.push({ pos:[ex,  0.00, L*0.72],  scale:[0.30, 0.30, L*0.36], col:[1.0, 0.32, 0.20, 0.92], grp:"prop", lbl: null });
+      mods.push({ pos:[ex, -0.02, L*0.26],  scale:[0.33, 0.33, L*0.26], col:[1.0, 0.68, 0.17, 0.92], grp:"prop", lbl: k===0 ? "TURBOFAN CORE" : null });
+      mods.push({ pos:[ex,  0.00, L*0.56],  scale:[0.31, 0.31, L*0.26], col:[1.0, 0.45, 0.20, 0.92], grp:"prop", lbl: null });
+      mods.push({ pos:[ex,  0.00, L*0.80],  scale:[0.28, 0.28, L*0.20], col:[1.0, 0.25, 0.25, 0.95], grp:"prop", lbl: null });
     });
 
     gl.useProgram(progGlow);
@@ -1322,6 +1756,7 @@ function renderWebGL(nowMs) {
       const trs = mat4TRS(m.pos[0], m.pos[1], m.pos[2], m.scale[0], m.scale[1], m.scale[2]);
       gl.uniformMatrix4fv(gl.getUniformLocation(progGlow, "uMVP"), false, mat4Mul(vp, trs));
       gl.uniformMatrix4fv(gl.getUniformLocation(progGlow, "uModel"), false, trs);
+      gl.uniform3fv(gl.getUniformLocation(progGlow, "uCamPos"), camPos);
       gl.uniform4fv(gl.getUniformLocation(progGlow, "uColor"), m.col);
       gl.drawElements(gl.TRIANGLES, unitCylCount, gl.UNSIGNED_SHORT, 0);
       if (m.lbl) {
@@ -1330,7 +1765,7 @@ function renderWebGL(nowMs) {
       }
     }
 
-    // 3B. CLEAN GLASS FRESNEL OUTER HULL (Drawn AFTER internals with depthWrite = false!)
+    // 3B. CLEAN GLASS FRESNEL OUTER HULL
     gl.depthMask(false);
     gl.useProgram(progPBR);
     gl.uniformMatrix4fv(gl.getUniformLocation(progPBR, "uMVP"), false, vp);
@@ -1344,25 +1779,28 @@ function renderWebGL(nowMs) {
     gl.drawElements(gl.TRIANGLES, mesh.count, gl.UNSIGNED_SHORT, 0);
     gl.depthMask(true);
 
-    // 3C. Clean 2D Overlay Callout Tags
+    // 3C. Hi-DPI Crisp 2D Callout Tags
     if (showXrayLabels) {
-      overlayCtx.font = "bold 10px monospace";
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      overlayCtx.font = `bold ${Math.round(10 * dpr)}px monospace`;
       activeLabels.forEach((item, idx) => {
         const [sx, sy] = item.sp;
         const side = sx >= W * 0.5 ? 1 : -1;
-        const lx = sx + side * 66;
-        const ly = Math.max(24, Math.min(H - 24, sy + (idx % 2 === 0 ? -24 : 24)));
+        const lx = sx + side * 66 * dpr;
+        const ly = Math.max(26 * dpr, Math.min(H - 26 * dpr, sy + (idx % 2 === 0 ? -24 : 24) * dpr));
         const cStr = `rgb(${Math.round(item.col[0]*255)},${Math.round(item.col[1]*255)},${Math.round(item.col[2]*255)})`;
         overlayCtx.strokeStyle = cStr;
-        overlayCtx.lineWidth = 1.1;
-        overlayCtx.beginPath(); overlayCtx.moveTo(sx, sy); overlayCtx.lineTo(lx, ly); overlayCtx.lineTo(lx + side*12, ly); overlayCtx.stroke();
-        const tw = overlayCtx.measureText(item.lbl).width + 10;
-        const bx = side > 0 ? lx + 12 : lx - 12 - tw;
-        overlayCtx.fillStyle = "rgba(4,12,24,0.88)";
-        overlayCtx.fillRect(bx, ly - 8, tw, 16);
-        overlayCtx.strokeRect(bx, ly - 8, tw, 16);
+        overlayCtx.lineWidth = 1.2 * dpr;
+        overlayCtx.beginPath(); overlayCtx.arc(sx, sy, 3.2 * dpr, 0, Math.PI * 2); overlayCtx.stroke();
+        overlayCtx.beginPath(); overlayCtx.moveTo(sx, sy); overlayCtx.lineTo(lx, ly); overlayCtx.lineTo(lx + side*12*dpr, ly); overlayCtx.stroke();
+        const tw = overlayCtx.measureText(item.lbl).width + 12 * dpr;
+        const bx = side > 0 ? lx + 12 * dpr : lx - 12 * dpr - tw;
+        const bh = 18 * dpr;
+        overlayCtx.fillStyle = "rgba(4,12,24,0.90)";
+        overlayCtx.fillRect(bx, ly - bh*0.5, tw, bh);
+        overlayCtx.strokeRect(bx, ly - bh*0.5, tw, bh);
         overlayCtx.fillStyle = cStr;
-        overlayCtx.fillText(item.lbl, bx + 5, ly + 3);
+        overlayCtx.fillText(item.lbl, bx + 6 * dpr, ly + 3.5 * dpr);
       });
     }
   }
@@ -1388,14 +1826,22 @@ function buildDetailedCAD(j) {
   };
   return `
   <svg viewBox="0 0 780 390" xmlns="http://www.w3.org/2000/svg">
-    <rect x="4" y="4" width="772" height="382" fill="rgba(4,12,22,0.92)" stroke="#2de2ff" stroke-opacity="0.4"/>
-    <text x="16" y="21" fill="#ffae2b" font-size="10" font-family="monospace">CLASSIFIED CUTAWAY // INTERNAL SUBSYSTEMS &amp; BULKHEAD STATIONS F1–F12 (${j.name})</text>
-    <g fill="rgba(45,226,255,0.08)" stroke="#2de2ff" stroke-width="1.5"><path d="${shapes[j.id]}" /></g>
+    <defs>
+      <pattern id="bpGrid" width="20" height="20" patternUnits="userSpaceOnUse">
+        <path d="M 20 0 L 0 0 0 20" fill="none" stroke="#2de2ff" stroke-opacity="0.08" stroke-width="0.6"/>
+      </pattern>
+    </defs>
+    <rect x="4" y="4" width="772" height="382" fill="rgba(4,12,22,0.95)" stroke="#2de2ff" stroke-opacity="0.48"/>
+    <rect x="4" y="4" width="772" height="382" fill="url(#bpGrid)"/>
+    <text x="16" y="21" fill="#ffae2b" font-size="10" font-family="monospace" font-weight="bold">CLASSIFIED ENGINEERING CUTAWAY // STATIONS STA-000 TO STA-250 (${j.name})</text>
+    <line x1="175" y1="16" x2="175" y2="262" stroke="#2de2ff" stroke-opacity="0.22" stroke-dasharray="4 3"/>
+    <g fill="rgba(45,226,255,0.09)" stroke="#2de2ff" stroke-width="1.6"><path d="${shapes[j.id]}" /></g>
     <line x1="164" y1="68" x2="186" y2="68" stroke="#2de2ff" stroke-opacity="0.5"/>
     <line x1="156" y1="104" x2="194" y2="104" stroke="#2de2ff" stroke-opacity="0.5"/>
     <line x1="146" y1="142" x2="204" y2="142" stroke="#2de2ff" stroke-opacity="0.5"/>
-    <line x1="92" y1="168" x2="258" y2="168" stroke="#ffae2b" stroke-opacity="0.65" stroke-width="2"/>
+    <line x1="92" y1="168" x2="258" y2="168" stroke="#ffae2b" stroke-opacity="0.7" stroke-width="2"/>
     <line x1="80" y1="178" x2="270" y2="178" stroke="#ffae2b" stroke-opacity="0.45" stroke-width="1.4"/>
+    <circle cx="175" cy="145" r="5" fill="none" stroke="#ffae2b" stroke-width="1.2"/>
     <ellipse cx="175" cy="46" rx="9" ry="13" fill="rgba(44,255,150,0.35)" stroke="#2cff96"/>
     <rect x="169" y="68" width="12" height="22" fill="rgba(255,228,94,0.35)" stroke="#ffe45e"/>
     <rect x="155" y="96" width="8" height="26" fill="rgba(181,108,255,0.45)" stroke="#b56cff"/>
@@ -1411,11 +1857,11 @@ function buildDetailedCAD(j) {
     <polyline points="258,168 335,184" stroke="#ffae2b" fill="none"/><text x="342" y="187" fill="#ffae2b" font-size="9.5" font-family="monospace">06. MAIN WING BOX-SPAR: ${j.sparMat} | SKIN: ${j.ramMm}</text>
     <polyline points="194,208 335,212" stroke="#ffae2b" fill="none"/><text x="342" y="215" fill="#ffae2b" font-size="9.5" font-family="monospace">07. PROPULSION: ${j.engine} (${j.thrustAB} kN | BYPASS ${j.bypass})</text>
     <polyline points="175,232 335,240" stroke="#2cff96" fill="none"/><text x="342" y="243" fill="#2cff96" font-size="9.5" font-family="monospace">08. COUNTERMEASURES: ${j.flares.cap}x ${j.flares.name} + APU + HYDRAULICS</text>
-    <rect x="16" y="272" width="748" height="104" fill="rgba(8,22,40,0.88)" stroke="#2de2ff" stroke-opacity="0.35"/>
-    <text x="26" y="292" fill="#ffae2b" font-size="10" font-family="monospace">STRUCTURAL &amp; AERODYNAMIC TELEMETRY // CLASSIFIED ENGINEERING SUMMARY</text>
+    <rect x="16" y="272" width="748" height="104" fill="rgba(8,22,40,0.92)" stroke="#2de2ff" stroke-opacity="0.4"/>
+    <text x="26" y="292" fill="#ffae2b" font-size="10" font-family="monospace" font-weight="bold">STRUCTURAL &amp; AERODYNAMIC TELEMETRY // CLASSIFIED ENGINEERING SUMMARY</text>
     <text x="26" y="312" fill="#e2f1ff" font-size="10" font-family="monospace">DIMENSIONS: LEN ${j.len} m | SPAN ${j.span} m | HT ${j.h} m | WING AREA ${j.wingArea} m² | AR ${j.ar}</text>
     <text x="26" y="330" fill="#2de2ff" font-size="10" font-family="monospace">MASS &amp; THRUST: COMBAT ${j.mass.toLocaleString()} kg | AB THRUST ${j.thrustAB} kN | T/W ${tw} | WING LOAD ${wl} kg/m² | +${j.maxG}G</text>
-    <text x="26" y="348" fill="#2cff96" font-size="10" font-family="monospace">STEALTH &amp; SENSORS: FRONT RCS ${j.rcs} | COATING ${j.ramMm} | RADAR ${j.radKm} km (${j.cone}°)</text>
+    <text x="26" y="348" fill="#2cff96" font-size="10" font-family="monospace">TOP SPEED &amp; STEALTH: ${j.kmh.toLocaleString()} km/h (Mach ${j.mach}) | FRONT RCS ${j.rcs} | RADAR ${j.radKm} km (${j.cone}°)</text>
     <text x="26" y="366" fill="${j.nuke ? '#ff3b4e' : '#7f9fbc'}" font-size="10" font-family="monospace">NUCLEAR STATUS: ${j.nuke ? 'CERTIFIED — ' + j.nuke[1] + 'x ' + MISSILES[j.nuke[0]].name : 'CONVENTIONAL SPECIALIST'}</text>
   </svg>`;
 }
@@ -1427,15 +1873,23 @@ function setViewMode(mode) {
   document.getElementById("glWrap").classList.toggle("hidden", mode !== "360" && mode !== "xray");
   document.getElementById("hangar-bar").classList.toggle("hidden", mode !== "360");
   document.getElementById("xray-filter-bar").classList.toggle("hidden", mode !== "xray");
+  document.getElementById("studio-angle-bar").classList.toggle("hidden", mode !== "studio");
   document.getElementById("cad-svg-wrap").classList.toggle("hidden", mode !== "cad");
-  document.getElementById("studio-img").classList.toggle("hidden", mode !== "studio");
+  document.getElementById("studio-wrap").classList.toggle("hidden", mode !== "studio");
   document.getElementById("orbit-hint").classList.toggle("hidden", mode !== "360" && mode !== "xray");
+}
+
+function setStudioAngle(ang, btn) {
+  studioAngle = ang;
+  document.getElementById("st-btn-q34").classList.toggle("active", ang === "q34");
+  document.getElementById("st-btn-front").classList.toggle("active", ang === "front");
+  document.getElementById("studio-img").src = JET_IMAGES[selectedJet.id][studioAngle];
 }
 
 function setCamPreset(y, p, dMult, btn) {
   const twoPi = Math.PI * 2;
   camYaw = ((camYaw % twoPi) + twoPi) % twoPi;
-  targetYaw = y; targetPitch = p; targetDist = 20.5 / dMult;
+  targetYaw = y; targetPitch = p; targetDist = 19.6 / dMult;
   autoSpin = false;
   document.getElementById("btn-autospin").textContent = "⟳ Auto-Orbit: OFF";
   document.querySelectorAll("#hangar-bar .ang-btn").forEach(b => { if (b.id !== "btn-ab-glow") b.classList.remove("active"); });
@@ -1474,10 +1928,9 @@ window.addEventListener("mousemove", e => {
 });
 glCanvas.addEventListener("wheel", e => {
   e.preventDefault();
-  targetDist = Math.max(10.0, Math.min(34.0, targetDist + e.deltaY * 0.016));
+  targetDist = Math.max(9.5, Math.min(34.0, targetDist + e.deltaY * 0.016));
 }, { passive: false });
 
-// Touch drag support
 glCanvas.addEventListener("touchstart", e => { if (e.touches[0]) { dragging = true; lastX = e.touches[0].clientX; lastY = e.touches[0].clientY; } }, { passive: true });
 window.addEventListener("touchend", () => dragging = false);
 window.addEventListener("touchmove", e => {
@@ -1487,8 +1940,30 @@ window.addEventListener("touchmove", e => {
   lastX = e.touches[0].clientX; lastY = e.touches[0].clientY;
 }, { passive: true });
 
-// ================== REALISTIC MULTI-LAYERED WEB AUDIO ==================
-let actx = null, noiseBuf = null;
+// ================== REALISTIC MULTI-LAYERED WEB AUDIO + EQ VISUALIZER ==================
+let actx = null, noiseBuf = null, eqTimer = null;
+function triggerAudioMeter(label, durationMs) {
+  const st = document.getElementById("audio-status");
+  const bars = Array.from(document.querySelectorAll("#eq-bars span"));
+  st.textContent = label;
+  st.style.color = "var(--hud-green)";
+  clearInterval(eqTimer);
+  const endAt = performance.now() + durationMs;
+  eqTimer = setInterval(() => {
+    if (performance.now() > endAt) {
+      clearInterval(eqTimer);
+      bars.forEach(b => b.style.height = "3px");
+      st.textContent = "ACOUSTIC ENGINE IDLE // VOSS-MCCARTNEY FILTERED NOISE";
+      st.style.color = "var(--text-dim)";
+      return;
+    }
+    bars.forEach(b => {
+      b.style.height = (4 + Math.random() * 12).toFixed(0) + "px";
+      b.style.background = Math.random() > 0.7 ? "var(--hud-amber)" : "var(--hud-cyan)";
+    });
+  }, 65);
+}
+
 function initAudio() {
   if (!actx) {
     actx = new (window.AudioContext || window.webkitAudioContext)();
@@ -1510,6 +1985,7 @@ function initAudio() {
 
 function playJetEngine() {
   initAudio();
+  triggerAudioMeter(`ACTIVE: ${selectedJet.engine} COMBUSTOR + AFTERBURNER`, 2400);
   const now = actx.currentTime, p = selectedJet.engPitch;
   const src1 = actx.createBufferSource(); src1.buffer = noiseBuf; src1.loop = true;
   const lp = actx.createBiquadFilter(); lp.type = "lowpass"; lp.frequency.setValueAtTime(140*p, now);
@@ -1537,6 +2013,7 @@ function playJetEngine() {
 function playCannon() {
   initAudio();
   const c = CANNONS[selectedJet.cannon], now = actx.currentTime;
+  triggerAudioMeter(`FIRING: ${c.name} (${c.rpm} RPM)`, 950);
   const count = Math.min(12, Math.max(5, Math.round(c.rpm / 500)));
   const dt = 60 / c.rpm;
   for (let i=0; i<count; i++) {
@@ -1559,6 +2036,7 @@ function playCannon() {
 
 function playMissile() {
   initAudio();
+  triggerAudioMeter(`FOX-3 / LAUNCH: ${MISSILES[selectedJet.pri[0]].name}`, 1200);
   const now = actx.currentTime;
   const src = actx.createBufferSource(); src.buffer = noiseBuf;
   const bp = actx.createBiquadFilter(); bp.type = "bandpass"; bp.Q.value = 0.9;
@@ -1571,6 +2049,7 @@ function playMissile() {
 
 function playFlare() {
   initAudio();
+  triggerAudioMeter(`COUNTERMEASURES: ${selectedJet.flares.name} SALVO`, 800);
   const now = actx.currentTime;
   for (let i=0; i<4; i++) {
     const t = now + i*0.06;
@@ -1584,6 +2063,7 @@ function playFlare() {
 
 function playNuke() {
   initAudio();
+  triggerAudioMeter(`☢ NUCLEAR DETONATION SHOCKWAVE`, 2500);
   const stage = document.getElementById("stage-shell");
   stage.classList.remove("flash-nuke"); void stage.offsetWidth; stage.classList.add("flash-nuke");
   const now = actx.currentTime;
@@ -1596,15 +2076,23 @@ function playNuke() {
 }
 
 // ================== UI RENDERING ==================
+function setAllLevels(lv) {
+  ["sl-jet", "sl-msl", "sl-rkt", "sl-gun"].forEach(id => document.getElementById(id).value = lv);
+  renderSelectedJet();
+}
+
 function renderRoster() {
   const aside = document.getElementById("jet-roster");
-  aside.innerHTML = `<div class="roster-title">FIGHTER SQUADRON (7 NUCLEAR JETS)</div>` + JETS.map(j => `
+  aside.innerHTML = `<div class="roster-title"><span>FIGHTER SQUADRON (10)</span><span style="color:var(--hud-red)">7 NUCLEAR</span></div>` + JETS.map(j => `
     <button class="jet-btn ${j.id === selectedJet.id ? 'active' : ''}" onclick="selectJet('${j.id}')">
       <div class="j-top">
         <span>${j.name}</span>
         <span class="tag-pill" style="color:${j.nuke ? 'var(--hud-red)' : 'var(--hud-cyan)'}">${j.nuke ? '☢ '+j.nuke[1]+'x NUKE' : j.origin}</span>
       </div>
-      <div class="j-sub">${j.role} • ${j.flares.cap} Flares ${j.rockets ? '• Rockets' : ''}</div>
+      <div class="j-sub">
+        <span>${j.role} • ${j.flares.cap}F</span>
+        <span class="j-spd">M ${j.mach}</span>
+      </div>
     </button>
   `).join("");
 }
@@ -1613,6 +2101,7 @@ function selectJet(id) {
   selectedJet = JETS.find(j => j.id === id) || JETS[0];
   renderRoster();
   renderSelectedJet();
+  renderMatrix();
 }
 
 function renderSelectedJet() {
@@ -1644,7 +2133,8 @@ function renderSelectedJet() {
   nBadge.textContent = j.nuke ? `☢ NUCLEAR ARMED (${j.nuke[1]}x)` : "CONVENTIONAL SPECIALIST";
   nBadge.style.color = j.nuke ? "var(--hud-red)" : "var(--text-dim)";
 
-  document.getElementById("studio-img").src = JET_IMAGES[j.id].q34;
+  document.getElementById("jet-hud-badge").textContent = `MACH ${machLive} • ${kmh.toLocaleString()} KM/H`;
+  document.getElementById("studio-img").src = JET_IMAGES[j.id][studioAngle];
   document.getElementById("cad-svg-wrap").innerHTML = buildDetailedCAD(j);
   document.getElementById("btn-nuke-sfx").classList.toggle("hidden", !j.nuke);
 
@@ -1654,16 +2144,22 @@ function renderSelectedJet() {
   document.getElementById("vfx-audio-line").textContent = `ACOUSTICS: ${j.audio}`;
   document.getElementById("ability-tier-badge").textContent = `OVERDRIVE TIER: LV ${abTier} (CD ${j.ability.cd[abTier - 1]}s)`;
 
+  const hpGain = jLv > 1 ? `+${Math.round((jLv - 1) * 6.5)}%` : "";
+  const spdGain = jLv > 1 ? `+${((jLv - 1) * 1.2).toFixed(1)}%` : "";
+  const trnGain = jLv > 1 ? `+${((jLv - 1) * 1.1).toFixed(1)}%` : "";
   const bars = [
-    ["AIRFRAME HULL HP", `${hp} HP`, Math.min(100, hp / 6)],
-    ["REAL-LIFE TOP SPEED", `${kmh.toLocaleString()} km/h (${spd} m/s • Mach ${machLive})`, Math.min(100, kmh / 26)],
-    ["TURN RATE / AGILITY", `${turn} deg/s`, Math.min(100, turn / 0.95)],
-    ["STEALTH RATING", `${j.stealth}% (RCS ${j.rcs})`, j.stealth],
-    ["RADAR REACH", `${j.radKm} km`, Math.min(100, j.radKm * 10)]
+    ["AIRFRAME HULL HP", `${hp} HP`, hpGain, Math.min(100, hp / 6)],
+    ["REAL-LIFE TOP SPEED", `${kmh.toLocaleString()} km/h (${spd} m/s • Mach ${machLive})`, spdGain, Math.min(100, kmh / 28)],
+    ["TURN RATE / AGILITY", `${turn} deg/s`, trnGain, Math.min(100, turn / 0.95)],
+    ["STEALTH RATING", `${j.stealth}% (RCS ${j.rcs})`, "", j.stealth],
+    ["RADAR REACH", `${j.radKm} km`, "", Math.min(100, j.radKm * 10)]
   ];
-  document.getElementById("stats-bars").innerHTML = bars.map(([lbl, txt, pct]) => `
+  document.getElementById("stats-bars").innerHTML = bars.map(([lbl, txt, delta, pct]) => `
     <div class="stat-row">
-      <div class="stat-label"><span>${lbl}</span><span style="color:var(--hud-green)">${txt}</span></div>
+      <div class="stat-label">
+        <span>${lbl}${delta ? `<span class="stat-delta">${delta}</span>` : ""}</span>
+        <span style="color:var(--hud-green);font-weight:700;">${txt}</span>
+      </div>
       <div class="stat-bar-bg"><div class="stat-bar-fill" style="width:${pct}%"></div></div>
     </div>
   `).join("");
@@ -1678,7 +2174,8 @@ function renderSelectedJet() {
   const silverCost = Math.round(650 * Math.pow(1.24, jLv - 1) * 1.6);
   const alloyCost = Math.round(15 * Math.pow(1.18, jLv - 1) * 1.6);
   document.getElementById("upgrade-cost-line").textContent =
-    `Next Upgrade (Lv ${jLv}→${Math.min(20, jLv+1)}): ${silverCost.toLocaleString()} Silver • ${alloyCost} Alloy • ${Math.max(2, Math.floor(jLv*1.5))} Blueprint Shards`;
+    jLv >= 20 ? "MAX LEVEL 20 REACHED — ALL OVERDRIVE TIERS UNLOCKED" :
+    `Next Upgrade (Lv ${jLv}→${jLv+1}): ${silverCost.toLocaleString()} Silver • ${alloyCost} Alloy • ${Math.max(2, Math.floor(jLv*1.5))} Blueprint Shards`;
 
   document.getElementById("traits-grid").innerHTML =
     j.traits.map(tr => `<div class="card"><h4>AIRFRAME TRAIT // ${tr.t}</h4><p>${tr.d}</p></div>`).join("") +
@@ -1708,6 +2205,7 @@ function renderSelectedJet() {
       <div class="kv-line"><span>${nuk.name}</span><span>${nukDmg} DMG</span></div>
       <div class="kv-line"><span>Class &amp; Speed</span><span>${nuk.cls} • ${nuk.spd} m/s</span></div>
       <div class="kv-line"><span>Thermal + EMP</span><span>${nuk.blast}</span></div>
+      <button class="inspect-3d-btn" onclick="inspectOrdnance3D('${j.nuke[0]}')">🔬 Inspect Nuclear 3D Design</button>
     </div>`;
   }
 
@@ -1720,6 +2218,7 @@ function renderSelectedJet() {
       <div class="kv-line"><span>Damage (Lv.${rLv})</span><span>${rkDmg} / rocket</span></div>
       <div class="kv-line"><span>Splash Radius</span><span>${(rk.splash * (1 + (rLv-1)*0.015)).toFixed(1)} m</span></div>
       <div class="kv-line"><span>Guidance</span><span>${rk.guid}</span></div>
+      <button class="inspect-3d-btn" onclick="inspectOrdnance3D('${j.rockets[0]}')">🔬 Inspect Pod &amp; Rocket 3D</button>
     </div>`;
   }
 
@@ -1729,6 +2228,10 @@ function renderSelectedJet() {
       <div class="kv-line"><span>${j.pri[1]}x ${pri.name}</span><span>${priDmg} DMG (${pri.rng} km)</span></div>
       ${secHtml}
       <div class="kv-line"><span>Lock Time (Lv.${mLv})</span><span>${(pri.lock/(1+(mLv-1)*0.02)).toFixed(2)}s</span></div>
+      <div style="display:flex;gap:6px;">
+        <button class="inspect-3d-btn" onclick="inspectOrdnance3D('${j.pri[0]}')">🔬 Primary 3D</button>
+        ${j.sec ? `<button class="inspect-3d-btn" onclick="inspectOrdnance3D('${j.sec[0]}')">🔬 Secondary 3D</button>` : ""}
+      </div>
     </div>
     ${nukeCard}
     ${rktCard}
@@ -1737,49 +2240,540 @@ function renderSelectedJet() {
       <div class="kv-line"><span>${gun.name}</span><span>${gunDps} DPS (${gun.rpm} RPM)</span></div>
       <div class="kv-line"><span>Ammo / Armor Pen</span><span>${gun.mag} rds • ${gun.pen}</span></div>
       <div class="kv-line"><span>Flares: ${j.flares.cap}x ${j.flares.name}</span><span>CD ${j.flares.cd} / Dur ${j.flares.dur}</span></div>
+      <button class="inspect-3d-btn" onclick="inspectOrdnance3D('${j.cannon}')">🔬 Inspect Cannon 3D</button>
     </div>
   `;
 }
 
+function renderMatrix() {
+  const tbl = document.getElementById("matrix-table");
+  tbl.innerHTML = `
+    <thead><tr>
+      <th>Jet</th><th>Top Speed</th><th>Base HP</th><th>Turn</th><th>Stealth</th><th>Radar</th><th>Missiles</th><th>Nuclear</th><th>Rockets</th><th>Flares</th>
+    </tr></thead>
+    <tbody>
+      ${JETS.map(j => {
+        const pri = MISSILES[j.pri[0]].name.split(" ")[0];
+        const sec = j.sec ? ` + ${j.sec[1]}x ${MISSILES[j.sec[0]].name.split(" ")[0]}` : "";
+        const nuk = j.nuke ? `<span style="color:var(--hud-red);font-weight:700;">☢ ${j.nuke[1]}x ${MISSILES[j.nuke[0]].name.split(" ")[0]}</span>` : `<span style="color:var(--text-dim);">—</span>`;
+        const rkt = j.rockets ? `${j.rockets[1]}x` : `<span style="color:var(--text-dim);">—</span>`;
+        return `<tr class="${j.id === selectedJet.id ? 'selected-row' : ''}" onclick="selectJet('${j.id}'); switchTab('aircraft', document.querySelector('.tab-btn'))">
+          <td style="font-weight:700;color:var(--hud-cyan);">${j.name}</td>
+          <td style="color:var(--hud-green);font-weight:700;">${j.kmh} km/h (M ${j.mach})</td>
+          <td>${j.hp}</td>
+          <td>${j.turn}°/s</td>
+          <td>${j.stealth}%</td>
+          <td>${j.radKm} km</td>
+          <td>${j.pri[1]}x ${pri}${sec}</td>
+          <td>${nuk}</td>
+          <td>${rkt}</td>
+          <td>${j.flares.cap}x</td>
+        </tr>`;
+      }).join("")}
+    </tbody>`;
+}
+
+// ================== ORDNANCE DESIGN STUDIO (ALL 31 WEAPONS: 12 MISSILES, 7 NUKES, 5 ROCKET PODS, 7 CANNONS) ==================
+const ORD_DESIGN_SPECS = {
+  // Missiles
+  am_120d: { kind:"missile", style:"bvr_radar", body:"#d6dee8", nose:"#6c7682", band:"#eab308", motor:"#92400e", fin:"#475569", desc:"Active BVR radar missile with ceramic radome, clipped mid-body wings, and high-impulse solid rocket motor." },
+  am_9x:   { kind:"missile", style:"ir_slim", body:"#dde4ee", nose:"#d97706", band:"#eab308", motor:"#78350f", fin:"#334155", desc:"High-off-boresight IR dogfight missile with smoky sapphire-amber seeker dome, small forward fins, and thrust-vectoring tail." },
+  mt_200:  { kind:"missile", style:"ramjet", body:"#cfd8e3", nose:"#475569", band:"#38bdf8", motor:"#334155", fin:"#1e293b", desc:"Throttleable ducted-rocket BVR missile with twin side air intakes feeding a Mach 4+ boron-fueled ramjet." },
+  ir_t:    { kind:"missile", style:"ir_strake", body:"#e2e8f0", nose:"#f59e0b", band:"#06b6d4", motor:"#475569", fin:"#334155", desc:"Agile short-range IR missile featuring long-chord mid-body strakes and a serrated thrust-vectoring exhaust nozzle." },
+  as_132:  { kind:"missile", style:"ir_wingless", body:"#d8e0ea", nose:"#b45309", band:"#ef4444", motor:"#64748b", fin:"#334155", desc:"Low-drag wingless high-acceleration IR interceptor with large hemispherical glass seeker and cropped rear tail fins." },
+  mk_em:   { kind:"missile", style:"strake_radar", body:"#cbd5e1", nose:"#64748b", band:"#38bdf8", motor:"#475569", fin:"#1e293b", desc:"Medium-range active radar missile with cruciform long-chord lifting strakes and low-smoke pulse motor." },
+  mk_ir:   { kind:"missile", style:"strake_ir", body:"#cbd5e1", nose:"#0ea5e9", band:"#f59e0b", motor:"#475569", fin:"#1e293b", desc:"Dual-color imaging IR dogfight missile sharing long-chord lifting strakes with a cyan-tinted optical dome." },
+  pl_15x:  { kind:"missile", style:"dual_pulse", body:"#dbe3ed", nose:"#525b66", band:"#3b82f6", motor:"#1f2937", fin:"#334155", desc:"Long-range dual-pulse AESA-guided BVR missile with cropped rectangular low-drag fins and stealth metallic aft collar." },
+  r_77v:   { kind:"missile", style:"lattice", body:"#e2e8f0", nose:"#64748b", band:"#ef4444", motor:"#475569", fin:"#94a3b8", desc:"Signature Adder-X BVR missile equipped with titanium drag-reducing lattice grid tail fins for high-AoA control." },
+  r_77s:   { kind:"missile", style:"lattice_boat", body:"#d1dae4", nose:"#475569", band:"#f97316", motor:"#334155", fin:"#94a3b8", desc:"Extended-range RVV-SD variant combining titanium lattice grid tail fins with a tapered aerodynamic boat-tail." },
+  r_74x:   { kind:"missile", style:"canard_ir", body:"#e2e8f0", nose:"#f59e0b", band:"#ef4444", motor:"#475569", fin:"#334155", desc:"Off-boresight IR missile with nose destabilizer vanes, forward cruciform canards, and wide rear delta stabilizers." },
+  r_73v:   { kind:"missile", style:"canard_ir", body:"#cbd5e1", nose:"#ea580c", band:"#eab308", motor:"#475569", fin:"#1e293b", desc:"Close-combat thrust-vectoring IR missile with forward control canards and signature rear spoiler paddles." },
+  // Nuclear Warheads
+  kh_102x: { kind:"nuke", style:"stealth_cruise", body:"#252b34", nose:"#161a20", band:"#ef4444", motor:"#f59e0b", fin:"#334155", desc:"Faceted hexagonal low-observable stealth nuclear cruise missile (250 kt) with ferrite RAM skin, deployed swept wings, and crimson hazard collar." },
+  cj_20x:  { kind:"nuke", style:"ventral_cruise", body:"#334155", nose:"#1e293b", band:"#ef4444", motor:"#eab308", fin:"#475569", desc:"Long-range subsonic nuclear cruise missile (200 kt) with underslung ventral turbofan nacelle and high-aspect swept wings." },
+  b61n:    { kind:"nuke", style:"b61_glide", body:"#94a3b8", nose:"#475569", band:"#ef4444", motor:"#eab308", fin:"#64748b", desc:"Sleek brushed-alloy tactical nuclear bay munition (80 kt) with blunt ogive nose, tapered tailcone, and 4 swept cruciform tail fins." },
+  storm_n: { kind:"nuke", style:"box_stealth", body:"#2c3440", nose:"#181c24", band:"#ef4444", motor:"#f59e0b", fin:"#3f4a5a", desc:"Trapezoidal stealth standoff nuclear missile (150 kt) with chin air intake, recessed dorsal wings, and dark RAM surface." },
+  kh_59n:  { kind:"nuke", style:"heavy_cruise", body:"#475569", nose:"#0ea5e9", band:"#ef4444", motor:"#eab308", fin:"#334155", desc:"Heavy tactical nuclear cruise missile (180 kt) with glazed nose optical/INS window, underslung turbojet pod, and dual hazard rings." },
+  asmp_r:  { kind:"nuke", style:"ramjet_nuke", body:"#e2e8f0", nose:"#334155", band:"#ef4444", motor:"#f59e0b", fin:"#475569", desc:"Mach 3 supersonic ramjet nuclear missile (300 kt) featuring twin cheek supersonic air-intakes and crimson radiation rings." },
+  kh_102s: { kind:"nuke", style:"twin_stealth", body:"#1f252d", nose:"#12161c", band:"#ef4444", motor:"#f59e0b", fin:"#334155", desc:"Heavy twin-rack tactical nuclear stealth cruise missile (250 kt ×2) with wide chined hull, dorsal saddle collar, and twin hazard bands." },
+  // Rocket Pods & Rockets
+  s8_kom:    { kind:"rocket", style:"pod_20", body:"#3a463d", nose:"#94a3b8", band:"#ef4444", motor:"#d97706", fin:"#1f2937", tubes:20, cal:80, desc:"20-tube cylindrical B-8V launcher pod in matte olive-gunmetal with conical nose cap and S-8K 80mm HEAT fin-folding rockets." },
+  s13_heavy: { kind:"rocket", style:"pod_5", body:"#2c3238", nose:"#64748b", band:"#f59e0b", motor:"#dc2626", fin:"#111827", tubes:5, cal:122, desc:"Heavy 5-tube B-13V steel bunker-buster pod firing massive 122mm S-13X armor-piercing rockets." },
+  log_70:    { kind:"rocket", style:"pod_7_stealth", body:"#4b5563", nose:"#0ea5e9", band:"#38bdf8", motor:"#475569", fin:"#1e293b", tubes:7, cal:70, desc:"Faceted semi-stealth 7-tube composite pod housing laser/IR semi-guided LOG-70 precision 70mm rockets." },
+  cr_70:     { kind:"rocket", style:"pod_19_dart", body:"#cbd5e1", nose:"#eab308", band:"#ef4444", motor:"#475569", fin:"#334155", tubes:19, cal:70, desc:"Aerodynamic 19-tube LAU-50V high-speed pod loaded with supersonic CR-70 kinetic flechette dart rockets." },
+  sn_68:     { kind:"rocket", style:"pod_12_euro", body:"#64748b", nose:"#e2e8f0", band:"#ef4444", motor:"#334155", fin:"#1e293b", tubes:12, cal:68, desc:"European tapered 12-tube TL-12 launcher pod with crimson safety collar and high-velocity 68mm SN-68 rockets." },
+  // Cannons
+  gsh_30v:       { kind:"cannon", style:"single_30", body:"#334155", nose:"#94a3b8", band:"#f97316", motor:"#1e293b", fin:"#0f172a", barrels:1, desc:"Single-barrel 30mm high-impulse internal autocannon with heavy recoil-damped receiver & 150-round drum." },
+  cs_23v_pod:    { kind:"cannon", style:"stealth_pod", body:"#1f2937", nose:"#475569", band:"#2cff96", motor:"#111827", fin:"#0f172a", barrels:4, desc:"Low-observable ventral stealth gun pod housing a compact 4-barrel 23mm rotary cannon & 240-round feeder." },
+  m61v_vulcanix: { kind:"cannon", style:"gatling_6", body:"#475569", nose:"#94a3b8", band:"#eab308", motor:"#1e293b", fin:"#0f172a", barrels:6, desc:"6-barrel hydraulically driven 20mm Gatling cannon (6,000 RPM) with helical drum magazine." },
+  m61k_precision:{ kind:"cannon", style:"gatling_6", body:"#64748b", nose:"#cbd5e1", band:"#38bdf8", motor:"#1e293b", fin:"#0f172a", barrels:6, desc:"Precision-stabilized 6-barrel 20mm rotary cannon tuned for tighter air-to-air dispersion." },
+  gau_22x:       { kind:"cannon", style:"gatling_4", body:"#374151", nose:"#9ca3af", band:"#f59e0b", motor:"#111827", fin:"#0f172a", barrels:4, desc:"Lightweight 4-barrel 25mm stealth-bay rotary cannon delivering heavy armor-piercing bursts." },
+  bk_27x:        { kind:"cannon", style:"revolver_1", body:"#4b5563", nose:"#9ca3af", band:"#ef4444", motor:"#1f2937", fin:"#0f172a", barrels:1, desc:"27mm gas-operated revolver cannon with rotating 5-chamber cylinder for instantaneous first-round snap." },
+  g30m_791x:     { kind:"cannon", style:"revolver_1", body:"#3f4a5a", nose:"#cbd5e1", band:"#f59e0b", motor:"#1e293b", fin:"#0f172a", barrels:1, desc:"High-cadence 30mm 7-chamber revolver cannon (2,500 RPM) engineered for air-to-air snap kills." }
+};
+
+function getAllOrdnanceList() {
+  const arr = [];
+  for (const [id, m] of Object.entries(MISSILES)) {
+    const sp = ORD_DESIGN_SPECS[id];
+    arr.push({ id, kind: m.nuke ? "nuke" : "missile", name: m.name, data: m, spec: sp });
+  }
+  for (const [id, r] of Object.entries(ROCKETS)) {
+    arr.push({ id, kind: "rocket", name: r.name, data: r, spec: ORD_DESIGN_SPECS[id] });
+  }
+  for (const [id, c] of Object.entries(CANNONS)) {
+    arr.push({ id, kind: "cannon", name: c.name, data: c, spec: ORD_DESIGN_SPECS[id] });
+  }
+  return arr;
+}
+
+function buildOrdnanceCardSVG(item) {
+  const s = item.spec, k = item.kind;
+  if (k === "rocket") {
+    return `<svg viewBox="0 0 320 74" xmlns="http://www.w3.org/2000/svg">
+      <line x1="10" y1="37" x2="310" y2="37" stroke="#2de2ff" stroke-opacity="0.16" stroke-dasharray="3 3"/>
+      <!-- Multi-Tube Rocket Pod -->
+      <path d="M58,20 L175,20 L182,24 L182,50 L175,54 L58,54 L40,42 L40,32 Z" fill="${s.body}" stroke="#94a3b8" stroke-width="1.2"/>
+      <rect x="64" y="20" width="8" height="34" fill="${s.band}" opacity="0.88"/>
+      <circle cx="48" cy="37" r="10" fill="#0b121c" stroke="#64748b"/>
+      <circle cx="45" cy="33" r="2.2" fill="${s.nose}"/><circle cx="51" cy="33" r="2.2" fill="${s.nose}"/>
+      <circle cx="45" cy="40" r="2.2" fill="${s.nose}"/><circle cx="51" cy="40" r="2.2" fill="${s.nose}"/>
+      <text x="112" y="13" fill="#7f9fbc" font-size="8" font-family="monospace" text-anchor="middle">${s.tubes}-TUBE POD (${s.cal}mm)</text>
+      <!-- Standalone Rocket Shown Below/Right -->
+      <rect x="215" y="32" width="76" height="10" rx="1" fill="#dce5ef" stroke="#475569"/>
+      <polygon points="215,32 197,37 215,42" fill="${s.nose}"/>
+      <rect x="223" y="32" width="7" height="10" fill="${s.band}"/>
+      <polygon points="282,32 294,25 294,32" fill="${s.fin}"/><polygon points="282,42 294,49 294,42" fill="${s.fin}"/>
+      <text x="252" y="64" fill="#2cff96" font-size="8" font-family="monospace" text-anchor="middle">INDIVIDUAL ${s.cal}mm ROCKET</text>
+    </svg>`;
+  }
+  if (k === "cannon") {
+    const bc = s.barrels;
+    let barrelsSvg = "";
+    for (let i=0; i<bc; i++) {
+      const y = 37 + (i - (bc-1)/2) * (bc > 1 ? 3.8 : 0);
+      barrelsSvg += `<rect x="44" y="${y-1.4}" width="118" height="2.8" fill="${s.nose}" stroke="#0f172a" stroke-width="0.4"/>`;
+    }
+    return `<svg viewBox="0 0 320 74" xmlns="http://www.w3.org/2000/svg">
+      <rect x="158" y="23" width="94" height="28" rx="3" fill="${s.body}" stroke="#64748b" stroke-width="1.2"/>
+      <circle cx="268" cy="37" r="16" fill="#1e293b" stroke="${s.band}" stroke-width="1.4"/>
+      <circle cx="268" cy="37" r="7" fill="${s.band}" opacity="0.5"/>
+      ${barrelsSvg}
+      <rect x="64" y="29" width="10" height="16" fill="#1e293b" stroke="#94a3b8"/>
+      <text x="160" y="67" fill="#b56cff" font-size="8" font-family="monospace" text-anchor="middle">${bc}-BARREL ${item.data.cal}mm • ${item.data.rpm} RPM</text>
+    </svg>`;
+  }
+  // Missile or Nuclear Warhead Profile
+  const isNuke = k === "nuke";
+  const isStealth = ["stealth_cruise","box_stealth","twin_stealth"].includes(s.style);
+  const isRamjet = ["ramjet","ramjet_nuke"].includes(s.style);
+  const isLattice = ["lattice","lattice_boat"].includes(s.style);
+  const isIR = ["ir_slim","ir_strake","ir_wingless","strake_ir","canard_ir"].includes(s.style);
+  const bodyH = isNuke ? 18 : 11;
+  const y0 = 37 - bodyH/2;
+  return `<svg viewBox="0 0 320 74" xmlns="http://www.w3.org/2000/svg">
+    <line x1="12" y1="37" x2="308" y2="37" stroke="#2de2ff" stroke-opacity="0.16" stroke-dasharray="3 3"/>
+    <!-- Main Body -->
+    ${isStealth
+      ? `<polygon points="62,${y0+3} 252,${y0} 266,${y0+4} 266,${y0+bodyH-4} 252,${y0+bodyH} 62,${y0+bodyH-3} 32,37" fill="${s.body}" stroke="#64748b" stroke-width="1.2"/>`
+      : `<rect x="62" y="${y0}" width="194" height="${bodyH}" fill="${s.body}" stroke="#475569" stroke-width="1"/>`
+    }
+    <!-- Nose / Seeker -->
+    ${isStealth ? "" : (isIR
+      ? `<path d="M62,${y0} Q38,37 62,${y0+bodyH} Z" fill="${s.nose}"/>`
+      : `<polygon points="62,${y0} 26,37 62,${y0+bodyH}" fill="${s.nose}"/>`
+    )}
+    <!-- Warhead / Nuclear Bands -->
+    <rect x="86" y="${y0}" width="${isNuke ? 14 : 8}" height="${bodyH}" fill="${s.band}"/>
+    ${isNuke ? `<rect x="106" y="${y0}" width="7" height="${bodyH}" fill="${s.motor}"/>` : `<rect x="184" y="${y0}" width="9" height="${bodyH}" fill="${s.motor}"/>`}
+    <!-- Ramjet Cheek Intakes or Ventral Turbofan -->
+    ${isRamjet ? `<rect x="115" y="${y0-5}" width="110" height="5" fill="${s.fin}" stroke="#94a3b8" stroke-width="0.6"/><rect x="115" y="${y0+bodyH}" width="110" height="5" fill="${s.fin}" stroke="#94a3b8" stroke-width="0.6"/>` : ""}
+    ${["ventral_cruise","heavy_cruise"].includes(s.style) ? `<rect x="186" y="${y0+bodyH}" width="46" height="8" rx="2" fill="${s.fin}" stroke="#94a3b8" stroke-width="0.6"/>` : ""}
+    <!-- Mid Wings / Canards / Tail Fins -->
+    ${isNuke && s.style !== "b61_glide" ? `<polygon points="135,${y0} 172,${y0-17} 190,${y0-17} 166,${y0}" fill="${s.body}" stroke="#64748b"/><polygon points="135,${y0+bodyH} 172,${y0+bodyH+17} 190,${y0+bodyH+17} 166,${y0+bodyH}" fill="${s.body}" stroke="#64748b"/>` : ""}
+    ${s.style === "canard_ir" ? `<polygon points="68,${y0} 82,${y0-8} 88,${y0}" fill="${s.fin}"/><polygon points="68,${y0+bodyH} 82,${y0+bodyH+8} 88,${y0+bodyH}" fill="${s.fin}"/>` : ""}
+    ${isLattice
+      ? `<rect x="234" y="${y0-11}" width="18" height="11" fill="none" stroke="${s.fin}" stroke-width="1.5"/><line x1="234" y1="${y0-5.5}" x2="252" y2="${y0-5.5}" stroke="${s.fin}"/><line x1="243" y1="${y0-11}" x2="243" y2="${y0}" stroke="${s.fin}"/><rect x="234" y="${y0+bodyH}" width="18" height="11" fill="none" stroke="${s.fin}" stroke-width="1.5"/>`
+      : `<polygon points="224,${y0} 248,${y0-13} 256,${y0-13} 256,${y0}" fill="${s.fin}"/><polygon points="224,${y0+bodyH} 248,${y0+bodyH+13} 256,${y0+bodyH+13} 256,${y0+bodyH}" fill="${s.fin}"/>`
+    }
+    ${isNuke ? `<text x="155" y="40" fill="#ffae2b" font-size="10" font-weight="bold" text-anchor="middle">☢</text>` : ""}
+    <text x="160" y="69" fill="${isNuke ? '#ff8e99' : '#7f9fbc'}" font-size="8" font-family="monospace" text-anchor="middle">${item.data.cls} • ${item.data.spd} m/s</text>
+  </svg>`;
+}
+
+// ================== 360° WEBGL2 PBR ORDNANCE HANGAR ENGINE ==================
+const ordCanvas = document.getElementById("ordCanvas");
+const ogl = ordCanvas ? ordCanvas.getContext("webgl2", { antialias: true, alpha: true }) : null;
+let ordProgPBR = null, ordProgGlow = null, ordProgDeck = null;
+let ordCylVAO = null, ordCylCnt = 0, ordConeVAO = null, ordConeCnt = 0, ordDeckVAO = null, ordDeckCnt = 0;
+let ordTexWhite = null;
+const ordBuffers = {};
+let ordFilter = "all";
+let selectedOrdId = "kh_102x";
+let ordYaw = 2.35, ordPitch = 0.28, ordDist = 7.4;
+let tOrdYaw = 2.35, tOrdPitch = 0.28, tOrdDist = 7.4;
+let ordDrag = false, oLastX = 0, oLastY = 0, showOrdPlume = true;
+
+function oLinkProg(vs, fs) {
+  const c = (src, tp) => { const s=ogl.createShader(tp); ogl.shaderSource(s,src); ogl.compileShader(s); return s; };
+  const p = ogl.createProgram();
+  ogl.attachShader(p, c(vs, ogl.VERTEX_SHADER)); ogl.attachShader(p, c(fs, ogl.FRAGMENT_SHADER));
+  ogl.linkProgram(p); return p;
+}
+
+function initOrdGL() {
+  ordProgPBR = oLinkProg(VS_PBR, FS_PBR);
+  ordProgGlow = oLinkProg(VS_GLOW, FS_GLOW);
+  ordProgDeck = oLinkProg(VS_DECK, FS_DECK);
+
+  // Neutral white/slate texture so vertex material IDs & custom UVs shine cleanly
+  const tc = document.createElement("canvas"); tc.width=256; tc.height=256;
+  const tx = tc.getContext("2d"); tx.fillStyle="#cfd8e3"; tx.fillRect(0,0,256,256);
+  tx.strokeStyle="rgba(15,23,42,0.35)"; tx.lineWidth=2;
+  for(let i=32;i<256;i+=32){ tx.beginPath(); tx.moveTo(0,i); tx.lineTo(256,i); tx.stroke(); }
+  ordTexWhite = ogl.createTexture(); ogl.bindTexture(ogl.TEXTURE_2D, ordTexWhite);
+  ogl.texImage2D(ogl.TEXTURE_2D, 0, ogl.RGBA, ogl.RGBA, ogl.UNSIGNED_BYTE, tc);
+  ogl.generateMipmap(ogl.TEXTURE_2D);
+
+  const cp=[], cn=[], ci=[]; const segs=18;
+  for(let i=0;i<=segs;i++){const a=(i/segs)*Math.PI*2, c=Math.cos(a), s=Math.sin(a); cp.push(c,s,-0.5,c,s,0.5); cn.push(c,s,0,c,s,0);}
+  for(let i=0;i<segs;i++){const b=i*2; ci.push(b,b+1,b+2, b+2,b+1,b+3);}
+  ordCylVAO=ogl.createVertexArray(); ogl.bindVertexArray(ordCylVAO);
+  let b1=ogl.createBuffer(); ogl.bindBuffer(ogl.ARRAY_BUFFER,b1); ogl.bufferData(ogl.ARRAY_BUFFER,new Float32Array(cp),ogl.STATIC_DRAW); ogl.enableVertexAttribArray(0); ogl.vertexAttribPointer(0,3,ogl.FLOAT,false,0,0);
+  let b2=ogl.createBuffer(); ogl.bindBuffer(ogl.ARRAY_BUFFER,b2); ogl.bufferData(ogl.ARRAY_BUFFER,new Float32Array(cn),ogl.STATIC_DRAW); ogl.enableVertexAttribArray(1); ogl.vertexAttribPointer(1,3,ogl.FLOAT,false,0,0);
+  let ib=ogl.createBuffer(); ogl.bindBuffer(ogl.ELEMENT_ARRAY_BUFFER,ib); ogl.bufferData(ogl.ELEMENT_ARRAY_BUFFER,new Uint16Array(ci),ogl.STATIC_DRAW);
+  ordCylCnt=ci.length;
+
+  const kp=[], kn=[], ki=[];
+  for(let i=0;i<=segs;i++){const a=(i/segs)*Math.PI*2, c=Math.cos(a), s=Math.sin(a); kp.push(c,s,0, c*0.08,s*0.08,1); kn.push(c,s,0.3, c,s,0.3);}
+  for(let i=0;i<segs;i++){const b=i*2; ki.push(b,b+1,b+2, b+2,b+1,b+3);}
+  ordConeVAO=ogl.createVertexArray(); ogl.bindVertexArray(ordConeVAO);
+  b1=ogl.createBuffer(); ogl.bindBuffer(ogl.ARRAY_BUFFER,b1); ogl.bufferData(ogl.ARRAY_BUFFER,new Float32Array(kp),ogl.STATIC_DRAW); ogl.enableVertexAttribArray(0); ogl.vertexAttribPointer(0,3,ogl.FLOAT,false,0,0);
+  b2=ogl.createBuffer(); ogl.bindBuffer(ogl.ARRAY_BUFFER,b2); ogl.bufferData(ogl.ARRAY_BUFFER,new Float32Array(kn),ogl.STATIC_DRAW); ogl.enableVertexAttribArray(1); ogl.vertexAttribPointer(1,3,ogl.FLOAT,false,0,0);
+  ib=ogl.createBuffer(); ogl.bindBuffer(ogl.ELEMENT_ARRAY_BUFFER,ib); ogl.bufferData(ogl.ELEMENT_ARRAY_BUFFER,new Uint16Array(ki),ogl.STATIC_DRAW);
+  ordConeCnt=ki.length;
+
+  ordDeckVAO=ogl.createVertexArray(); ogl.bindVertexArray(ordDeckVAO);
+  b1=ogl.createBuffer(); ogl.bindBuffer(ogl.ARRAY_BUFFER,b1); ogl.bufferData(ogl.ARRAY_BUFFER,new Float32Array([-16,-1.1,-16, 16,-1.1,-16, 16,-1.1,16, -16,-1.1,16]),ogl.STATIC_DRAW); ogl.enableVertexAttribArray(0); ogl.vertexAttribPointer(0,3,ogl.FLOAT,false,0,0);
+  ib=ogl.createBuffer(); ogl.bindBuffer(ogl.ELEMENT_ARRAY_BUFFER,ib); ogl.bufferData(ogl.ELEMENT_ARRAY_BUFFER,new Uint16Array([0,2,1,0,3,2]),ogl.STATIC_DRAW);
+  ordDeckCnt=6;
+  ogl.bindVertexArray(null);
+}
+
+function buildOrdnance3D(item) {
+  if (ordBuffers[item.id]) return ordBuffers[item.id];
+  const pos=[], norm=[], uv=[], mat=[], idx=[];
+  const s = item.spec;
+
+  function tri(a,b,c,m) {
+    const base=pos.length/3;
+    const ux=b[0]-a[0],uy=b[1]-a[1],uz=b[2]-a[2], vx=c[0]-a[0],vy=c[1]-a[1],vz=c[2]-a[2];
+    let nx=uy*vz-uz*vy, ny=uz*vx-ux*vz, nz=ux*vy-uy*vx; const l=Math.hypot(nx,ny,nz)||1; nx/=l;ny/=l;nz/=l;
+    [a,b,c].forEach(p=>{pos.push(p[0],p[1],p[2]); norm.push(nx,ny,nz); uv.push(0.5,0.5); mat.push(m);});
+    idx.push(base,base+1,base+2);
+  }
+  function loft(st, segs, m, chine=0) {
+    const base=pos.length/3;
+    for(let r=0;r<st.length;r++){
+      const [z,cx,cy,rx,ry]=st[r];
+      for(let i=0;i<=segs;i++){
+        const a=(i/segs)*Math.PI*2; let ca=Math.cos(a), sa=Math.sin(a);
+        if(chine>0){ca=Math.sign(ca)*Math.pow(Math.abs(ca),1-chine*0.42); sa=Math.sign(sa)*Math.pow(Math.abs(sa),1+chine*0.28);}
+        const px=cx+ca*rx, py=cy+sa*ry;
+        let nx=ca/Math.max(0.05,rx), ny=sa/Math.max(0.05,ry), nz=(r===0?-0.35:(r===st.length-1?0.25:0));
+        const nl=Math.hypot(nx,ny,nz)||1;
+        pos.push(px,py,z); norm.push(nx/nl,ny/nl,nz/nl); uv.push(i/segs, r/(st.length-1)); mat.push(m);
+      }
+    }
+    const stride=segs+1;
+    for(let r=0;r<st.length-1;r++) for(let i=0;i<segs;i++){
+      const a=base+r*stride+i, b=a+1, c=base+(r+1)*stride+i, d=c+1;
+      idx.push(a,c,b, b,c,d);
+    }
+  }
+  function fin4(z0, z1, r0, r1, thick, m, rotOffset=0, cx=0, cy=0) {
+    for(let k=0;k<4;k++){
+      const ang=rotOffset + k*Math.PI*0.5;
+      const dx=Math.cos(ang), dy=Math.sin(ang), px=-dy*thick, py=dx*thick;
+      const a=[cx+dx*r0-px, cy+dy*r0-py, z0], b=[cx+dx*r1-px, cy+dy*r1-py, z0+0.15];
+      const c=[cx+dx*r1-px, cy+dy*r1-py, z1], d=[cx+dx*r0-px, cy+dy*r0-py, z1];
+      const e=[cx+dx*r0+px, cy+dy*r0+py, z0], f=[cx+dx*r1+px, cy+dy*r1+py, z0+0.15];
+      const g=[cx+dx*r1+px, cy+dy*r1+py, z1], h=[cx+dx*r0+px, cy+dy*r0+py, z1];
+      tri(a,b,c,m); tri(a,c,d,m); tri(e,g,f,m); tri(e,h,g,m);
+      tri(a,e,f,m); tri(a,f,b,m); tri(b,f,g,m); tri(b,g,c,m);
+    }
+  }
+
+  let tailZ = 2.0, hasPlume = true;
+  if (item.kind === "rocket") {
+    const rPod = s.cal >= 120 ? 0.56 : 0.48;
+    const podMat = (item.id==="s8_kom"||item.id==="s13_heavy") ? 2.0 : 3.0;
+    const chine = s.style === "pod_7_stealth" ? 0.55 : 0.0;
+    // Left-of-center: Multi-Tube Rocket Pod
+    loft([[-1.95,-0.55,0, rPod*0.35,rPod*0.35], [-1.45,-0.55,0, rPod,rPod], [1.45,-0.55,0, rPod,rPod], [1.75,-0.55,0, rPod*0.85,rPod*0.85]], 20, podMat, chine);
+    loft([[-1.48,-0.55,0, rPod*0.82,rPod*0.82], [-1.42,-0.55,0, rPod*0.82,rPod*0.82]], 16, 4.0, chine);
+    loft([[-1.42,-0.55,0, rPod*1.03,rPod*1.03], [-1.22,-0.55,0, rPod*1.03,rPod*1.03]], 20, 6.0, chine);
+    // Individual Launch Tubes & Protruding Warheads
+    const tRing = s.tubes <= 7 ? s.tubes : 8;
+    for(let i=0;i<tRing;i++){
+      const a=(i/tRing)*Math.PI*2, tx=-0.55+Math.cos(a)*rPod*0.52, ty=Math.sin(a)*rPod*0.52;
+      loft([[-1.52,tx,ty,0.06,0.06],[-1.40,tx,ty,0.08,0.08]],8, 4.0);
+      loft([[-1.66,tx,ty,0.015,0.015],[-1.46,tx,ty,0.055,0.055]],8, 6.0);
+    }
+    // Right-of-center: Standalone Individual Rocket Design
+    const rr = s.cal >= 120 ? 0.16 : 0.11;
+    loft([[-1.45,0.72,0, 0.015,0.015], [-0.95,0.72,0, rr,rr], [1.15,0.72,0, rr,rr], [1.28,0.72,0, rr*0.75,rr*0.75]], 14, 3.0);
+    loft([[-0.95,0.72,0, rr*1.04,rr*1.04], [-0.72,0.72,0, rr*1.04,rr*1.04]], 14, 6.0);
+    fin4(0.85, 1.24, rr*0.8, rr*2.3, 0.015, 2.0, Math.PI*0.25, 0.72, 0);
+    tailZ = 1.32;
+  } else if (item.kind === "cannon") {
+    hasPlume = false;
+    // Cannon Receiver + Ammo Drum + Multi-Barrel / Single Barrel Assembly
+    loft([[0.0,0,0, 0.36,0.32], [1.4,0,0, 0.38,0.34], [1.5,0,0, 0.15,0.15]], 12, 2.0, 0.5);
+    loft([[0.65,0.52,0, 0.40,0.40], [1.35,0.52,0, 0.40,0.40]], 16, 7.0); // Ammo Drum
+    const bc = s.barrels;
+    for(let i=0;i<bc;i++){
+      const a = bc===1 ? 0 : (i/bc)*Math.PI*2;
+      const bx = bc===1 ? 0 : Math.cos(a)*0.14, by = bc===1 ? 0 : Math.sin(a)*0.14;
+      loft([[-2.1,bx,by, 0.045,0.045], [0.05,bx,by, 0.045,0.045]], 10, 7.0);
+    }
+    if(bc > 1) loft([[-1.65,0,0, 0.21,0.21], [-1.52,0,0, 0.21,0.21]], 14, 2.0); // Muzzle clamp
+    tailZ = 1.5;
+  } else {
+    // Missiles & Nuclear Warheads
+    const isNuke = item.kind === "nuke";
+    const isStealth = ["stealth_cruise","box_stealth","twin_stealth"].includes(s.style);
+    const isRamjet = ["ramjet","ramjet_nuke"].includes(s.style);
+    const isIR = ["ir_slim","ir_strake","ir_wingless","strake_ir","canard_ir"].includes(s.style);
+    const rad = isNuke ? 0.36 : 0.20;
+    const len = isNuke ? 2.55 : 2.35;
+    const bodyMat = isStealth ? 5.0 : (s.style==="b61_glide" ? 7.0 : 3.0);
+    const noseMat = isIR ? 1.0 : (isStealth ? 5.0 : 2.0);
+    const chine = isStealth ? 0.85 : 0.0;
+
+    // Seeker / Nose
+    if (isIR) {
+      loft([[-len,0,0, 0.03,0.03], [-len+0.12,0,0, rad*0.76,rad*0.76], [-len+0.28,0,0, rad,rad]], 16, 1.0);
+    } else {
+      loft([[-len,0,0, 0.02,0.02], [-len+0.35,0,0, rad*0.62,rad*0.62], [-len+0.68,0,0, rad,rad]], 16, noseMat, chine);
+    }
+    // Hazard / Warhead Band
+    loft([[-len+0.68,0,0, rad*1.04,rad*1.04], [-len+0.96,0,0, rad*1.04,rad*1.04]], 16, 6.0, chine);
+    if (isNuke) loft([[-len+1.02,0,0, rad*1.04,rad*1.04], [-len+1.16,0,0, rad*1.04,rad*1.04]], 16, 1.0, chine);
+    // Main Airframe + Exhaust Nozzle
+    loft([[-len+0.96,0,0, rad,rad], [len-0.25,0,0, rad,rad], [len,0,0, rad*(s.style==="lattice_boat"?0.72:0.90), rad*(s.style==="lattice_boat"?0.72:0.90)]], 18, bodyMat, chine);
+    loft([[len-0.08,0,0, rad*0.72,rad*0.72], [len+0.02,0,0, rad*0.68,rad*0.68]], 14, 4.0);
+
+    // Ramjet Cheek Intakes
+    if (isRamjet) {
+      for(const sd of [-1,1]) {
+        loft([[-0.65, sd*rad*1.12, 0, rad*0.36, rad*0.36], [len-0.35, sd*rad*1.12, 0, rad*0.36, rad*0.36]], 10, 2.0, 0.45);
+        loft([[-0.66, sd*rad*1.12, 0, rad*0.26, rad*0.26], [-0.45, sd*rad*1.12, 0, rad*0.26, rad*0.26]], 8, 4.0);
+      }
+    }
+    // Ventral Turbofan Engine Pod
+    if (["ventral_cruise","heavy_cruise"].includes(s.style)) {
+      loft([[0.45, 0, -rad*1.05, rad*0.46, rad*0.42], [1.75, 0, -rad*1.05, rad*0.42, rad*0.38]], 12, 2.0);
+      loft([[0.44, 0, -rad*1.05, rad*0.32, rad*0.28], [0.65, 0, -rad*1.05, rad*0.30, rad*0.26]], 10, 4.0);
+    }
+    // Cruise Wings or Mid-Body Wings/Canards
+    if (isNuke && s.style !== "b61_glide") {
+      for(const sd of [-1,1]) {
+        const zW = -0.35;
+        tri([sd*rad*0.8, 0.04, zW], [sd*rad*0.8, 0.04, zW+0.55], [sd*1.85, 0.02, zW+0.95], bodyMat);
+        tri([sd*rad*0.8, 0.04, zW+0.55], [sd*1.85, 0.02, zW+1.30], [sd*1.85, 0.02, zW+0.95], bodyMat);
+        tri([sd*rad*0.8,-0.02, zW], [sd*1.85,-0.02, zW+0.95], [sd*rad*0.8,-0.02, zW+0.55], bodyMat);
+      }
+    } else if (["bvr_radar","strake_radar","strake_ir","dual_pulse"].includes(s.style)) {
+      fin4(-0.25, 0.35, rad*0.95, rad*2.4, 0.02, bodyMat, Math.PI*0.25);
+    } else if (s.style === "canard_ir") {
+      fin4(-len+0.62, -len+0.95, rad*0.95, rad*2.1, 0.018, 2.0, Math.PI*0.25);
+    }
+    // Tail Fins (Lattice Grid Fins vs Cruciform)
+    const isLat = ["lattice","lattice_boat"].includes(s.style);
+    fin4(len-0.65, len-0.12, rad*0.85, rad*(isLat?2.3:2.55), isLat?0.055:0.022, 2.0, Math.PI*0.25);
+    tailZ = len + 0.04;
+  }
+
+  const vao = ogl.createVertexArray(); ogl.bindVertexArray(vao);
+  const mk = (arr, loc, sz) => { const b=ogl.createBuffer(); ogl.bindBuffer(ogl.ARRAY_BUFFER,b); ogl.bufferData(ogl.ARRAY_BUFFER,new Float32Array(arr),ogl.STATIC_DRAW); ogl.enableVertexAttribArray(loc); ogl.vertexAttribPointer(loc,sz,ogl.FLOAT,false,0,0); };
+  mk(pos,0,3); mk(norm,1,3); mk(uv,2,2); mk(mat,3,1);
+  const ib=ogl.createBuffer(); ogl.bindBuffer(ogl.ELEMENT_ARRAY_BUFFER,ib); ogl.bufferData(ogl.ELEMENT_ARRAY_BUFFER,new Uint16Array(idx),ogl.STATIC_DRAW);
+  ogl.bindVertexArray(null);
+  const out = { vao, count: idx.length, tailZ, hasPlume, isNuke: item.kind==="nuke", isRocket: item.kind==="rocket" };
+  ordBuffers[item.id] = out;
+  return out;
+}
+
+function renderOrdWebGL(nowMs) {
+  if (ogl && !document.getElementById("tab-ordnance").classList.contains("hidden")) {
+    if (!ordProgPBR) initOrdGL();
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    const W = Math.max(300, Math.round(ordCanvas.clientWidth * dpr));
+    const H = Math.max(200, Math.round(ordCanvas.clientHeight * dpr));
+    if (ordCanvas.width !== W || ordCanvas.height !== H) { ordCanvas.width = W; ordCanvas.height = H; }
+
+    if (!ordDrag) tOrdYaw += 0.007;
+    let dy = ((tOrdYaw - ordYaw + Math.PI) % (Math.PI * 2)) - Math.PI;
+    if (dy < -Math.PI) dy += Math.PI * 2;
+    ordYaw += dy * 0.14; ordPitch += (tOrdPitch - ordPitch) * 0.14; ordDist += (tOrdDist - ordDist) * 0.14;
+
+    const item = getAllOrdnanceList().find(x => x.id === selectedOrdId) || getAllOrdnanceList()[0];
+    const mesh = buildOrdnance3D(item);
+
+    ogl.viewport(0, 0, W, H); ogl.clearColor(0,0,0,0); ogl.clear(ogl.COLOR_BUFFER_BIT | ogl.DEPTH_BUFFER_BIT);
+    ogl.enable(ogl.DEPTH_TEST);
+    const camPos = [Math.sin(ordYaw)*Math.cos(ordPitch)*ordDist, Math.sin(ordPitch)*ordDist, Math.cos(ordYaw)*Math.cos(ordPitch)*ordDist];
+    const vp = mat4Mul(mat4Persp(0.62, W/H, 0.2, 80), mat4LookAt(camPos, [0,0,0], [0,1,0]));
+    const ident = mat4TRS(0,0,0,1,1,1);
+
+    // Deck
+    ogl.useProgram(ordProgDeck); ogl.enable(ogl.BLEND); ogl.blendFunc(ogl.SRC_ALPHA, ogl.ONE_MINUS_SRC_ALPHA); ogl.depthMask(false);
+    ogl.uniformMatrix4fv(ogl.getUniformLocation(ordProgDeck,"uMVP"),false,vp);
+    ogl.uniform1f(ogl.getUniformLocation(ordProgDeck,"uTime"),nowMs*0.001);
+    ogl.uniform1f(ogl.getUniformLocation(ordProgDeck,"uAbOn"),(showOrdPlume && mesh.hasPlume)?1:0);
+    ogl.uniform1f(ogl.getUniformLocation(ordProgDeck,"uTailZ"),mesh.tailZ);
+    ogl.uniform1f(ogl.getUniformLocation(ordProgDeck,"uXray"),0.0);
+    ogl.bindVertexArray(ordDeckVAO); ogl.drawElements(ogl.TRIANGLES, ordDeckCnt, ogl.UNSIGNED_SHORT, 0);
+
+    // PBR Weapon
+    ogl.depthMask(true); ogl.disable(ogl.BLEND); ogl.useProgram(ordProgPBR);
+    ogl.uniformMatrix4fv(ogl.getUniformLocation(ordProgPBR,"uMVP"),false,vp);
+    ogl.uniformMatrix4fv(ogl.getUniformLocation(ordProgPBR,"uModel"),false,ident);
+    ogl.uniform3fv(ogl.getUniformLocation(ordProgPBR,"uCamPos"),camPos);
+    ogl.uniform1f(ogl.getUniformLocation(ordProgPBR,"uXrayMode"),0.0);
+    ogl.uniform1f(ogl.getUniformLocation(ordProgPBR,"uTime"),nowMs*0.001);
+    ogl.uniform1f(ogl.getUniformLocation(ordProgPBR,"uAbOn"),(showOrdPlume && mesh.hasPlume)?1:0);
+    ogl.uniform1f(ogl.getUniformLocation(ordProgPBR,"uTailZ"),mesh.tailZ);
+    ogl.activeTexture(ogl.TEXTURE0); ogl.bindTexture(ogl.TEXTURE_2D, ordTexWhite);
+    ogl.uniform1i(ogl.getUniformLocation(ordProgPBR,"uTex"),0);
+    ogl.bindVertexArray(mesh.vao); ogl.drawElements(ogl.TRIANGLES, mesh.count, ogl.UNSIGNED_SHORT, 0);
+
+    // Rocket / Ramjet Exhaust Plume
+    if (showOrdPlume && mesh.hasPlume) {
+      ogl.useProgram(ordProgGlow); ogl.enable(ogl.BLEND); ogl.blendFunc(ogl.SRC_ALPHA, ogl.ONE); ogl.depthMask(false);
+      const pulse = 1 + Math.sin(nowMs*0.03)*0.12;
+      const px = mesh.isRocket ? 0.72 : 0.0;
+      const pr = mesh.isNuke ? 0.24 : (mesh.isRocket ? 0.08 : 0.14);
+      ogl.bindVertexArray(ordConeVAO);
+      const m1 = mat4TRS(px, 0, mesh.tailZ, pr*1.2, pr*1.2, 1.8*pulse);
+      ogl.uniformMatrix4fv(ogl.getUniformLocation(ordProgGlow,"uMVP"),false,mat4Mul(vp,m1));
+      ogl.uniformMatrix4fv(ogl.getUniformLocation(ordProgGlow,"uModel"),false,m1);
+      ogl.uniform3fv(ogl.getUniformLocation(ordProgGlow,"uCamPos"),camPos);
+      ogl.uniform4f(ogl.getUniformLocation(ordProgGlow,"uColor"), mesh.isNuke?1.0:0.35, mesh.isNuke?0.55:0.82, mesh.isNuke?0.18:1.0, 0.72);
+      ogl.drawElements(ogl.TRIANGLES, ordConeCnt, ogl.UNSIGNED_SHORT, 0);
+      ogl.depthMask(true);
+    }
+  }
+  requestAnimationFrame(renderOrdWebGL);
+}
+
+if (ordCanvas) {
+  ordCanvas.addEventListener("mousedown", e => { ordDrag = true; oLastX = e.clientX; oLastY = e.clientY; });
+  window.addEventListener("mouseup", () => ordDrag = false);
+  window.addEventListener("mousemove", e => {
+    if (!ordDrag) return;
+    tOrdYaw -= (e.clientX - oLastX) * 0.012;
+    tOrdPitch = Math.max(-1.45, Math.min(1.45, tOrdPitch + (e.clientY - oLastY) * 0.012));
+    oLastX = e.clientX; oLastY = e.clientY;
+  });
+  ordCanvas.addEventListener("wheel", e => {
+    e.preventDefault(); tOrdDist = Math.max(3.6, Math.min(14.0, tOrdDist + e.deltaY * 0.01));
+  }, { passive: false });
+}
+
+function setOrdCam(y, p, dMult, btn) {
+  const twoPi = Math.PI * 2;
+  ordYaw = ((ordYaw % twoPi) + twoPi) % twoPi;
+  tOrdYaw = y; tOrdPitch = p; tOrdDist = 7.4 / dMult;
+  if (btn) { btn.parentElement.querySelectorAll(".ang-btn").forEach(b=>b.classList.remove("active")); btn.classList.add("active"); }
+}
+function toggleOrdPlume(btn) { showOrdPlume = !showOrdPlume; btn.textContent = `🔥 Motor Plume: ${showOrdPlume?"ON":"OFF"}`; }
+
+function setOrdFilter(f, btn) {
+  ordFilter = f;
+  document.querySelectorAll("#ord-filter-bar .mode-btn").forEach(b => b.classList.remove("active"));
+  if (btn) btn.classList.add("active");
+  renderOrdnanceCatalog();
+}
+
+function selectOrdItem(id) {
+  selectedOrdId = id;
+  renderOrdnanceCatalog();
+}
+
+function inspectOrdnance3D(id) {
+  selectedOrdId = id;
+  ordFilter = "all";
+  document.querySelectorAll("#ord-filter-bar .mode-btn").forEach((b, i) => b.classList.toggle("active", i === 0));
+  const ordTabBtn = document.querySelectorAll(".nav-tabs .tab-btn")[2];
+  switchTab("ordnance", ordTabBtn);
+  renderOrdnanceCatalog();
+}
+
 function renderOrdnanceCatalog() {
-  const list = [
-    ...Object.values(MISSILES).map(m => ({
-      cls: m.nuke ? "card nuke" : "card",
-      title: `${m.nuke ? "☢ " : ""}${m.name}`,
-      lines: [
-        ["Category", m.cls], ["Base Damage", m.dmg],
-        ["Range / Speed", `${m.rng} km • ${m.spd} m/s`],
-        [m.nuke ? "EMP & Blast" : "Lock / Turn", m.nuke ? m.blast : `${m.lock}s / ${m.turn}°/s`]
-      ]
-    })),
-    ...Object.values(ROCKETS).map(r => ({
-      cls: "card", title: `ROCKET POD // ${r.name}`,
-      lines: [["Warhead DMG", r.dmg], ["Splash Radius", r.splash + " m"], ["Velocity", r.spd + " m/s"], ["Mode", r.guid]]
-    })),
-    ...Object.values(CANNONS).map(c => ({
-      cls: "card ability", title: `CANNON // ${c.name}`,
-      lines: [["Caliber / RPM", `${c.cal}mm • ${c.rpm}`], ["Dmg / Round", c.dmg], ["Muzzle Vel", c.vel + " m/s"], ["Armor Pen", c.pen]]
-    }))
-  ];
-  document.getElementById("ordnance-catalog").innerHTML = list.map(item => `
-    <div class="${item.cls}">
-      <h4>${item.title}</h4>
-      ${item.lines.map(([k, v]) => `<div class="kv-line"><span>${k}</span><span>${v}</span></div>`).join("")}
-    </div>
+  const all = getAllOrdnanceList();
+  const filtered = ordFilter === "all" ? all : all.filter(x => x.kind === ordFilter);
+  const sel = all.find(x => x.id === selectedOrdId) || filtered[0] || all[0];
+  selectedOrdId = sel.id;
+
+  document.getElementById("ord-cam-readout").textContent = `360° ORDNANCE // ${sel.name.toUpperCase()}`;
+  document.getElementById("ord-sel-title").textContent = (sel.kind==="nuke" ? "☢ " : "") + sel.name;
+  document.getElementById("ord-sel-title").style.color = sel.kind==="nuke" ? "var(--hud-red)" : "var(--hud-cyan)";
+  document.getElementById("ord-sel-desc").textContent = sel.spec.desc;
+
+  let specLines = [];
+  if (sel.kind==="missile" || sel.kind==="nuke") {
+    const m = sel.data;
+    specLines = [["Classification", m.cls], ["Base Damage", m.dmg], ["Range / Speed", `${m.rng} km • ${m.spd} m/s`], [m.nuke?"EMP & Blast":"Lock / Turn", m.nuke?m.blast:`${m.lock}s / ${m.turn}°/s`]];
+  } else if (sel.kind==="rocket") {
+    const r = sel.data;
+    specLines = [["Warhead DMG", r.dmg], ["Splash Radius", r.splash+" m"], ["Velocity", r.spd+" m/s"], ["Guidance", r.guid]];
+  } else {
+    const c = sel.data;
+    specLines = [["Caliber / RPM", `${c.cal}mm • ${c.rpm}`], ["Dmg / Round", c.dmg], ["Muzzle Vel", c.vel+" m/s"], ["Armor Pen", c.pen]];
+  }
+  document.getElementById("ord-sel-specs").innerHTML = specLines.map(([k,v]) => `<div class="kv-line"><span>${k}</span><span>${v}</span></div>`).join("");
+
+  document.getElementById("ord-chip-grid").innerHTML = filtered.map(x => `
+    <button class="ord-chip ${x.kind==='nuke'?'nuke-chip':''} ${x.id===selectedOrdId?'active':''}" onclick="selectOrdItem('${x.id}')">${x.kind==='nuke'?'☢ ':''}${x.name.split('(')[0].trim()}</button>
   `).join("");
+
+  document.getElementById("ordnance-catalog").innerHTML = filtered.map(item => {
+    const cls = item.kind === "nuke" ? "card nuke" : (item.kind === "cannon" ? "card ability" : "card");
+    const prefix = item.kind === "nuke" ? "☢ " : (item.kind === "rocket" ? "ROCKET POD // " : (item.kind === "cannon" ? "CANNON // " : ""));
+    let lines = [];
+    if (item.kind==="missile" || item.kind==="nuke") {
+      const m=item.data; lines=[["Category",m.cls],["Base Damage",m.dmg],["Range / Speed",`${m.rng} km • ${m.spd} m/s`],[m.nuke?"EMP & Blast":"Lock / Turn",m.nuke?m.blast:`${m.lock}s / ${m.turn}°/s`]];
+    } else if (item.kind==="rocket") {
+      const r=item.data; lines=[["Warhead DMG",r.dmg],["Splash Radius",r.splash+" m"],["Velocity",r.spd+" m/s"],["Mode",r.guid]];
+    } else {
+      const c=item.data; lines=[["Caliber / RPM",`${c.cal}mm • ${c.rpm}`],["Dmg / Round",c.dmg],["Muzzle Vel",c.vel+" m/s"],["Armor Pen",c.pen]];
+    }
+    return `
+      <div class="${cls}">
+        <h4>${prefix}${item.name}</h4>
+        <div class="ord-art-box">${buildOrdnanceCardSVG(item)}</div>
+        <p style="margin-bottom:6px;">${item.spec.desc}</p>
+        ${lines.map(([k, v]) => `<div class="kv-line"><span>${k}</span><span>${v}</span></div>`).join("")}
+        <button class="inspect-3d-btn" onclick="selectOrdItem('${item.id}'); window.scrollTo({top:0,behavior:'smooth'})">🔬 Inspect in 360° 3D</button>
+      </div>`;
+  }).join("");
 }
 
 function switchTab(tabId, btn) {
-  ["aircraft", "ordnance", "controls"].forEach(t => document.getElementById("tab-" + t).classList.add("hidden"));
+  ["aircraft", "matrix", "ordnance", "controls"].forEach(t => document.getElementById("tab-" + t).classList.add("hidden"));
   document.getElementById("tab-" + tabId).classList.remove("hidden");
   document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
-  btn.classList.add("active");
+  if (btn) btn.classList.add("active");
 }
 
 renderRoster();
 renderSelectedJet();
+renderMatrix();
 renderOrdnanceCatalog();
 requestAnimationFrame(renderWebGL);
+requestAnimationFrame(renderOrdWebGL);
 </script>
 </body>
 </html>
